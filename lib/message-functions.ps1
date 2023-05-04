@@ -239,7 +239,6 @@ function emergMsg
     [String]$message
   )
 
-#  _coloredMsg "emerg" "EMERG:   ${message}"
   _coloredMsg "emerg" "[EMERG  ] ${message}"
 
 }
@@ -254,7 +253,6 @@ function alertMsg
     [String]$message
   )
 
-#  _coloredMsg "alert" "ALERT:   ${message}"
   _coloredMsg "alert" "[ALERT  ] ${message}"
 
 }
@@ -269,7 +267,6 @@ function critMsg
     [String]$message
   )
 
-#  _coloredMsg "crit" "CRIT:    ${message}"
   _coloredMsg "crit" "[CRIT   ] ${message}"
 
 }
@@ -284,7 +281,6 @@ function errMsg
     [String]$message
   )
 
-#  _coloredMsg "err" "ERR:     ${message}"
   _coloredMsg "err" "[ERR    ] ${message}"
 
 }
@@ -306,7 +302,6 @@ function warningMsg
   # Show message if ${__VERBOSE} >= 4 (warning).
   if ("$__VERBOSE" -ge 4)
   {
-#    _coloredMsg "warning" "WARNING: ${message}"
     _coloredMsg "warning" "[WARNING] ${message}"
   }
 
@@ -329,7 +324,6 @@ function noticeMsg
   # Show message if ${__VERBOSE} >= 5 (notice).
   if ("$__VERBOSE" -ge 5)
   {
-#    _coloredMsg "notice" "NOTICE:  ${message}"
     _coloredMsg "notice" "[NOTICE ] ${message}"
   }
 
@@ -352,7 +346,6 @@ function infoMsg
   # Show message if ${__VERBOSE} >= 6 (info).
   if ("$__VERBOSE" -ge 6)
   {
-#    _coloredMsg "info" "INFO:    ${message}"
     _coloredMsg "info" "[INFO   ] ${message}"
   }
 
@@ -375,7 +368,6 @@ function debugMsg
   # Show message if ${__VERBOSE} >= 7 (debug).
   if ("$__VERBOSE" -ge 7)
   {
-    #_coloredMsg "debug" "DEBUG:   ${message}"
     _coloredMsg "debug" "[DEBUG  ] ${message}"
   }
 
@@ -402,8 +394,7 @@ function emergExit
     [String]$message
   )
 
-  #_coloredLog "emerg" "EMERG: ${message}"
-  _coloredMsg "emerg" "EMERG: ${message}"
+  _coloredMsg "emerg" "[EMERG  ] ${message}"
   exit $exit_code
 
 }
@@ -423,8 +414,7 @@ function alertExit
     [String]$message
   )
 
-  #_coloredLog "alert" "ALERT: ${message}"
-  _coloredMsg "alert" "ALERT: ${message}"
+  _coloredMsg "alert" "[ALERT  ] ${message}"
   exit $exit_code
 
 }
@@ -444,8 +434,7 @@ function critExit
     [String]$message
   )
 
-  #_coloredLog "crit" "CRIT: ${message}"
-  _coloredMsg "crit" "CRIT: ${message}"
+  _coloredMsg "crit" "[CRIT   ] ${message}"
   exit $exit_code
 
 }
@@ -465,8 +454,7 @@ function errExit
     [String]$message
   )
 
-  #_coloredLog "err" "ERR: ${message}"
-  _coloredMsg "err" "ERR: ${message}"
+  _coloredMsg "err" "[ERR    ] ${message}"
   exit $exit_code
 
 }
@@ -515,7 +503,7 @@ function normalMessage
   # Show message if ${__VERBOSE} >= 5 (notice).
   if ("$__VERBOSE" -ge 5)
   {
-    _coloredMsg "info" "${message}"
+    _coloredMsg "info" "[INFO   ] ${message}"
   }
 
 }
@@ -540,7 +528,7 @@ function verboseMessage
   # Show message if ${__VERBOSE} = 7 (debug).
   if ("$__VERBOSE" -eq 7)
   {
-    _coloredMsg "info" "${message}"
+    _coloredMsg "info" "[INFO   ] ${message}"
   }
 
 }
