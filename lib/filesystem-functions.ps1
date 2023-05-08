@@ -127,7 +127,6 @@ function checkNecessaryFolder
 
   if (! (_folderExists "$folder_spec") )
   {
-    #logAndShowMessage "${logfile}" ERR "Following folder has been moved or deleted:`n$folder_spec"
     logAndShowMessage "${logfile}" ERR "The folder '${definition_name}' has been moved or deleted:`n$folder_spec"
 
     Write-Host -NoNewLine "Press any key to abort..."
@@ -170,13 +169,23 @@ function checkNecessaryFile
 
   if (! (_fileExists "$file_spec") )
   {
-    #logAndShowMessage "${logfile}" ERR "Following file has been moved or deleted:`n$file_spec"
-    logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n$file_spec"
+    #TODO Search in the Windows PATH environment variable.
+    $file_in_path = (Get-Command "${file_spec}").Path
 
-    Write-Host -NoNewLine "Press any key to abort..."
-    [void][System.Console]::ReadKey($true)
+    if ("${file_in_path}" -ne "")
+    {
+      debugMsg "Found via Windows PATH environment variable: ${file_in_path}"
+    }
+    else
+    {
+      logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n$file_spec"
 
-    exit 2
+      Write-Host -NoNewLine "Press any key to abort..."
+      [void][System.Console]::ReadKey($true)
+
+      exit 2
+
+    }
 
   }
 

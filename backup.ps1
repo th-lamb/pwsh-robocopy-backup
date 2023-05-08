@@ -1,8 +1,5 @@
 # 2023, Thomas Lambeck
 #
-# Backup with robocopy based on a dir-list.
-# Backup with PowerShell and robocopy using a dir-list.
-# Backup with PowerShell and robocopy using a list of directories/files.
 # Backup with PowerShell and robocopy using a list of directories/files to backup.
 #
 ################################################################################
@@ -14,6 +11,8 @@
 <#
 - 2023-03-02, Version 0.0.01, Thomas Lambeck
   - File created
+- 2023-05-08, Version 0.0.02, Thomas Lambeck
+  - Better check for $ROBOCOPY_EXE (search in Windows PATH environment variable if no path is provided).
 #>
 
 #endregion ChangeLog ###########################################################
@@ -48,7 +47,7 @@
 
 #region Constant values
 
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.0.01
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.0.02
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
 Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
 
@@ -125,7 +124,9 @@ checkNecessaryFolder 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}"
 checkNecessaryFolder 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
 checkNecessaryFolder 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}"
 
+#TODO robocopy needs a separate check as well.
 checkNecessaryFile 'ROBOCOPY_EXE' "${ROBOCOPY_EXE}" "${BACKUP_LOGFILE}"
+
 checkNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_INCR'  "${ROBOCOPY_JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
 checkNecessaryFile 'BACKUP_DIRLIST'  "${BACKUP_DIRLIST}" "${BACKUP_LOGFILE}"
 #checkNecessaryFile 'BACKUP_LOGFILE'  "${BACKUP_LOGFILE}" "${BACKUP_LOGFILE}"
