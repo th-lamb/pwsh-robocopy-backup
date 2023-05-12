@@ -200,7 +200,7 @@ function checkNecessaryFile
 function CreateNecessaryDirectory
 {
   <#
-  Returns $true if the specified directory has been created, or already exists.
+  Creates the specified directory and all parent folders if necessary.
   Exits the script with exit-code 2 on errors.
   #>
   param (
@@ -238,7 +238,6 @@ function CreateNecessaryDirectory
 
   try {
     [System.IO.Directory]::CreateDirectory("${dir_spec}") | Out-Null
-    $true
   }
   catch
   {
