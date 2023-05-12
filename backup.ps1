@@ -114,13 +114,13 @@ logAndShowMessage "${BACKUP_LOGFILE}" INFO "Checking necessary directories and f
 
 #TODO Some folders/files we could create automatically if they are missing. Others are mandatory.
 
+checkNecessaryFolder 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
+
 #TODO $BACKUP_SERVER needs a different check! checkNecessaryFolder() does not work for UNC paths.
 #checkNecessaryFolder 'BACKUP_SERVER' "${BACKUP_SERVER}" "${BACKUP_LOGFILE}"
 #2023-04-29T14:23:02 [ERR    ] Following folder has been moved or deleted:
 #\\NODE304
 #TODO $BACKUP_SERVER might also be an IP address!
-
-checkNecessaryFolder 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
 
 #TODO $BACKUP_BASE_DIR might be a network share (cannot be created like this)!
 CreateNecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
