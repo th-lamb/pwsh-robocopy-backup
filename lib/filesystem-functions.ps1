@@ -46,7 +46,7 @@ function RealFsObjectType
 
 
 
-#region Checks
+#region Existence checks
 
 function _folderExists
 {
@@ -191,11 +191,76 @@ function checkNecessaryFile
 
 }
 
-#endregion Checks ##############################################################
+#endregion Existence checks ####################################################
 
 
 
-################################################################################
+#region Object creation
+
+function CreateNecessaryDirectory
+{
+  <#
+  Returns $true if the specified directory has been created, or already exists.
+  Exits the script with exit-code 2 on errors.
+  #>
+  param (
+    [String]$definition_name,
+    [String]$dir_spec,
+    [String]$logfile
+  )
+
+  #region Check parameters
+  if (! $PSBoundParameters.ContainsKey('definition_name'))
+  {
+    Write-Error "checkNecessaryFolder(): Parameter definition_name not provided!"
+    exit 1
+  }
+
+  if (! $PSBoundParameters.ContainsKey('dir_spec'))
+  {
+    Write-Error "checkNecessaryFolder(): Parameter dir_spec not provided!"
+    exit 1
+  }
+
+  if (! $PSBoundParameters.ContainsKey('logfile'))
+  {
+    Write-Error "checkNecessaryFolder(): Parameter logfile not provided!"
+    exit 1
+  }
+  #endregion
+
+  <#
+  https://stackoverflow.com/a/63311340
+  `New-Item -ItemType "directory" -Path ...`    : Fails if the directory already exists!
+  `New-Item ... -Force`                         : Doesn't show an error if there already is a *file* with the same name!
+  `[System.IO.Directory]::CreateDirectory(...)` : Creates the directory if necessary, and fails if there is a file with the same name.
+  #>
+
+  try {
+    [System.IO.Directory]::CreateDirectory("${dir_spec}") | Out-Null
+    $true
+  }
+  catch
+  {
+    logAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${dir_spec}. Error: $_"
+    exit 2
+  }
+
+}
+
+
+
+#TODO implement CreateNecessaryFile
+#TODO use a template as parameter?
+
+
+
+#region Object creation ########################################################
+
+
+
+#region Get-KnownFolderPath
+
 # How-to: Get or Set Special Folders with PowerShell
 # https://ss64.com/ps/syntax-knownfolders.html
 
@@ -367,7 +432,11 @@ function Get-KnownFolderPath
     "$result"
 }
 
-################################################################################
+#endregion Get-KnownFolderPath #################################################
+
+
+
+#region Path functions
 
 function expandedPath
 {
@@ -508,3 +577,5 @@ function getParentDir
   return "${parent_dir}"
 
 }
+
+#endregion Path functions ######################################################
