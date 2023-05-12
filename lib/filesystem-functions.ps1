@@ -63,7 +63,7 @@ function _folderExists
   }
   #endregion
 
-  if (Test-Path -Path "$folder_spec" -PathType Container)
+  if (Test-Path -Path "${folder_spec}" -PathType Container)
   {
     return $true
   }
@@ -87,7 +87,7 @@ function _fileExists
   }
   #endregion
 
-  if (Test-Path -Path "$file_spec" -PathType Leaf)
+  if (Test-Path -Path "${file_spec}" -PathType Leaf)
   {
     return $true
   }
@@ -125,9 +125,9 @@ function checkNecessaryFolder
   }
   #endregion
 
-  if (! (_folderExists "$folder_spec") )
+  if (! (_folderExists "${folder_spec}") )
   {
-    logAndShowMessage "${logfile}" ERR "The folder '${definition_name}' has been moved or deleted:`n$folder_spec"
+    logAndShowMessage "${logfile}" ERR "The folder '${definition_name}' has been moved or deleted:`n${folder_spec}"
 
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
@@ -167,25 +167,73 @@ function checkNecessaryFile
   }
   #endregion
 
-  if (! (_fileExists "$file_spec") )
+  if (! (_fileExists "${file_spec}") )
   {
-    #TODO Search in the Windows PATH environment variable.
-    $file_in_path = (Get-Command "${file_spec}").Path
+    logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
 
-    if ("${file_in_path}" -ne "")
-    {
-      debugMsg "Found via Windows PATH environment variable: ${file_in_path}"
-    }
-    else
-    {
-      logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n$file_spec"
+    Write-Host -NoNewLine "Press any key to abort..."
+    [void][System.Console]::ReadKey($true)
 
-      Write-Host -NoNewLine "Press any key to abort..."
-      [void][System.Console]::ReadKey($true)
+    exit 2
 
-      exit 2
+  }
 
-    }
+}
+
+function GetExecutablePath
+{
+  <#
+  Returns the path to the specified executable if it exists.
+  Also searches in the Windows PATH environment variable.
+  Exits the script with exit-code 2 if the specified file doesn't exist.
+  #>
+  param (
+    [String]$definition_name,
+    [String]$file_spec,
+    [String]$logfile
+  )
+
+  #region Check parameters
+  if (! $PSBoundParameters.ContainsKey('definition_name'))
+  {
+    Write-Error "checkNecessaryFile(): Parameter definition_name not provided!"
+    exit 1
+  }
+
+  if (! $PSBoundParameters.ContainsKey('file_spec'))
+  {
+    Write-Error "checkNecessaryFile(): Parameter file_spec not provided!"
+    exit 1
+  }
+
+  if (! $PSBoundParameters.ContainsKey('logfile'))
+  {
+    Write-Error "checkNecessaryFile(): Parameter logfile not provided!"
+    exit 1
+  }
+  #endregion
+
+  if (_fileExists "${file_spec}")
+  {
+    return "${file_spec}"
+  }
+
+  #TODO Search in the Windows PATH environment variable.
+  $file_in_path = (Get-Command "${file_spec}").Path
+
+  if ("${file_in_path}" -ne "")
+  {
+    debugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"
+    return "${file_in_path}"
+  }
+  else
+  {
+    logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
+
+    Write-Host -NoNewLine "Press any key to abort..."
+    [void][System.Console]::ReadKey($true)
+
+    exit 2
 
   }
 

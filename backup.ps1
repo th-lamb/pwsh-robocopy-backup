@@ -12,7 +12,7 @@
 - 2023-03-02, Version 0.0.01, Thomas Lambeck
   - File created
 - 2023-05-08, Version 0.0.02, Thomas Lambeck
-  - Better check for $ROBOCOPY_EXE (search in Windows PATH environment variable if no path is provided).
+  - Better check for $ROBOCOPY (search in Windows PATH environment variable if no path is provided).
 #>
 
 #endregion ChangeLog ###########################################################
@@ -129,8 +129,7 @@ CreateNecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BAC
 CreateNecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}"
 CreateNecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}"
 
-#TODO robocopy needs a separate check as well.
-checkNecessaryFile 'ROBOCOPY_EXE' "${ROBOCOPY_EXE}" "${BACKUP_LOGFILE}"
+$robocopy_exe = GetExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 
 checkNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_INCR'  "${ROBOCOPY_JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
 checkNecessaryFile 'BACKUP_DIRLIST'  "${BACKUP_DIRLIST}" "${BACKUP_LOGFILE}"
@@ -480,7 +479,7 @@ else
     infoMsg "Job: ${user_defined_job}..."
 
     $process = Start-Process -Wait -PassThru -NoNewWindow `
-      -FilePath "${ROBOCOPY_EXE}" `
+      -FilePath "${robocopy_exe}" `
       -ArgumentList "/job:""${ROBOCOPY_JOB_TEMPLATE_INCR}""", "/job:""${user_defined_job}"""
 
     [Int32]$exit_code = $process.ExitCode

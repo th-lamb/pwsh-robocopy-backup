@@ -34,7 +34,7 @@ function readSettingsFile {
   debugMsg "BACKUP_USER_BASE_DIR      : ${BACKUP_USER_BASE_DIR}"
   debugMsg "BACKUP_DIR                : ${BACKUP_DIR}"
   debugMsg "BACKUP_JOB_DIR            : ${BACKUP_JOB_DIR}"
-  debugMsg "ROBOCOPY_EXE              : ${ROBOCOPY_EXE}"
+  debugMsg "ROBOCOPY                  : ${ROBOCOPY}"
   debugMsg "ROBOCOPY_JOB_TEMPLATE_INCR: ${ROBOCOPY_JOB_TEMPLATE_INCR}"
   debugMsg "BACKUP_DIRLIST            : ${BACKUP_DIRLIST}"
   debugMsg "BACKUP_LOGFILE            : ${BACKUP_LOGFILE}"
