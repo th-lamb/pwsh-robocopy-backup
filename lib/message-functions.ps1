@@ -200,7 +200,7 @@ TODO
 #
 #}
 
-#endregion Helper functions - Colored message (without and with timestamp)
+#endregion Helper functions - Colored message (without and with timestamp) #####
 
 
 
@@ -223,7 +223,7 @@ function _isVerbosityDefined
 
 }
 
-#endregion Helper functions - checks
+#endregion Helper functions - checks ###########################################
 
 
 
@@ -373,7 +373,7 @@ function debugMsg
 
 }
 
-#endregion Wrappers for severity levels (without timestamp)
+#endregion Wrappers for severity levels (without timestamp) ####################
 
 
 
@@ -459,7 +459,7 @@ function errExit
 
 }
 
-#endregion ... with additional exit codes
+#endregion ... with additional exit codes ######################################
 
 
 
@@ -533,4 +533,4 @@ function verboseMessage
 
 }
 
-#endregion Wrappers for simple verbose modes
+#endregion Wrappers for simple verbose modes ###################################

@@ -294,6 +294,8 @@ function dirlistLineType
 
 
 
+#region Path functions
+
 function getTargetDir
 {
   # Returns the desired target (backup) directory for the specified directory.
@@ -327,6 +329,8 @@ function getTargetDir
   return $target_dir
 
 }
+
+#endregion Path functions ######################################################
 
 
 
