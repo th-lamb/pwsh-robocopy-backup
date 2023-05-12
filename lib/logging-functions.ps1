@@ -10,6 +10,8 @@ enum SeverityKeyword
   DEBUG
 }
 
+#region Helper functions
+
 function _inSquareBrackets
 {
   # Wraps severity keywords in square brackets of fix length 
@@ -35,6 +37,10 @@ function _inSquareBrackets
   return $result
 
 }
+
+#endregion Helper functions ####################################################
+
+
 
 function logMessage
 {
@@ -72,10 +78,8 @@ function logMessage
     "${date_time} ${severity_header} ${message}" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
   }
   catch {
-    # The output of Write-Error is quite difficult to read!
-    #Write-Error "logMessage(): Cannot write to logfile: ${logfile}"
-    #TODO Use function errMsg from message-functions.ps1? (Might be better without an external dependency.)
-    Write-Host "logMessage(): Cannot write to logfile: ${logfile}" -ForegroundColor White -BackgroundColor Red
+    # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
+    Write-Host "logMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
   }
 
 }
@@ -162,7 +166,7 @@ function logInsertEmptyLine
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "logMessage(): Parameter logfile not provided!"
+    Write-Error "logInsertEmptyLine(): Parameter logfile not provided!"
     exit 1
   }
   #endregion
@@ -171,8 +175,8 @@ function logInsertEmptyLine
     "" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
   }
   catch {
-    #TODO Use function errMsg from message-functions.ps1? (Might be better without an external dependency.)
-    Write-Host "logMessage(): Cannot write to logfile: ${logfile}" -ForegroundColor White -BackgroundColor Red
+    # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
+    Write-Host "logInsertEmptyLine(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
   }
 
 }
