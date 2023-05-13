@@ -27,6 +27,42 @@ function RealFsObjectType
   }
   #endregion
 
+  <#
+  We have to "manually" check for a UNC path first because Test-Path recognizes
+  network shares like "\\fileserver\backup\" as directory.
+  Since this script cannot create a network share, we have to distinguish 
+  between directory and network share.
+  #>
+
+  $is_unc_path=[bool]([System.Uri]"${path_spec}").IsUnc
+  if ($is_unc_path)
+  {
+    <#
+    Top-level element : server
+    Second element    : share
+    Further elements  : directories/files (that we might be able to create)
+    #>
+
+    $test_dir = "${path_spec}" | Select-String -Pattern '\\\\.*\\.*\\.*\\'
+    $test_file = "${path_spec}" | Select-String -Pattern '\\\\.*\\.*\\.{1}'
+    $test_share = "${path_spec}" | Select-String -Pattern '\\\\.*\\.*\\'
+
+    if ("${test_dir}" -ne "")
+    {
+      # A directory
+      #NOP: Check for existing directory/file using Test-Path later.
+    }
+    elseif ("${test_file}" -ne "")
+    {
+      # A file
+      #NOP: Check for existing directory/file using Test-Path later.
+    }
+    elseif ("${test_share}" -ne "")
+    {
+      return "network share"  # The network share itself, not a subfolder or file.
+    }
+  }
+
   # Existing directory/file
   if (Test-Path -Path "${path_spec}" -PathType Container)
   {
@@ -218,7 +254,6 @@ function GetExecutablePath
     return "${file_spec}"
   }
 
-  #TODO Search in the Windows PATH environment variable.
   $file_in_path = (Get-Command "${file_spec}").Path
 
   if ("${file_in_path}" -ne "")
