@@ -78,6 +78,72 @@ function RealFsObjectType
 
 }
 
+function SpecifiedFsObjectType
+{
+  param (
+    [String]$path_spec
+  )
+
+  #region Check parameters
+  if (! $PSBoundParameters.ContainsKey('path_spec'))
+  {
+    Write-Error "SpecifiedFsObjectType(): Parameter path_spec not provided!"
+    exit 1
+  }
+  #endregion
+
+  $is_pattern = $false
+  $is_directory = $false
+  $is_file = $false
+  $result = ""
+
+  # conditions
+  if ("${path_spec}".Contains("*"))
+  {
+    $is_pattern = $true
+  }
+
+  if ("${path_spec}".EndsWith("$PATH_SEPARATOR")) {
+    $is_directory = $true
+  }
+  else
+  {
+    $is_file = $true
+  }
+
+  # Combine the conditions.
+  if ($is_directory -and ! $is_pattern)
+  {
+    $result = "directory"
+  }
+  elseif ($is_file -and ! $is_pattern)
+  {
+    $result = "file"
+  }
+  elseif ($is_pattern)
+  {
+    # directory pattern or file pattern
+
+    # We cannot just use (Split-Path -Path "${path_spec}").Contains("*") because 
+    # it would give us the parent directory if $path_spec itself is a directory!
+    $first_placeholder_pos = "${path_spec}".IndexOf('*')                          # -1 if not found
+    $last_path_separator_pos = "${path_spec}".LastIndexOf("${PATH_SEPARATOR}")    # -1 if not found
+
+    if ( ($first_placeholder_pos -lt $last_path_separator_pos) )
+    {
+      $result = "directory pattern"
+    }
+    else
+    {
+      $result = "file pattern"
+    }
+
+  }
+
+  "${result}"
+
+}
+
 #endregion Object types ########################################################
 
 
