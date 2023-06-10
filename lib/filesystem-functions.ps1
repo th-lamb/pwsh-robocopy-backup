@@ -28,38 +28,11 @@ function RealFsObjectType
   between directory and network share.
   #>
 
-  $is_unc_path=[bool]([System.Uri]"${path_spec}").IsUnc
-  if ($is_unc_path)
-  {
-    <#
-    Top-level element : server
-    Second element    : share
-    Further elements  : directories/files (that we might be able to create)
-    #>
-
-    $test_dir = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.+\\'
-    $test_file = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.{1}'
-    $test_share = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+[\\]?'
-    $test_computer = "${path_spec}" | Select-String -Pattern '\\\\.+[\\]?'
-
-    if ("${test_dir}" -ne "")
-    {
-      # A directory
-      #NOP: Check for existing directory/file using Test-Path later.
-    }
-    elseif ("${test_file}" -ne "")
-    {
-      # A file
-      #NOP: Check for existing directory/file using Test-Path later.
-    }
-    elseif ("${test_share}" -ne "")
-    {
-      return "network share"  # The network share itself, not a subfolder or file.
-    }
-    elseif ("${test_computer}" -ne "")
-    {
-      return "network computer"  # The network share itself, not a subfolder or file.
-    }
+  $test_network_type = SpecifiedFsObjectType "${path_spec}"
+  switch ("${test_network_type}") {
+    "network share"     { return "${test_network_type}" }
+    "network computer"  { return "${test_network_type}" }
+    Default {}
   }
 
   # Existing directory/file
@@ -91,6 +64,42 @@ function SpecifiedFsObjectType
   }
   #endregion
 
+  # Test 1: network share or network computer.
+  $is_unc_path=[bool]([System.Uri]"${path_spec}").IsUnc
+  if ($is_unc_path)
+  {
+    <#
+    Top-level element : server
+    Second element    : share
+    Further elements  : directories/files (that we might be able to create)
+    #>
+
+    $test_dir = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.+\\'
+    $test_file = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.{1}'
+    $test_share = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+[\\]?'
+    $test_computer = "${path_spec}" | Select-String -Pattern '\\\\.+[\\]?'
+
+    if ("${test_dir}" -ne "")
+    {
+      # A directory
+      #NOP: Check for directory or directory pattern later.
+    }
+    elseif ("${test_file}" -ne "")
+    {
+      # A file
+      #NOP: Check for file or file pattern later.
+    }
+    elseif ("${test_share}" -ne "")
+    {
+      return "network share"  # The network share itself, not a subfolder or file.
+    }
+    elseif ("${test_computer}" -ne "")
+    {
+      return "network computer"  # The network computer itself, not a share.
+    }
+  }
+
+  # Test 2: directory (pattern) or file (pattern).
   $is_pattern = $false
   $is_directory = $false
   $is_file = $false
@@ -121,7 +130,7 @@ function SpecifiedFsObjectType
   }
   elseif ($is_pattern)
   {
-    # directory pattern or file pattern
+    # Directory pattern or file pattern
 
     # We cannot just use (Split-Path -Path "${path_spec}").Contains("*") because 
     # it would give us the parent directory if $path_spec itself is a directory!
