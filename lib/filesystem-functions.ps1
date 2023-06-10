@@ -1,12 +1,3 @@
-#     Helper functions
-#     ================
-# 
-# Not meant to be called directly:
-# - _folderExists()
-# - _fileExists()
-#
-################################################################################
-
 $PATH_SEPARATOR = '\'
 
 
@@ -15,6 +6,9 @@ $PATH_SEPARATOR = '\'
 
 function RealFsObjectType
 {
+  <#
+  Returns the type of the specified FS object; or $false for non-existing directory/file.
+  #>
   param (
     [String]$path_spec
   )
@@ -43,9 +37,10 @@ function RealFsObjectType
     Further elements  : directories/files (that we might be able to create)
     #>
 
-    $test_dir = "${path_spec}" | Select-String -Pattern '\\\\.*\\.*\\.*\\'
-    $test_file = "${path_spec}" | Select-String -Pattern '\\\\.*\\.*\\.{1}'
-    $test_share = "${path_spec}" | Select-String -Pattern '\\\\.*\\.*\\'
+    $test_dir = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.+\\'
+    $test_file = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.{1}'
+    $test_share = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+[\\]?'
+    $test_computer = "${path_spec}" | Select-String -Pattern '\\\\.+[\\]?'
 
     if ("${test_dir}" -ne "")
     {
@@ -60,6 +55,10 @@ function RealFsObjectType
     elseif ("${test_share}" -ne "")
     {
       return "network share"  # The network share itself, not a subfolder or file.
+    }
+    elseif ("${test_computer}" -ne "")
+    {
+      return "network computer"  # The network share itself, not a subfolder or file.
     }
   }
 
@@ -150,7 +149,7 @@ function SpecifiedFsObjectType
 
 #region Existence checks
 
-function _folderExists
+function folderExists
 {
   # Returns $true if the specified folder exists; otherwise $false.
   param (
@@ -160,7 +159,7 @@ function _folderExists
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('folder_spec'))
   {
-    Write-Error "_folderExists(): Parameter folder_spec not provided!"
+    Write-Error "folderExists(): Parameter folder_spec not provided!"
     exit 1
   }
   #endregion
@@ -174,7 +173,7 @@ function _folderExists
 
 }
 
-function _fileExists
+function fileExists
 {
   # Returns $true if the specified file exists; otherwise $false.
   param (
@@ -184,7 +183,7 @@ function _fileExists
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
-    Write-Error "_fileExists(): Parameter file_spec not provided!"
+    Write-Error "fileExists(): Parameter file_spec not provided!"
     exit 1
   }
   #endregion
@@ -198,38 +197,38 @@ function _fileExists
 
 }
 
-function checkNecessaryFolder
+function CheckNecessaryDirectory
 {
-  # Exits the script with exit-code 2 if the specified folder doesn't exist.
+  # Exits the script with exit-code 2 if the specified directory doesn't exist.
   param (
     [String]$definition_name,
-    [String]$folder_spec,
+    [String]$directory_spec,
     [String]$logfile
   )
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
-    Write-Error "checkNecessaryFolder(): Parameter definition_name not provided!"
+    Write-Error "CheckNecessaryDirectory(): Parameter definition_name not provided!"
     exit 1
   }
 
-  if (! $PSBoundParameters.ContainsKey('folder_spec'))
+  if (! $PSBoundParameters.ContainsKey('directory_spec'))
   {
-    Write-Error "checkNecessaryFolder(): Parameter folder_spec not provided!"
+    Write-Error "CheckNecessaryDirectory(): Parameter directory_spec not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "checkNecessaryFolder(): Parameter logfile not provided!"
+    Write-Error "CheckNecessaryDirectory(): Parameter logfile not provided!"
     exit 1
   }
   #endregion
 
-  if (! (_folderExists "${folder_spec}") )
+  if (! (folderExists "${directory_spec}") )
   {
-    logAndShowMessage "${logfile}" ERR "The folder '${definition_name}' has been moved or deleted:`n${folder_spec}"
+    logAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
 
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
@@ -240,7 +239,7 @@ function checkNecessaryFolder
 
 }
 
-function checkNecessaryFile
+function CheckNecessaryFile
 {
   # Exits the script with exit-code 2 if the specified file doesn't exist.
   param (
@@ -252,24 +251,24 @@ function checkNecessaryFile
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
-    Write-Error "checkNecessaryFile(): Parameter definition_name not provided!"
+    Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
-    Write-Error "checkNecessaryFile(): Parameter file_spec not provided!"
+    Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "checkNecessaryFile(): Parameter logfile not provided!"
+    Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
     exit 1
   }
   #endregion
 
-  if (! (_fileExists "${file_spec}") )
+  if (! (fileExists "${file_spec}") )
   {
     logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
 
@@ -281,6 +280,62 @@ function checkNecessaryFile
   }
 
 }
+
+
+
+
+
+function CheckBackupserverPath
+{
+  # Exits the script with exit-code 2 if the specified path doesn't exist.
+  param (
+    [String]$definition_name,
+    [String]$server_path_spec,
+    [String]$logfile
+  )
+
+  #region Check parameters
+  if (! $PSBoundParameters.ContainsKey('definition_name'))
+  {
+    Write-Error "CheckNecessaryDirectory(): Parameter definition_name not provided!"
+    exit 1
+  }
+
+  if (! $PSBoundParameters.ContainsKey('server_path_spec'))
+  {
+    Write-Error "CheckNecessaryDirectory(): Parameter server_path_spec not provided!"
+    exit 1
+  }
+
+  if (! $PSBoundParameters.ContainsKey('logfile'))
+  {
+    Write-Error "CheckNecessaryDirectory(): Parameter logfile not provided!"
+    exit 1
+  }
+  #endregion
+
+  Write-Host "${server_path_spec}" -ForegroundColor Yellow
+  Write-Host "RealFsObjectType ${server_path_spec}" -ForegroundColor Yellow
+  Write-Host "SpecifiedFsObjectType ${server_path_spec}" -ForegroundColor Yellow
+
+  return
+
+  if (! (folderExists "${server_path_spec}") )
+  {
+    logAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${server_path_spec}"
+
+    Write-Host -NoNewLine "Press any key to abort..."
+    [void][System.Console]::ReadKey($true)
+
+    exit 2
+
+  }
+
+}
+
+
+
+
 
 function GetExecutablePath
 {
@@ -298,24 +353,24 @@ function GetExecutablePath
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
-    Write-Error "checkNecessaryFile(): Parameter definition_name not provided!"
+    Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
-    Write-Error "checkNecessaryFile(): Parameter file_spec not provided!"
+    Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "checkNecessaryFile(): Parameter logfile not provided!"
+    Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
     exit 1
   }
   #endregion
 
-  if (_fileExists "${file_spec}")
+  if (fileExists "${file_spec}")
   {
     return "${file_spec}"
   }
@@ -361,19 +416,19 @@ function CreateNecessaryDirectory
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
-    Write-Error "checkNecessaryFolder(): Parameter definition_name not provided!"
+    Write-Error "CheckNecessaryDirectory(): Parameter definition_name not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('dir_spec'))
   {
-    Write-Error "checkNecessaryFolder(): Parameter dir_spec not provided!"
+    Write-Error "CheckNecessaryDirectory(): Parameter dir_spec not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "checkNecessaryFolder(): Parameter logfile not provided!"
+    Write-Error "CheckNecessaryDirectory(): Parameter logfile not provided!"
     exit 1
   }
   #endregion
