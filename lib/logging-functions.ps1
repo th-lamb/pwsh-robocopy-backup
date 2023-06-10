@@ -114,43 +114,43 @@ function logAndShowMessage
   {
     EMERG
     {
-      logMessage "${logfile}" EMERG "${message}"
       emergMsg "${message}"
+      logMessage "${logfile}" EMERG "${message}"
     }
     ALERT
     {
-      logMessage "${logfile}" ALERT "${message}"
       alertMsg "${message}"
+      logMessage "${logfile}" ALERT "${message}"
     }
     CRIT
     {
-      logMessage "${logfile}" CRIT "${message}"
       critMsg "${message}"
+      logMessage "${logfile}" CRIT "${message}"
     }
     ERR
     {
-      logMessage "${logfile}" ERR "${message}"
       errMsg "${message}"
+      logMessage "${logfile}" ERR "${message}"
     }
     WARNING
     {
-      logMessage "${logfile}" WARNING "${message}"
       warningMsg "${message}"
+      logMessage "${logfile}" WARNING "${message}"
     }
     NOTICE
     {
-      logMessage "${logfile}" NOTICE "${message}"
       noticeMsg "${message}"
+      logMessage "${logfile}" NOTICE "${message}"
     }
     INFO
     {
-      logMessage "${logfile}" INFO "${message}"
       infoMsg "${message}"
+      logMessage "${logfile}" INFO "${message}"
     }
     DEBUG
     {
-      logMessage "${logfile}" DEBUG "${message}"
       debugMsg "${message}"
+      logMessage "${logfile}" DEBUG "${message}"
     }
   }
 
