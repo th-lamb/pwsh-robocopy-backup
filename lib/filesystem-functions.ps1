@@ -2,6 +2,29 @@ $PATH_SEPARATOR = '\'
 
 
 
+#region Helper functions
+
+function computernameFromUncPath
+{
+  param (
+    [String]$unc_path
+  )
+
+  $temp = "${unc_path}".Replace("\\", "")
+  $pos = "${temp}".IndexOf("\")
+
+  if ($pos -eq -1) {
+    return "${temp}"
+  } else {
+    return "${temp}".Substring(0, $pos)
+  }
+
+}
+
+#endregion Helper functions
+
+
+
 #region Object types
 
 function RealFsObjectType
@@ -323,11 +346,24 @@ function CheckBackupserverPath
   }
   #endregion
 
-  Write-Host "${server_path_spec}" -ForegroundColor Yellow
-  Write-Host "RealFsObjectType ${server_path_spec}" -ForegroundColor Yellow
-  Write-Host "SpecifiedFsObjectType ${server_path_spec}" -ForegroundColor Yellow
+  Write-Host "server_path_spec: ${server_path_spec}" -ForegroundColor Yellow
+  $test_object_type = SpecifiedFsObjectType "${server_path_spec}"
+  Write-Host "test_object_type: ${test_object_type}" -ForegroundColor Yellow
+
+  if ("${test_object_type}".StartsWith("network")) {
+    # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
+    # Test-Connection -BufferSize 32 -Count 1 -ComputerName 192.168.0.41 -Quiet
+
+    # OK without leading "\\"
+    $server_name = computernameFromUncPath "${server_path_spec}"
+    Write-Host "server_name     : ${server_name}" -ForegroundColor Yellow
+    $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
+    Write-Host "available       : $available" -ForegroundColor Yellow
+  }
 
   return
+
+
 
   if (! (folderExists "${server_path_spec}") )
   {
