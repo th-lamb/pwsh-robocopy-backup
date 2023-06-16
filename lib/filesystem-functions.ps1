@@ -44,6 +44,8 @@ function RealFsObjectType
   }
   #endregion
 
+  $specified_type = SpecifiedFsObjectType "${path_spec}"
+
   <#
   We have to "manually" check for a UNC path first because Test-Path recognizes
   network shares like "\\fileserver\backup\" as directory.
@@ -51,17 +53,25 @@ function RealFsObjectType
   between directory and network share.
   #>
 
-  $test_network_type = SpecifiedFsObjectType "${path_spec}"
-  switch ("${test_network_type}") {
-    "network share"     { return "${test_network_type}" }
-    "network computer"  { return "${test_network_type}" }
+  #TODO This doesn't test if a share really exists or is available!
+  switch ("${specified_type}")
+  {
+    "network share"     { return "${specified_type}" }
+    "network computer"  { return "${specified_type}" }
     Default {}
   }
 
   # Existing directory/file
   if (Test-Path -Path "${path_spec}" -PathType Container)
   {
-    return "directory"
+    if ("${specified_type}" -eq "drive letter")
+    {
+      return "drive letter"
+    }
+    else
+    {
+      return "directory"
+    }
   }
   elseif (Test-Path -Path "${path_spec}" -PathType Leaf)
   {
@@ -87,7 +97,20 @@ function SpecifiedFsObjectType
   }
   #endregion
 
-  # Test 1: network share or network computer.
+  # Test 1: syntax errors
+  if ("${path_spec}" -eq "")
+  {
+    return "empty string"
+  }
+
+  # Test 2: drive letter
+  $test_driveletter = "${path_spec}" | Select-String -Pattern '^[A-Z]:\\{0,1}$'
+  if ("${path_spec}" -eq "${test_driveletter}")
+  {
+    return "drive letter"
+  }
+
+  # Test 3: network share or network computer.
   $is_unc_path=[bool]([System.Uri]"${path_spec}").IsUnc
   if ($is_unc_path)
   {
@@ -122,7 +145,7 @@ function SpecifiedFsObjectType
     }
   }
 
-  # Test 2: directory (pattern) or file (pattern).
+  # Test 4: directory (pattern) or file (pattern).
   $is_pattern = $false
   $is_directory = $false
   $is_file = $false
@@ -134,7 +157,8 @@ function SpecifiedFsObjectType
     $is_pattern = $true
   }
 
-  if ("${path_spec}".EndsWith("$PATH_SEPARATOR")) {
+  if ("${path_spec}".EndsWith("$PATH_SEPARATOR"))
+  {
     $is_directory = $true
   }
   else
@@ -172,6 +196,47 @@ function SpecifiedFsObjectType
   }
 
   "${result}"
+
+}
+
+function SpecifiedBackupBaseDirType
+{
+  param (
+    [String]$path_spec
+  )
+
+  #region Check parameters
+  if (! $PSBoundParameters.ContainsKey('path_spec'))
+  {
+    Write-Error "SpecifiedBackupBaseDirType(): Parameter path_spec not provided!"
+    exit 1
+  }
+  #endregion
+
+  $specified_type = SpecifiedFsObjectType "${path_spec}"
+
+  switch ("${specified_type}")
+  {
+    "directory"
+    {
+      if ("${path_spec}".StartsWith("\\"))
+      {
+        return "directory"
+      }
+      else
+      {
+        if ("${path_spec}".Contains(":"))
+        {
+          return "directory"
+        }
+        else
+        {
+          return "relative path"
+        }
+      }
+    }
+    Default { return "${specified_type}" }
+  }
 
 }
 
@@ -317,7 +382,8 @@ function CheckNecessaryFile
 
 
 
-function CheckBackupserverPath
+#TODO Remove later
+function CheckBackupBaseDir
 {
   # Exits the script with exit-code 2 if the specified path doesn't exist.
   param (
@@ -349,6 +415,14 @@ function CheckBackupserverPath
   Write-Host "server_path_spec: ${server_path_spec}" -ForegroundColor Yellow
   $test_object_type = SpecifiedFsObjectType "${server_path_spec}"
   Write-Host "test_object_type: ${test_object_type}" -ForegroundColor Yellow
+
+  #TODO Variants:
+  # 1:  Relative path             TODO
+  # 2:  Qualifier                 Check if the drive exists.
+  # 3:  Local path                Create?
+  # 4:  Network computer          Not possible
+  # 5:  Network share             Check if it exists.
+  # 6:  "Network folder"          Create?
 
   if ("${test_object_type}".StartsWith("network")) {
     # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
@@ -690,7 +764,7 @@ function expandedPath
 {
   <#
   Expands the specified path in three ways:
-  1. Script variables.          Example: ${BACKUP_SERVER}\${BACKUP_SHARE}\ becomes \\fileserver\backup\
+  1. Script variables.          Example: ${BACKUP_BASE_DIR}\ becomes C:\Backup\
   2. Environment variables.     Example: %HOMEDRIVE% becomes C:
   3. (Windows) known folders.   Example: %Documents% becomes C:\Users\<username>\Documents
   #>
