@@ -1,4 +1,4 @@
-function readSettingsFile {
+function ReadSettingsFile {
   param (
     [String]$ini_file
   )
@@ -28,8 +28,6 @@ function readSettingsFile {
   #debugMsg "BACKUP_CONFIG_DIR         : ${BACKUP_CONFIG_DIR}"
   #debugMsg "LIB_DIR                   : ${LIB_DIR}"
   debugMsg "BACKUP_TEMPLATES_DIR      : ${BACKUP_TEMPLATES_DIR}"
-  debugMsg "BACKUP_SERVER             : ${BACKUP_SERVER}"
-  debugMsg "BACKUP_SHARE              : ${BACKUP_SHARE}"
   debugMsg "BACKUP_BASE_DIR           : ${BACKUP_BASE_DIR}"
   debugMsg "BACKUP_USER_BASE_DIR      : ${BACKUP_USER_BASE_DIR}"
   debugMsg "BACKUP_DIR                : ${BACKUP_DIR}"
