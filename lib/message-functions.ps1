@@ -56,11 +56,11 @@
 #     Wrappers for simple verbose modes
 #     =================================
 # 
-# - quietMessage()  : Interpreted as a warning
-# - normalMessage() : Interpreted as "info" but will already be shown at 
-#                     verbose level 5 (severity level "notice").
-# - verboseMessage(): Interpreted as "info" but will only be shown at verbose 
-#                     level 7 (severity level "debug").
+# - ShowQuietMessage()  : Interpreted as a warning
+# - ShowNormalMessage() : Interpreted as "info" but will already be shown at 
+#                         verbose level 5 (severity level "notice").
+# - ShowVerboseMessage(): Interpreted as "info" but will only be shown at verbose 
+#                         level 7 (severity level "debug").
 # 
 ################################################################################
 
@@ -379,7 +379,7 @@ function ShowDebugMsg
 
 #region ... with additional exit codes
 
-function emergExit
+function EmergExit
 {
   <#
   _coloredLog() for severity level 0 (emerg) and exit with specified exit code.
@@ -399,7 +399,7 @@ function emergExit
 
 }
 
-function alertExit
+function AlertExit
 {
   <#
   _coloredLog() for severity level 1 (alert) and exit with specified exit code.
@@ -419,7 +419,7 @@ function alertExit
 
 }
 
-function critExit
+function CritExit
 {
   <#
   _coloredLog() for severity level 2 (crit) and exit with specified exit code.
@@ -439,7 +439,7 @@ function critExit
 
 }
 
-function errExit
+function ErrExit
 {
   <#
   _coloredLog() for severity level 3 (err) and exit with specified exit code.
@@ -465,7 +465,7 @@ function errExit
 
 #region Wrappers for simple verbose modes
 
-function quietMessage
+function ShowQuietMessage
 {
   <#
   Shows the specified message even in quiet mode.
@@ -480,7 +480,7 @@ function quietMessage
 
 }
 
-function normalMessage
+function ShowNormalMessage
 {
   <#
   Shows the specified message in normal mode.
@@ -508,7 +508,7 @@ function normalMessage
 
 }
 
-function verboseMessage
+function ShowVerboseMessage
 {
   <#
   Shows the specified message only in verbose mode.
