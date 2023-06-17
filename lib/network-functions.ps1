@@ -43,7 +43,24 @@ function ServerIsAvailable
 
   $server_name = computernameFromUncPath "${server_path_spec}"
   #Write-Host "server_name : ${server_name}" -ForegroundColor Blue
-  $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
+
+  #$available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
+
+  #TODO We can't catch the Ping exception for the blackhole prefix 240.0.0.0?
+  try {
+    $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
+
+    #$available = (Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}")
+
+    #if (Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet | Out-Null)
+    #{
+    #  $available = $true
+    #}
+  }
+  catch [System.Net.NetworkInformation.PingException]
+  {
+    $available = $false
+  }
   #Write-Host "available   : $available" -ForegroundColor Blue
 
   return $available
