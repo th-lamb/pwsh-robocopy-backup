@@ -325,7 +325,7 @@ function CheckNecessaryDirectory
 
   if (! (folderExists "${directory_spec}") )
   {
-    logAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
+    LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
 
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
@@ -367,7 +367,7 @@ function CheckNecessaryFile
 
   if (! (fileExists "${file_spec}") )
   {
-    logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
+    LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
 
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
@@ -441,7 +441,7 @@ function CheckBackupBaseDir
 
   if (! (folderExists "${server_path_spec}") )
   {
-    logAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${server_path_spec}"
+    LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${server_path_spec}"
 
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
@@ -503,7 +503,7 @@ function GetExecutablePath
   }
   else
   {
-    logAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
+    LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
 
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
@@ -564,7 +564,7 @@ function CreateNecessaryDirectory
   }
   catch
   {
-    logAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${dir_spec}. Error: $_"
+    LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${dir_spec}. Error: $_"
     exit 2
   }
 

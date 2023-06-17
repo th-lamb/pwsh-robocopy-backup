@@ -23,23 +23,23 @@ function logAndShowRobocopyErrors
     {$_ -in 0..3}
     { 
       # We log only errors and warnings.
-      #logAndShowMessage "${logfile}" INFO "${job_name}: ${result}"
+      #LogAndShowMessage "${logfile}" INFO "${job_name}: ${result}"
     }
     {$_ -in 4..7}
     {
-      logAndShowMessage "${logfile}" NOTICE "${job_name}: ${result} (Examine the output log. Some housekeeping may be needed.)"
+      LogAndShowMessage "${logfile}" NOTICE "${job_name}: ${result} (Examine the output log. Some housekeeping may be needed.)"
     }
     {$_ -in 8..15}
     {
-      logAndShowMessage "${logfile}" WARNING "${job_name}: ${result}"
+      LogAndShowMessage "${logfile}" WARNING "${job_name}: ${result}"
     }
     16
     {
-      logAndShowMessage "${logfile}" ERR "${job_name}: ${result}"
+      LogAndShowMessage "${logfile}" ERR "${job_name}: ${result}"
     }
     Default
     {
-      logAndShowMessage "${logfile}" ERR "${job_name}: Invalid robocopy exit code: $exit_code"
+      LogAndShowMessage "${logfile}" ERR "${job_name}: Invalid robocopy exit code: $exit_code"
     }
   }
 

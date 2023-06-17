@@ -154,12 +154,12 @@ function dirlistLineType
       }
       "missing"
       {
-        logAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
+        LogAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
         $object_type = "missing"
       }
       "type mismatch"
       {
-        logAndShowMessage "${logfile}" NOTICE "Type mismatch: ${entry}"
+        LogAndShowMessage "${logfile}" NOTICE "Type mismatch: ${entry}"
         $object_type = "${existing_type}"   # We use the real object type!
       }
       Default
@@ -252,7 +252,7 @@ function getTargetDir
 
   if ("${folder_spec}" -eq "")
   {
-    logAndShowMessage "${BACKUP_LOGFILE}" ERR "getTargetDir(): No folder specified!"
+    LogAndShowMessage "${BACKUP_LOGFILE}" ERR "getTargetDir(): No folder specified!"
   }
 
   $sub_dir= ($folder_spec -replace ":", "")

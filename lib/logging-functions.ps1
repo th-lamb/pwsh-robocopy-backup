@@ -1,3 +1,7 @@
+#TODO Check directory before showing "Cannot write to logfile" error?
+
+
+
 enum SeverityKeyword
 {
   EMERG
@@ -42,7 +46,7 @@ function _inSquareBrackets
 
 
 
-function logMessage
+function LogMessage
 {
   # Writes the $message to the $logfile.
   #
@@ -60,13 +64,13 @@ function logMessage
   # No check for $severity since it is declared as enum value.
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "logMessage(): Parameter logfile not provided!"
+    Write-Error "LogMessage(): Parameter logfile not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('message'))
   {
-    Write-Error "logMessage(): Parameter message not provided!"
+    Write-Error "LogMessage(): Parameter message not provided!"
     exit 1
   }
   #endregion
@@ -79,12 +83,12 @@ function logMessage
   }
   catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
-    Write-Host "logMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
+    Write-Host "LogMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
   }
 
 }
 
-function logAndShowMessage
+function LogAndShowMessage
 {
   # Writes the $message to the $logfile, and displays it in the console.
   Param(
@@ -99,13 +103,13 @@ function logAndShowMessage
   # No check for $severity since it is declared as enum value.
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "logAndShowMessage(): Parameter logfile not provided!"
+    Write-Error "LogAndShowMessage(): Parameter logfile not provided!"
     exit 1
   }
 
   if (! $PSBoundParameters.ContainsKey('message'))
   {
-    Write-Error "logAndShowMessage(): Parameter message not provided!"
+    Write-Error "LogAndShowMessage(): Parameter message not provided!"
     exit 1
   }
   #endregion
@@ -115,48 +119,48 @@ function logAndShowMessage
     EMERG
     {
       emergMsg "${message}"
-      logMessage "${logfile}" EMERG "${message}"
+      LogMessage "${logfile}" EMERG "${message}"
     }
     ALERT
     {
       alertMsg "${message}"
-      logMessage "${logfile}" ALERT "${message}"
+      LogMessage "${logfile}" ALERT "${message}"
     }
     CRIT
     {
       critMsg "${message}"
-      logMessage "${logfile}" CRIT "${message}"
+      LogMessage "${logfile}" CRIT "${message}"
     }
     ERR
     {
       errMsg "${message}"
-      logMessage "${logfile}" ERR "${message}"
+      LogMessage "${logfile}" ERR "${message}"
     }
     WARNING
     {
       warningMsg "${message}"
-      logMessage "${logfile}" WARNING "${message}"
+      LogMessage "${logfile}" WARNING "${message}"
     }
     NOTICE
     {
       noticeMsg "${message}"
-      logMessage "${logfile}" NOTICE "${message}"
+      LogMessage "${logfile}" NOTICE "${message}"
     }
     INFO
     {
       infoMsg "${message}"
-      logMessage "${logfile}" INFO "${message}"
+      LogMessage "${logfile}" INFO "${message}"
     }
     DEBUG
     {
       debugMsg "${message}"
-      logMessage "${logfile}" DEBUG "${message}"
+      LogMessage "${logfile}" DEBUG "${message}"
     }
   }
 
 }
 
-function logInsertEmptyLine
+function LogInsertEmptyLine
 {
   # Appends an empty line to the $logfile.
   Param(
@@ -166,7 +170,7 @@ function logInsertEmptyLine
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
-    Write-Error "logInsertEmptyLine(): Parameter logfile not provided!"
+    Write-Error "LogInsertEmptyLine(): Parameter logfile not provided!"
     exit 1
   }
   #endregion
@@ -176,7 +180,7 @@ function logInsertEmptyLine
   }
   catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
-    Write-Host "logInsertEmptyLine(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
+    Write-Host "LogInsertEmptyLine(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
   }
 
 }
