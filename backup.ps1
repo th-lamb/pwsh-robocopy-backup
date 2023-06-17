@@ -1,4 +1,4 @@
-# 2023, Thomas Lambeck
+ # 2023, Thomas Lambeck
 #
 # Backup with PowerShell and robocopy using a list of directories/files to backup.
 #
@@ -39,7 +39,7 @@
   - Is it possible to log errors directly?
 #>
 
-#TODO Use more normalMessage() and verboseMessage() instead of debugMsg() or infoMsg()?
+#TODO Use more ShowNormalMessage() and ShowVerboseMessage() instead of ShowDebugMsg() or ShowInfoMsg()?
 
 #endregion TODO ################################################################
 
@@ -97,12 +97,12 @@ catch {
 
 # No info message here, because $__VERBOSE is not defined before reading the settings file.
 #TODO Maybe use cmdline parameters if provided? (Maybe too much effort to just get some more info messages.)
-#logAndShowMessage "${BACKUP_LOGFILE}" INFO "Reading the settings file..."
+#LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Reading the settings file..."
 
-readSettingsFile ($PSCommandPath -replace ".ps1", ".ini")
+ReadSettingsFile ($PSCommandPath -replace ".ps1", ".ini")
 
-logInsertEmptyLine "${BACKUP_LOGFILE}"
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
+LogInsertEmptyLine "${BACKUP_LOGFILE}"
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
 
 #endregion Read settings file ##################################################
 
@@ -110,17 +110,72 @@ logAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
 
 #region Check necessary directories and files
 
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "Checking necessary directories and files..."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Checking necessary directories and files..."
 
-#TODO Some folders/files we could create automatically if they are missing. Others are mandatory.
+<#
+TODO Some folders/files are mandatory. The rest can be created automatically.
 
-checkNecessaryFolder 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
+- Mandatory
+  - BACKUP_TEMPLATES_DIR        OK
+  - ROBOCOPY_JOB_TEMPLATE_INCR
 
-#TODO $BACKUP_SERVER needs a different check! checkNecessaryFolder() does not work for UNC paths.
-#checkNecessaryFolder 'BACKUP_SERVER' "${BACKUP_SERVER}" "${BACKUP_LOGFILE}"
-#2023-04-29T14:23:02 [ERR    ] Following folder has been moved or deleted:
-#\\NODE304
+- Created automatically
+  - BACKUP_BASE_DIR             working on it...
+  - BACKUP_USER_BASE_DIR
+  - BACKUP_DIR
+  - BACKUP_JOB_DIR
+  - BACKUP_DIRLIST              (empty file or a copy of the example?)
+  - BACKUP_LOGFILE
+  - ERROR_LOGFILE
+
+TODO Write Check... methods and Create... methods!
+
+#>
+
+CheckNecessaryDirectory 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
+
+#TODO $BACKUP_SERVER needs a different check! CheckNecessaryDirectory() does not work for UNC paths.
 #TODO $BACKUP_SERVER might also be an IP address!
+$dir_type = SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
+ShowDebugMsg "BackupBaseDir type: ${dir_type}"
+
+switch ("${dir_type}") {
+  "directory"
+  {
+    CreateNecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
+  }
+  {$_ -in "drive letter", "network share"}
+  {
+    CheckNecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
+  }
+  "relative path"
+  {
+    #Write-Host "dir_type: relative path" -ForegroundColor Red
+    #TODO Interpret as path below script dir, current drive or ...?
+    #...
+    #TODO Check or create the path!
+    #...
+  }
+
+
+
+  "network computer"
+  {
+    ShowCritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
+    exit 1
+  }
+  Default {
+    ShowCritMsg "Unexpected BackupBaseDir type: ${dir_type}"
+    exit 1
+  }
+}
+
+Write-Host "OK?" -ForegroundColor Green
+exit
+
+
+
+
 
 #TODO $BACKUP_BASE_DIR might be a network share (cannot be created like this)!
 CreateNecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
@@ -131,12 +186,12 @@ CreateNecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}
 
 $robocopy_exe = GetExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 
-checkNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_INCR'  "${ROBOCOPY_JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
-checkNecessaryFile 'BACKUP_DIRLIST'  "${BACKUP_DIRLIST}" "${BACKUP_LOGFILE}"
-#checkNecessaryFile 'BACKUP_LOGFILE'  "${BACKUP_LOGFILE}" "${BACKUP_LOGFILE}"
-#checkNecessaryFile 'ERROR_LOGFILE'  "${ERROR_LOGFILE}" "${ERROR_LOGFILE}"
+CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_INCR'  "${ROBOCOPY_JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
+CheckNecessaryFile 'BACKUP_DIRLIST'  "${BACKUP_DIRLIST}" "${BACKUP_LOGFILE}"
+#CheckNecessaryFile 'BACKUP_LOGFILE'  "${BACKUP_LOGFILE}" "${BACKUP_LOGFILE}"
+#CheckNecessaryFile 'ERROR_LOGFILE'  "${ERROR_LOGFILE}" "${ERROR_LOGFILE}"
 
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files checked."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files checked."
 
 #endregion Check necessary directories and files ###############################
 
@@ -144,11 +199,11 @@ logAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files chec
 
 #region Archive previous jobs
 
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "Archiving previous jobs..."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Archiving previous jobs..."
 
 archiveOldJobs "${BACKUP_JOB_DIR}" "${BACKUP_JOB_NAME_SCHEME}" "${BACKUP_JOB_LOG_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 
 #endregion Archive previous job files ##########################################
 
@@ -156,7 +211,7 @@ logAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 
 #region Create job files
 
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 
 <#
 Creates a job file for each dir in the dir-list.
@@ -193,7 +248,7 @@ Creates a job file for each dir in the dir-list.
 function _callCreateJob
 {
   # Creates the current job using all values collected from the dir-list.
-  debugMsg "_callCreateJob()"
+  ShowDebugMsg "_callCreateJob()"
 
   createJob `
     "${COMPUTERNAME}" `
@@ -207,18 +262,18 @@ function _callCreateJob
     $copy_single_file
 
   $script:jobs_created_count = ($jobs_created_count + 1)
-  debugMsg "jobs_created_count: $jobs_created_count"
+  ShowDebugMsg "jobs_created_count: $jobs_created_count"
 
   _resetJobRelatedInfo
 
-  debugMsg "----------------------------------------------------------------------"
+  ShowDebugMsg "----------------------------------------------------------------------"
 }
 
 function _resetJobRelatedInfo
 {
   # Resets all values that apply for a whole job definition, possibly
   # consisting of multiple lines in the dir-list.
-  debugMsg "_resetJobRelatedInfo()"
+  ShowDebugMsg "_resetJobRelatedInfo()"
   $script:current_job_num = 0
   $script:current_source_definition = ""
   $script:current_source_type = ""
@@ -233,7 +288,7 @@ function _resetJobRelatedInfo
 function _resetLineRelatedInfo
 {
   # Resets all values that apply only for the current line in the dir-list.
-  debugMsg "_resetLineRelatedInfo()"
+  ShowDebugMsg "_resetLineRelatedInfo()"
   $script:start_new_job = $false
   $script:finish_previous_job = $false
   $script:continue_curr_job = $false
@@ -246,7 +301,7 @@ $dir_list_content = Get-Content "${BACKUP_DIRLIST}"
 
 ForEach($line in $dir_list_content)
 {
-  debugMsg "Next line: ${line}"
+  ShowDebugMsg "Next line: ${line}"
 
   # Expand all entries first to avoid interpreting environment variables etc. as filenames.
   $expanded = expandedPath "${line}"
@@ -259,19 +314,19 @@ ForEach($line in $dir_list_content)
   - EOF
   #>
   $line_type = dirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
-  debugMsg "${line_type}: ${expanded}"
+  ShowDebugMsg "${line_type}: ${expanded}"
 
   switch -Wildcard ("${line_type}")
   {
     "error: *"  # The fallback value of function dirlistLineType
     {
       $finish_previous_job = $true
-      logAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
+      LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
     }
     "invalid: *"
     {
       $finish_previous_job = $true
-      logAndShowMessage "${BACKUP_LOGFILE}" WARNING "Invalid entry in dir-list: ${line}"
+      LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "Invalid entry in dir-list: ${line}"
     }
     "ignore"
     {
@@ -318,7 +373,7 @@ ForEach($line in $dir_list_content)
     if ($current_job_num -eq 0)
     {
       $continue_curr_job = $false
-      logAndShowMessage "${BACKUP_LOGFILE}" ERR "No folder/job defined for: ${line}"
+      LogAndShowMessage "${BACKUP_LOGFILE}" ERR "No folder/job defined for: ${line}"
     }
   }
 
@@ -332,7 +387,7 @@ ForEach($line in $dir_list_content)
     if ($copy_single_file) { $task_list.Add("Copy single file") > $null }
 
     $tasks = ($task_list -join ", ")
-    debugMsg "Task(s): ${tasks}"
+    ShowDebugMsg "Task(s): ${tasks}"
 
     $task_list.Clear()
     $tasks = ""
@@ -342,22 +397,22 @@ ForEach($line in $dir_list_content)
 
   if ($finish_previous_job)
   {
-    debugMsg "----- Finishing the previous job: ------------------------------------"
+    ShowDebugMsg "----- Finishing the previous job: ------------------------------------"
     _callCreateJob
   }
 
   if ($start_new_job)
   {
-    debugMsg "----- Starting a new job: --------------------------------------------"
+    ShowDebugMsg "----- Starting a new job: --------------------------------------------"
     $source_defs_count = ($source_defs_count + 1)
     $current_job_num = $source_defs_count
     $current_source_definition = "${line}"
     $current_source_type = "${line_type}"
 
-    debugMsg "source_defs_count : $source_defs_count"
-    debugMsg "current_job_num   : $current_job_num"
-    debugMsg "current_source_definition: ${current_source_definition}"
-    debugMsg "current_source_type : ${current_source_type}"
+    ShowDebugMsg "source_defs_count : $source_defs_count"
+    ShowDebugMsg "current_job_num   : $current_job_num"
+    ShowDebugMsg "current_source_definition: ${current_source_definition}"
+    ShowDebugMsg "current_source_type : ${current_source_type}"
 
     #TODO Check here whether source exists?
     #TODO Also determine whether the type is correct? (e.g. missing trailing "\" on a folder)
@@ -373,40 +428,40 @@ ForEach($line in $dir_list_content)
 
         # Add the filename (pattern) to $included_files because we must NOT use *.* later!
         $source_filename = Split-Path -Leaf "${expanded}"
-        debugMsg "source_filename   : ${source_filename}"
+        ShowDebugMsg "source_filename   : ${source_filename}"
         $included_files.Add("${source_filename}") > $null
         $source_filename = ""
       }
     }
-    debugMsg "source_dir        : ${source_dir}"
+    ShowDebugMsg "source_dir        : ${source_dir}"
 
     if ("${source_dir}" -eq "")
     {
-      logAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
+      LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
       _resetJobRelatedInfo
     }
     else
     {
       $target_dir = getTargetDir "${BACKUP_DIR}" "${source_dir}"
-      debugMsg "target_dir        : ${target_dir}"
+      ShowDebugMsg "target_dir        : ${target_dir}"
     }
 
-    debugMsg "----------------------------------------------------------------------"
+    ShowDebugMsg "----------------------------------------------------------------------"
   }
 
   if ($copy_single_file)
   {
-    debugMsg "----- Copying a single file: -----------------------------------------"
+    ShowDebugMsg "----- Copying a single file: -----------------------------------------"
     _callCreateJob
   }
 
   # Add included/excluded files/directories to the job file (robocopy options /IF, /XF, /XD).
   if ($continue_curr_job)
   {
-    debugMsg "----- Continuing the job: --------------------------------------------"
+    ShowDebugMsg "----- Continuing the job: --------------------------------------------"
     # Determine additional information for the job.
     $entry = "${line}".Substring(4)   # Remove the leading "  + " or "  - "
-    debugMsg "entry               : ${entry}"
+    ShowDebugMsg "entry               : ${entry}"
 
     switch ("${line_type}")
     {
@@ -415,11 +470,11 @@ ForEach($line in $dir_list_content)
       "excl-dirs-pattern"   {$excluded_dirs.Add("${entry}") > $null}
     }
 
-    debugMsg ("included_files.Count: " + $included_files.Count)
-    debugMsg ("excluded_files.Count: " + $excluded_files.Count)
-    debugMsg ("excluded_dirs.Count : " + $excluded_dirs.Count)
+    ShowDebugMsg ("included_files.Count: " + $included_files.Count)
+    ShowDebugMsg ("excluded_files.Count: " + $excluded_files.Count)
+    ShowDebugMsg ("excluded_dirs.Count : " + $excluded_dirs.Count)
 
-    debugMsg "----------------------------------------------------------------------"
+    ShowDebugMsg "----------------------------------------------------------------------"
   }
 
   # Reset values that can only apply for 1 line.
@@ -427,18 +482,18 @@ ForEach($line in $dir_list_content)
 
 }
 
-debugMsg "----- End of the dir-list --------------------------------------------"
+ShowDebugMsg "----- End of the dir-list --------------------------------------------"
 
 # Finish the last job?
 $finish_last_job = ($current_job_num -ne 0)
 
 if ($finish_last_job)
 {
-  debugMsg "----- Finishing the last job: ----------------------------------------"
+  ShowDebugMsg "----- Finishing the last job: ----------------------------------------"
   _callCreateJob
 }
 
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "$jobs_created_count job file(s) created."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$jobs_created_count job file(s) created."
 
 #Write-Host "----- Results ------------------------------------------------------------------" -ForegroundColor DarkCyan
 #Write-Host "source_defs_count   : $source_defs_count" -ForegroundColor DarkCyan
@@ -467,23 +522,23 @@ $jobfiles_count = $jobfiles.Count
 
 if ($jobfiles_count -eq 0)
 {
-  logAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
+  LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
 }
 else
 {
-  logAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
+  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
 
   for ($i = 0; $i -lt $jobfiles_count; $i++)
   {
     $user_defined_job = $jobfiles[$i]
-    infoMsg "Job: ${user_defined_job}..."
+    ShowInfoMsg "Job: ${user_defined_job}..."
 
     $process = Start-Process -Wait -PassThru -NoNewWindow `
       -FilePath "${robocopy_exe}" `
       -ArgumentList "/job:""${ROBOCOPY_JOB_TEMPLATE_INCR}""", "/job:""${user_defined_job}"""
 
     [Int32]$exit_code = $process.ExitCode
-    debugMsg "Exit code: $exit_code"
+    ShowDebugMsg "Exit code: $exit_code"
 
     # Log errors. Use the jobname (Job1..n) from the filename.
     [Int32]$job_name_pos = ("${user_defined_job}".LastIndexOf("-") + 1)
@@ -511,7 +566,7 @@ else
 
   }
 
-  logAndShowMessage "${BACKUP_LOGFILE}" INFO "$job_result_ok_count jobs finished successful, $job_result_warning_count with warnings, $job_result_error_count with errors."
+  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$job_result_ok_count jobs finished successful, $job_result_warning_count with warnings, $job_result_error_count with errors."
 
 }
 
@@ -523,7 +578,7 @@ else
 $endTime = (Get-Date)
 $elapsedTime = $endTime-$startTime
 $message = "Script finished in {0:hh} h {0:mm} min {0:ss} sec." -f $elapsedTime
-logAndShowMessage "${BACKUP_LOGFILE}" INFO "${message}"
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "${message}"
 
 
 
