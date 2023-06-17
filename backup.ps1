@@ -117,24 +117,25 @@ TODO Some folders/files are mandatory. The rest can be created automatically.
 
 - Mandatory
   - BACKUP_TEMPLATES_DIR        OK
-  - ROBOCOPY_JOB_TEMPLATE_INCR
+  - DIRLIST_TEMPLATE            OK
+  - ROBOCOPY_JOB_TEMPLATE_INCR  OK
 
 - Created automatically
   - BACKUP_BASE_DIR             OK
-  - BACKUP_USER_BASE_DIR
-  - BACKUP_DIR
-  - BACKUP_JOB_DIR
-  - BACKUP_DIRLIST              (empty file or a copy of the example?)
-  - BACKUP_LOGFILE
-  - ERROR_LOGFILE
-
-TODO Write Check... methods and Create... methods!
+  - BACKUP_USER_BASE_DIR        OK
+  - BACKUP_DIR                  OK
+  - BACKUP_JOB_DIR              OK
+  - BACKUP_DIRLIST              OK (copy of the template)
+  - BACKUP_LOGFILE              OK
+  - ERROR_LOGFILE               OK
 
 #>
 
 CheckNecessaryDirectory 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
+CheckNecessaryFile 'DIRLIST_TEMPLATE' "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
+CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_INCR' "${ROBOCOPY_JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
 
-#TODO Different cases for $BACKUP_BASE_DIR (some cannot be created)!
+# Different cases for $BACKUP_BASE_DIR (some cannot be created)!
 $dir_type = SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
 ShowDebugMsg "BackupBaseDir type: ${dir_type}"
 
@@ -164,24 +165,24 @@ switch ("${dir_type}") {
   }
 }
 
-Write-Host "OK?" -ForegroundColor Green
-exit
-
-
-
-
-
-
 CreateNecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}"
 CreateNecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}"
 CreateNecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}"
 
+# Make sure that robocopy has been found if the ini file defines only "robocopy"!
 $robocopy_exe = GetExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 
-CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_INCR'  "${ROBOCOPY_JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
-CheckNecessaryFile 'BACKUP_DIRLIST'  "${BACKUP_DIRLIST}" "${BACKUP_LOGFILE}"
-#CheckNecessaryFile 'BACKUP_LOGFILE'  "${BACKUP_LOGFILE}" "${BACKUP_LOGFILE}"
-#CheckNecessaryFile 'ERROR_LOGFILE'  "${ERROR_LOGFILE}" "${ERROR_LOGFILE}"
+# Create the dir-list from the template if necessary.
+$dirlist_created = CreateNecessaryFile 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
+
+if ($dirlist_created)
+{
+  ShowInfoMsg "Opening the dir-list in Editor and wait..."
+  Notepad.exe "${BACKUP_DIRLIST}" | Out-Null
+}
+
+#CheckNecessaryFile 'BACKUP_LOGFILE' "${BACKUP_LOGFILE}" "${BACKUP_LOGFILE}"
+#CheckNecessaryFile 'ERROR_LOGFILE' "${ERROR_LOGFILE}" "${ERROR_LOGFILE}"
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files checked."
 
