@@ -21,8 +21,8 @@
 
 A relative path like `Backup\` could be interpreted in different ways.
 
-- Path below the script directory: e.g. `C:\<script folder>\Backup\`
-- Path below the current drive: e.g. `D:\Backup\`
-- Path below the home drive: `C:\Backup\`
-- Path below the user home: `<Userprofile>\Backup\`
+- Case 3a: Path below the script directory: e.g. `C:\<script folder>\Backup\`
+- Case 3b: Path below the current drive: e.g. `D:\Backup\`
+- Case 3c: Path below the home drive: `C:\Backup\`
+- Case 3d: Path below the user home: `<Userprofile>\Backup\`
 - ...?

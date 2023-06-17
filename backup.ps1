@@ -1,4 +1,4 @@
- # 2023, Thomas Lambeck
+# 2023, Thomas Lambeck
 #
 # Backup with PowerShell and robocopy using a list of directories/files to backup.
 #
@@ -120,7 +120,7 @@ TODO Some folders/files are mandatory. The rest can be created automatically.
   - ROBOCOPY_JOB_TEMPLATE_INCR
 
 - Created automatically
-  - BACKUP_BASE_DIR             working on it...
+  - BACKUP_BASE_DIR             OK
   - BACKUP_USER_BASE_DIR
   - BACKUP_DIR
   - BACKUP_JOB_DIR
@@ -134,8 +134,7 @@ TODO Write Check... methods and Create... methods!
 
 CheckNecessaryDirectory 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
 
-#TODO $BACKUP_SERVER needs a different check! CheckNecessaryDirectory() does not work for UNC paths.
-#TODO $BACKUP_SERVER might also be an IP address!
+#TODO Different cases for $BACKUP_BASE_DIR (some cannot be created)!
 $dir_type = SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
 ShowDebugMsg "BackupBaseDir type: ${dir_type}"
 
@@ -150,15 +149,10 @@ switch ("${dir_type}") {
   }
   "relative path"
   {
-    #Write-Host "dir_type: relative path" -ForegroundColor Red
-    #TODO Interpret as path below script dir, current drive or ...?
-    #...
-    #TODO Check or create the path!
-    #...
+    # Interpret as path below script dir, current drive or ...?
+    $absolute_base_dir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
+    CreateNecessaryDirectory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}"
   }
-
-
-
   "network computer"
   {
     ShowCritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
@@ -177,8 +171,6 @@ exit
 
 
 
-#TODO $BACKUP_BASE_DIR might be a network share (cannot be created like this)!
-CreateNecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
 
 CreateNecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}"
 CreateNecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}"
