@@ -169,7 +169,7 @@ function dirlistLineType
       }
     }
 
-    debugMsg "dirlistLineType(): object_type: ${object_type}"
+    ShowDebugMsg "dirlistLineType(): object_type: ${object_type}"
 
     switch ("${object_type}")
     {
@@ -747,15 +747,15 @@ function createJob
   }
   #endregion
 
-  debugMsg "createJob(): computername         : ${computername}"
-  debugMsg "createJob(): current_job_num      : $current_job_num"
-  debugMsg "createJob(): dirlist_entry        : ${dirlist_entry}"
-  debugMsg "createJob(): source_dir           : ${source_dir}"
-  debugMsg "createJob(): target_dir           : ${target_dir}"
-  debugMsg ("createJob(): included_files.Count : " + $included_files.Count)
-  debugMsg ("createJob(): excluded_dirs.Count  : " + $excluded_dirs.Count)
-  debugMsg ("createJob(): excluded_files.Count : " + $excluded_files.Count)
-  debugMsg "createJob(): copy_single_file     : $copy_single_file"
+  ShowDebugMsg "createJob(): computername         : ${computername}"
+  ShowDebugMsg "createJob(): current_job_num      : $current_job_num"
+  ShowDebugMsg "createJob(): dirlist_entry        : ${dirlist_entry}"
+  ShowDebugMsg "createJob(): source_dir           : ${source_dir}"
+  ShowDebugMsg "createJob(): target_dir           : ${target_dir}"
+  ShowDebugMsg ("createJob(): included_files.Count : " + $included_files.Count)
+  ShowDebugMsg ("createJob(): excluded_dirs.Count  : " + $excluded_dirs.Count)
+  ShowDebugMsg ("createJob(): excluded_files.Count : " + $excluded_files.Count)
+  ShowDebugMsg "createJob(): copy_single_file     : $copy_single_file"
 
   # Paths for the current job
   #TODO Use $BACKUP_JOB_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
@@ -764,8 +764,8 @@ function createJob
   $jobfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.RCJ"
   $logfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.log"
 
-  debugMsg "createJob(): jobfile_path         : ${jobfile_path}"
-  debugMsg "createJob(): logfile_path         : ${logfile_path}"
+  ShowDebugMsg "createJob(): jobfile_path         : ${jobfile_path}"
+  ShowDebugMsg "createJob(): logfile_path         : ${logfile_path}"
 
   # Create job file
   _writeHeader "${jobfile_path}" "${computername}" $current_job_num "${dirlist_entry}"

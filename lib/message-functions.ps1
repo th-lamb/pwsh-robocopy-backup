@@ -9,7 +9,7 @@
 # Verbose, ...), only Write-Host to write to the console with different colors.
 # 
 # There are two variants of all message functions. Example:
-# - infoMsg(): Prints the message only.
+# - ShowInfoMsg(): Prints the message only.
 # - infoLog(): Prints a timestamp before the message.
 # 
 # 
@@ -22,7 +22,7 @@
 #    -> Set ${__VERBOSE} via options --quiet, --verbose or similar.
 # 
 # 3. Replace Write-Host commands with function calls depending on the message severity.
-#    -> e.g. noticeMsg() for important (but expected) messages, and errMsg() 
+#    -> e.g. ShowNoticeMsg() for important (but expected) messages, and ShowErrMsg() 
 #       for unexpected errors
 # 
 # 
@@ -34,14 +34,14 @@
 # 
 #   | Function      | Severity (value)| Condition           |
 #   +---------------+-----------------+---------------------+
-#   | emergMsg()    | emerg     (0)   | none (always shown) |
-#   | alertMsg()    | alert     (1)   | ""                  |
-#   | critMsg()     | crit      (2)   | ""                  |
-#   | errMsg()      | err       (3)   | ""                  |
-#   | warningMsg()  | warning   (4)   | ${__VERBOSE} >= 4   |
-#   | noticeMsg()   | notice    (5)   | ${__VERBOSE} >= 5   |
-#   | infoMsg()     | info      (6)   | ${__VERBOSE} >= 6   |
-#   | debugMsg()    | debug     (7)   | ${__VERBOSE} = 7    |
+#   | ShowEmergMsg()    | emerg     (0)   | none (always shown) |
+#   | ShowAlertMsg()    | alert     (1)   | ""                  |
+#   | ShowCritMsg()     | crit      (2)   | ""                  |
+#   | ShowErrMsg()      | err       (3)   | ""                  |
+#   | ShowWarningMsg()  | warning   (4)   | ${__VERBOSE} >= 4   |
+#   | ShowNoticeMsg()   | notice    (5)   | ${__VERBOSE} >= 5   |
+#   | ShowInfoMsg()     | info      (6)   | ${__VERBOSE} >= 6   |
+#   | ShowDebugMsg()    | debug     (7)   | ${__VERBOSE} = 7    |
 # 
 # 
 #     Helper functions
@@ -229,7 +229,7 @@ function _isVerbosityDefined
 
 #region Wrappers for severity levels (without timestamp)
 
-function emergMsg
+function ShowEmergMsg
 {
   <#
   _coloredMsg() for severity level 0 (emerg).
@@ -243,7 +243,7 @@ function emergMsg
 
 }
 
-function alertMsg
+function ShowAlertMsg
 {
   <#
   _coloredMsg() for severity level 1 (alert).
@@ -257,7 +257,7 @@ function alertMsg
 
 }
 
-function critMsg
+function ShowCritMsg
 {
   <#
   _coloredMsg() for severity level 2 (crit).
@@ -271,7 +271,7 @@ function critMsg
 
 }
 
-function errMsg
+function ShowErrMsg
 {
   <#
   _coloredMsg() for severity level 3 (err).
@@ -285,7 +285,7 @@ function errMsg
 
 }
 
-function warningMsg
+function ShowWarningMsg
 {
   # _coloredMsg() for severity level 4 (warning).
   param (
@@ -295,7 +295,7 @@ function warningMsg
   # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (_isVerbosityDefined) )
   {
-    errMsg "__VERBOSE is not defined and between 0..7!"
+    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
     exit 1
   }
 
@@ -307,7 +307,7 @@ function warningMsg
 
 }
 
-function noticeMsg
+function ShowNoticeMsg
 {
   # _coloredMsg() for severity level 5 (notice).
   param (
@@ -317,7 +317,7 @@ function noticeMsg
   # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (_isVerbosityDefined) )
   {
-    errMsg "__VERBOSE is not defined and between 0..7!"
+    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
     exit 1
   }
 
@@ -329,7 +329,7 @@ function noticeMsg
 
 }
 
-function infoMsg
+function ShowInfoMsg
 {
   # _coloredMsg() for severity level 6 (info).
   param (
@@ -339,7 +339,7 @@ function infoMsg
   # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (_isVerbosityDefined) )
   {
-    errMsg "__VERBOSE is not defined and between 0..7!"
+    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
     exit 1
   }
 
@@ -351,7 +351,7 @@ function infoMsg
 
 }
 
-function debugMsg
+function ShowDebugMsg
 {
   # _coloredMsg() for severity level 7 (debug).
   param (
@@ -361,7 +361,7 @@ function debugMsg
   # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (_isVerbosityDefined) )
   {
-    errMsg "__VERBOSE is not defined and between 0..7!"
+    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
     exit 1
   }
 
@@ -476,7 +476,7 @@ function quietMessage
   )
 
   # Colored warning message if ${__VERBOSE} >= 4.
-  warningMsg "${message}"
+  ShowWarningMsg "${message}"
 
 }
 
@@ -496,7 +496,7 @@ function normalMessage
   # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (_isVerbosityDefined) )
   {
-    errMsg "__VERBOSE is not defined and between 0..7!"
+    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
     exit 1
   }
 
@@ -521,7 +521,7 @@ function verboseMessage
   # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (_isVerbosityDefined) )
   {
-    errMsg "__VERBOSE is not defined and between 0..7!"
+    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
     exit 1
   }
 

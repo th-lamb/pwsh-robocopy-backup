@@ -498,7 +498,7 @@ function GetExecutablePath
 
   if ("${file_in_path}" -ne "")
   {
-    debugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"
+    ShowDebugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"
     return "${file_in_path}"
   }
   else
@@ -846,11 +846,11 @@ function getParentDir
   }
   #endregion
 
-  debugMsg "getParentDir(): file_spec : ${file_spec}"
+  ShowDebugMsg "getParentDir(): file_spec : ${file_spec}"
 
   #TODO Currently the most reliable way?
   $parent_dir = Split-Path -Path "${file_spec}"
-  debugMsg "getParentDir(): parent_dir: ${parent_dir}"
+  ShowDebugMsg "getParentDir(): parent_dir: ${parent_dir}"
 
 #region tests
 
@@ -893,7 +893,7 @@ function getParentDir
   )
   {
     $parent_dir = "${parent_dir}${PATH_SEPARATOR}"
-    debugMsg "getParentDir(): parent_dir: ${parent_dir}"
+    ShowDebugMsg "getParentDir(): parent_dir: ${parent_dir}"
   }
 
   return "${parent_dir}"
