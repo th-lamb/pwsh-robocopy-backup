@@ -4,23 +4,6 @@ $PATH_SEPARATOR = '\'
 
 #region Helper functions
 
-function computernameFromUncPath
-{
-  param (
-    [String]$unc_path
-  )
-
-  $temp = "${unc_path}".Replace("\\", "")
-  $pos = "${temp}".IndexOf("\")
-
-  if ($pos -eq -1) {
-    return "${temp}"
-  } else {
-    return "${temp}".Substring(0, $pos)
-  }
-
-}
-
 #endregion Helper functions
 
 
@@ -377,84 +360,6 @@ function CheckNecessaryFile
   }
 
 }
-
-
-
-
-
-#TODO Remove later
-function CheckBackupBaseDir
-{
-  # Exits the script with exit-code 2 if the specified path doesn't exist.
-  param (
-    [String]$definition_name,
-    [String]$server_path_spec,
-    [String]$logfile
-  )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name'))
-  {
-    Write-Error "CheckNecessaryDirectory(): Parameter definition_name not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('server_path_spec'))
-  {
-    Write-Error "CheckNecessaryDirectory(): Parameter server_path_spec not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
-    Write-Error "CheckNecessaryDirectory(): Parameter logfile not provided!"
-    exit 1
-  }
-  #endregion
-
-  Write-Host "server_path_spec: ${server_path_spec}" -ForegroundColor Yellow
-  $test_object_type = SpecifiedFsObjectType "${server_path_spec}"
-  Write-Host "test_object_type: ${test_object_type}" -ForegroundColor Yellow
-
-  #TODO Variants:
-  # 1:  Relative path             TODO
-  # 2:  Qualifier                 Check if the drive exists.
-  # 3:  Local path                Create?
-  # 4:  Network computer          Not possible
-  # 5:  Network share             Check if it exists.
-  # 6:  "Network folder"          Create?
-
-  if ("${test_object_type}".StartsWith("network")) {
-    # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
-    # Test-Connection -BufferSize 32 -Count 1 -ComputerName 192.168.0.41 -Quiet
-
-    # OK without leading "\\"
-    $server_name = computernameFromUncPath "${server_path_spec}"
-    Write-Host "server_name     : ${server_name}" -ForegroundColor Yellow
-    $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
-    Write-Host "available       : $available" -ForegroundColor Yellow
-  }
-
-  return
-
-
-
-  if (! (folderExists "${server_path_spec}") )
-  {
-    LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${server_path_spec}"
-
-    Write-Host -NoNewLine "Press any key to abort..."
-    [void][System.Console]::ReadKey($true)
-
-    exit 2
-
-  }
-
-}
-
-
-
-
 
 function GetExecutablePath
 {
