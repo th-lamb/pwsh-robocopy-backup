@@ -1,4 +1,4 @@
-#TODO Check directory before showing "Cannot write to logfile" error?
+#TODO: Check directory before showing "Cannot write to logfile" error?
 
 
 

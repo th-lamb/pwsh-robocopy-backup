@@ -46,7 +46,7 @@ function ServerIsAvailable
 
   #$available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
 
-  #TODO We can't catch the Ping exception for the blackhole prefix 240.0.0.0?
+  #TODO: We can't catch the Ping exception for the blackhole prefix 240.0.0.0?
   try {
     $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
 

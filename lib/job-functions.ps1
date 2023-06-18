@@ -96,7 +96,7 @@ function checkFsObjectTypeMismatch
 }
 
 function dirlistLineType
-#TODO Use an Enum? https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#enum
+#TODO: Use an Enum? https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#enum
 {
   <#
   Returns the type of the specified line in the dir-list.
@@ -141,7 +141,7 @@ function dirlistLineType
   # source-dir, source-file, or source-file-pattern
   if ( (! $entry.StartsWith(" ")) )
   {
-    #TODO Check specified and real type, then compare and warn if necessary!
+    #TODO: Check specified and real type, then compare and warn if necessary!
     $specified_type = SpecifiedFsObjectType "${entry}"
     $existing_type = RealFsObjectType "${entry}"
     $result = checkFsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
@@ -344,7 +344,7 @@ function _writeHeader
   }
   #endregion
 
-  #TODO Use $BACKUP_JOB_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
+  #TODO: Use $BACKUP_JOB_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
   # e.g.  $BACKUP_JOB_NAME_SCHEME = "${computername}-Job*.RCJ"
   # or    $BACKUP_JOB_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
   _writeToJobfile "${jobfile_path}" ":: Robocopy Job ${computername}-Job${current_job_num}" $true
@@ -622,7 +622,7 @@ function _finalizeJob
 function createJob
 {
   # Creates the specified job file, including a simple header.
-  #TODO Omit $computername here? (Determined at the beginning and available here.)
+  #TODO: Omit $computername here? (Determined at the beginning and available here.)
   param (
     [String]$computername,
     [Int32]$current_job_num,
@@ -758,7 +758,7 @@ function createJob
   ShowDebugMsg "createJob(): copy_single_file     : $copy_single_file"
 
   # Paths for the current job
-  #TODO Use $BACKUP_JOB_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
+  #TODO: Use $BACKUP_JOB_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
   # e.g.  $BACKUP_JOB_NAME_SCHEME = "${computername}-Job*.RCJ"
   # or    $BACKUP_JOB_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
   $jobfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.RCJ"

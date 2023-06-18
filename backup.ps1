@@ -13,6 +13,8 @@
   - File created
 - 2023-05-08, Version 0.0.02, Thomas Lambeck
   - Better check for $ROBOCOPY (search in Windows PATH environment variable if no path is provided).
+- 2023-06-18, Version 0.1.00, Thomas Lambeck
+  - Checks for necessary directories and files, including creation where possible.
 #>
 
 #endregion ChangeLog ###########################################################
@@ -39,7 +41,7 @@
   - Is it possible to log errors directly?
 #>
 
-#TODO Use more ShowNormalMessage() and ShowVerboseMessage() instead of ShowDebugMsg() or ShowInfoMsg()?
+#TODO: Use more ShowNormalMessage() and ShowVerboseMessage() instead of ShowDebugMsg() or ShowInfoMsg()?
 
 #endregion TODO ################################################################
 
@@ -78,8 +80,8 @@ catch {
 
 #region Import function libraries
 
-#TODO Hard-coded for now, later an import function for different library folders might be better.
-#TODO Search order: current directory, parallel folder "lib" or standard directory
+#TODO: Hard-coded for now, later an import function for different library folders might be better.
+#TODO: Search order: current directory, parallel folder "lib" or standard directory
 
 . lib\message-functions.ps1       # No dependencies
 . lib\logging-functions.ps1       # Depends on message-functions.
@@ -96,7 +98,7 @@ catch {
 #region Read settings file
 
 # No info message here, because $__VERBOSE is not defined before reading the settings file.
-#TODO Maybe use cmdline parameters if provided? (Maybe too much effort to just get some more info messages.)
+#TODO: Maybe use cmdline parameters if provided? (Maybe too much effort to just get some more info messages.)
 #LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Reading the settings file..."
 
 ReadSettingsFile ($PSCommandPath -replace ".ps1", ".ini")
@@ -113,7 +115,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Checking necessary directories and files..."
 
 <#
-TODO Some folders/files are mandatory. The rest can be created automatically.
+Some folders/files are mandatory. The rest can be created automatically.
 
 - Mandatory
   - BACKUP_TEMPLATES_DIR        OK
@@ -407,8 +409,8 @@ ForEach($line in $dir_list_content)
     ShowDebugMsg "current_source_definition: ${current_source_definition}"
     ShowDebugMsg "current_source_type : ${current_source_type}"
 
-    #TODO Check here whether source exists?
-    #TODO Also determine whether the type is correct? (e.g. missing trailing "\" on a folder)
+    #TODO: Check here whether source exists?
+    #TODO: Also determine whether the type is correct? (e.g. missing trailing "\" on a folder)
     Write-Host "expanded: ${expanded}" -ForegroundColor Yellow
 
     # Determine basic information for the job.
@@ -499,7 +501,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$jobs_created_count job file(s) crea
 #Write-Host "jobs_created_count  : $jobs_created_count" -ForegroundColor DarkCyan
 #Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkCyan
 
-#TODO Remove the next 2 lines after testing
+#TODO: Remove the next 2 lines after testing
 #Write-Host "Abort test" -ForegroundColor Red
 #return
 

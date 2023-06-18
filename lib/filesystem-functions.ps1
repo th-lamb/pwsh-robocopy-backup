@@ -36,7 +36,7 @@ function RealFsObjectType
   between directory and network share.
   #>
 
-  #TODO This doesn't test if a share really exists or is available!
+  #TODO: This doesn't test if a share really exists or is available!
   switch ("${specified_type}")
   {
     "network share"     { return "${specified_type}" }
@@ -791,7 +791,7 @@ function getParentDir
   <#
   Returns the parent directory of the specified file (pattern).
   #>
-  #TODO Additional parameter "check_file_exists" needed?
+  #TODO: Additional parameter "check_file_exists" needed?
   param (
     [String]$file_spec
   )
@@ -806,7 +806,7 @@ function getParentDir
 
   ShowDebugMsg "getParentDir(): file_spec : ${file_spec}"
 
-  #TODO Currently the most reliable way?
+  #TODO: Currently the most reliable way?
   $parent_dir = Split-Path -Path "${file_spec}"
   ShowDebugMsg "getParentDir(): parent_dir: ${parent_dir}"
 
@@ -834,9 +834,9 @@ function getParentDir
 
 
 
-  #TODO What did `get-item` return? A list?
-  #TODO Return only the 1st result?
-  #TODO What do we return if NO matching file has been found?
+  #TODO: What did `get-item` return? A list?
+  #TODO: Return only the 1st result?
+  #TODO: What do we return if NO matching file has been found?
 
 #  (get-item "${file_spec}")            # 2 results!: "Notepad2.ini" and "WinSCP.ini"
 #  Write-Host "########################################" -ForegroundColor Yellow

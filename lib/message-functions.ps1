@@ -85,7 +85,7 @@ function _coloredMsg
   * Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
   * Colors inspired by ANSI Z535.6
   * Exits with exit code 1 on illegal severity levels.
-TODO
+TODO:
   * Redirects errors (emerg...warning) to stderr and other messages to stdout.
     -> Powershell has 6 streams!
 
@@ -93,7 +93,7 @@ TODO
   $1   Severity level: emerg|alert|crit|err|warning|notice|info|debug
   $2   The message
   #>
-  #TODO Use the enum in logging-functions for $severity.
+  #TODO: Use the enum in logging-functions for $severity.
   param (
     [String]$severity,
     [String]$message
@@ -146,7 +146,7 @@ TODO
     }
   }
 
-  #TODO Finish the remaining section!
+  #TODO: Finish the remaining section!
   #Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}"
 
   if ($is_err)
@@ -174,7 +174,7 @@ TODO
   }
   else
   {
-    #TODO remove the redirection after testing
+    #TODO: remove the redirection after testing
     Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}" # 6>> .\success.log
   }
 
@@ -189,7 +189,7 @@ TODO
 #  $1   Severity level  -> passed to _coloredMsg()
 #  $2   The message     -> timestamp + message passed to _coloredMsg()
 #  #>
-#  #TODO Use the enum in logging-functions for $severity.
+#  #TODO: Use the enum in logging-functions for $severity.
 #  param (
 #    [String]$severity,
 #    [String]$message
