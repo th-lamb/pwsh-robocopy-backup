@@ -8,22 +8,6 @@
 
 :: ----- Global settings -------------------------------------------------------
 
-:: global-exclude-dirs
-/XD
-  %Temp%\   ::  C:\Users\lambecth\AppData\Local\Temp\
-
-:: global-exclude-files
-/XF
-  *.tmp
-  *.wbk
-
-/XJ     :: eXclude symbolic links (for both files and directories) and Junction points.
-        :: https://resolve.co.uk/blog/article/an-introductory-guide-to-robocopy/
-        :: /XJ - Exclude junction Points (win 7+ issue)
-        :: This is a very important switch if you are running robocopy on Vista/7 Machines, 
-        :: especially if the machine was upgraded from XP. You can end up with the copy job 
-        :: getting into an endless loop at the application data folder, use /XJ to avoid this.
-
 :: global-robocopy-options
 :: Retry Options
 /R:3

@@ -2,12 +2,6 @@ $PATH_SEPARATOR = '\'
 
 
 
-#region Helper functions
-
-#endregion Helper functions
-
-
-
 #region Object types
 
 function RealFsObjectType
@@ -532,8 +526,6 @@ function CreateNecessaryFile
   }
 
 }
-
-
 
 #region Object creation ########################################################
 
