@@ -85,7 +85,7 @@ function UserSelectedJobType
     [String]$logfile
   )
 
-  LogAndShowMessage "${logfile}" DEBUG "UserSelectedJobType()"
+  LogMessage "${logfile}" INFO "Asking the user for the job-type..."
 
   [Int32]$max_wait_time_ms = ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} * 1000
   [Int32]$check_interval_ms = 100
