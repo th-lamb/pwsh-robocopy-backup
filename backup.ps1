@@ -226,7 +226,7 @@ switch ($selected_job_type)
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Archiving previous jobs..."
 
-archiveOldJobs "${BACKUP_JOB_DIR}" "${BACKUP_JOB_NAME_SCHEME}" "${BACKUP_JOB_LOG_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+archiveOldJobs "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 
@@ -538,7 +538,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$jobs_created_count job file(s) crea
 #region Run jobs
 
 $jobfiles = New-Object System.Collections.ArrayList
-$jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${BACKUP_JOB_NAME_SCHEME}" -File
+$jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File
 $jobfiles_count = $jobfiles.Count
 
 if ($jobfiles_count -eq 0)

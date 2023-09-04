@@ -22,7 +22,7 @@
 #TODO: Add logging - not only console messages!
 
 #TODO: Create a test in a separate folder? -> as in "C:\Backup\lambecth\robocopy-jobs - Kopie"?
-#archiveOldJobs "${BACKUP_JOB_DIR}" "${BACKUP_JOB_NAME_SCHEME}" "${BACKUP_JOB_LOG_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+#archiveOldJobs "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
 function _deleteFiles
 {

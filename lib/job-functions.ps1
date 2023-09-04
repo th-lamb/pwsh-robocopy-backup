@@ -344,9 +344,9 @@ function _writeHeader
   }
   #endregion
 
-  #TODO: Use $BACKUP_JOB_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
-  # e.g.  $BACKUP_JOB_NAME_SCHEME = "${computername}-Job*.RCJ"
-  # or    $BACKUP_JOB_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
+  #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
+  # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
+  # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
   _writeToJobfile "${jobfile_path}" ":: Robocopy Job ${computername}-Job${current_job_num}" $true
   _writeToJobfile "${jobfile_path}" ":: For dir-list entry: ${dirlist_entry}" $false
   _writeToJobfile "${jobfile_path}" "" $false
@@ -758,9 +758,9 @@ function createJob
   ShowDebugMsg "createJob(): copy_single_file     : $copy_single_file"
 
   # Paths for the current job
-  #TODO: Use $BACKUP_JOB_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
-  # e.g.  $BACKUP_JOB_NAME_SCHEME = "${computername}-Job*.RCJ"
-  # or    $BACKUP_JOB_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
+  #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function archiveOldJobs uses the same scheme!
+  # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
+  # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
   $jobfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.RCJ"
   $logfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.log"
 
