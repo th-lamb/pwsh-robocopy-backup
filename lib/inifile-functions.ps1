@@ -1,48 +1,89 @@
+#region Helper functions
+
+function _debugPrintFormattedIniValues {
+  param (
+    [System.Collections.ArrayList]$var_names,
+    [System.Collections.ArrayList]$var_values
+  )
+
+  [System.Collections.ArrayList]$var_names_same_length = New-Object System.Collections.ArrayList
+
+  # Determine the longest variable name.
+  $max_length = $( $var_names | sort length -desc | select -first 1 ).Length
+
+  # Make shorter variable names longer.
+  for ($i = 0; $i -lt $var_names.Count; $i++) {
+    $var_name = $($var_names[$i])
+    $num_spaces_to_add = $( $max_length - $var_name.Length )
+    $var_name_with_spaces = "${var_name}" + (" " * $num_spaces_to_add)
+    $var_names_same_length.Add("${var_name_with_spaces}") > $null
+
+  }
+
+  # Show debug messages.
+  ShowDebugMsg "--------------------------------------------------------------------------------"
+  ShowDebugMsg "Values from the settings file:"
+  ShowDebugMsg ""
+  for ($i = 0; $i -lt $var_names.Count; $i++) {
+    ShowDebugMsg "$($var_names_same_length[$i]): $($var_values[$i])"
+  }
+  ShowDebugMsg "--------------------------------------------------------------------------------"
+
+}
+
+# https://stackoverflow.com/a/10939609/5944475
+function Is-Numeric ($Value) {
+    return $Value -match "^[\d\.]+$"
+}
+
+#endregion Helper functions ####################################################
+
+
+
 function ReadSettingsFile {
   param (
     [String]$ini_file
   )
 
-  #$ini_file = $PSCommandPath -replace ".ps1", ".ini"
+  [System.Collections.ArrayList]$var_names = New-Object System.Collections.ArrayList
+  [System.Collections.ArrayList]$var_values = New-Object System.Collections.ArrayList
+
   $ini_file_content = Get-Content "${ini_file}"
 
   ForEach($line in $ini_file_content)
   {
     if (
-      ($line -ne "") -and
-      (! $line.StartsWith("[")) -and 
-      (! $line.StartsWith(";")) -and 
+      ($line -ne "") -and               # Empty line
+      (! $line.StartsWith("[")) -and    # Section
+      (! $line.StartsWith(";")) -and    # Commented out
       ($line.Contains("="))
     )
     {
       $var_name = ($line -split "=")[0]
       $var_value = ($line -split "=")[1]
 
-      $expanded = expandedPath "${var_value}"
+      # Store for debug messages.
+      $var_names.Add("${var_name}") > $null
+      $var_values.Add("${var_value}") > $null
 
-      Set-Variable -Name $var_name -Value ${expanded} -Scope script
+      # Interpret numeric values as Int32; others as String.
+      if ( Is-Numeric $var_value )
+      {
+        [Int32]$int_value = $var_value
+        Set-Variable -Name "${var_name}" -Value $int_value -Scope script
+
+      }
+      elseif ( ${var_value} -is [String] )
+      {
+        $expanded = expandedPath "${var_value}"
+        Set-Variable -Name "${var_name}" -Value "${expanded}" -Scope script
+
+      }
+
     }
+
   }
 
-  ShowDebugMsg "__VERBOSE                 : ${__VERBOSE}"
-  #ShowDebugMsg "BACKUP_CONFIG_DIR         : ${BACKUP_CONFIG_DIR}"
-  #ShowDebugMsg "LIB_DIR                   : ${LIB_DIR}"
-  ShowDebugMsg "BACKUP_TEMPLATES_DIR      : ${BACKUP_TEMPLATES_DIR}"
-  ShowDebugMsg "BACKUP_BASE_DIR           : ${BACKUP_BASE_DIR}"
-  ShowDebugMsg "BACKUP_USER_BASE_DIR      : ${BACKUP_USER_BASE_DIR}"
-  ShowDebugMsg "BACKUP_DIR                : ${BACKUP_DIR}"
-  ShowDebugMsg "BACKUP_JOB_DIR            : ${BACKUP_JOB_DIR}"
-  ShowDebugMsg "ROBOCOPY                  : ${ROBOCOPY}"
-  ShowDebugMsg "ROBOCOPY_JOB_TEMPLATE_INCR: ${ROBOCOPY_JOB_TEMPLATE_INCR}"
-  ShowDebugMsg "BACKUP_DIRLIST            : ${BACKUP_DIRLIST}"
-  ShowDebugMsg "BACKUP_LOGFILE            : ${BACKUP_LOGFILE}"
-  ShowDebugMsg "ERROR_LOGFILE             : ${ERROR_LOGFILE}"
-  ShowDebugMsg "BACKUP_JOB_NAME_SCHEME    : ${BACKUP_JOB_NAME_SCHEME}"
-  ShowDebugMsg "BACKUP_JOB_LOG_NAME_SCHEME: ${BACKUP_JOB_LOG_NAME_SCHEME}"
-  ShowDebugMsg "ARCHIVE_NAME_SCHEME       : ${ARCHIVE_NAME_SCHEME}"
-  ShowDebugMsg "MAX_ARCHIVES_COUNT        : ${MAX_ARCHIVES_COUNT}"
-  #ShowDebugMsg "BACKUP_GLOBAL_EXCLUDE_DIRS_LIST : ${BACKUP_GLOBAL_EXCLUDE_DIRS_LIST}"
-  #ShowDebugMsg "BACKUP_GLOBAL_EXCLUDE_FILES_LIST: ${BACKUP_GLOBAL_EXCLUDE_FILES_LIST}"
-  #ShowDebugMsg "BACKUP_GLOBAL_ROBOCOPY_OPTIONS  : ${BACKUP_GLOBAL_ROBOCOPY_OPTIONS}"
+  _debugPrintFormattedIniValues $var_names $var_values
 
 }
