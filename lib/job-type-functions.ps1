@@ -38,14 +38,14 @@ function _showOptions
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
   }
   elseif ( "${default_job_type}" -eq "Full")
   {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
 
   }
   elseif ( "${default_job_type}" -eq "Purge")
@@ -53,21 +53,21 @@ function _showOptions
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files) (", "default", ")" -Color White, Yellow, White, Green, White
-    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
   }
   elseif ( "${default_job_type}" -eq "Archive")
   {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute) (", "default", ")" -Color White, Yellow, White, Green, White
+    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute) (", "default", ")" -Color White, Red, White, Yellow, White, Green, White
   }
   else  #if ( "${default_job_type}" -eq "Cancel")
   {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
   }
 
   Write-Host ""
