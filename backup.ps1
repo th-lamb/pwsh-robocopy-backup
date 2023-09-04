@@ -49,7 +49,7 @@
 
 #region Constant values
 
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.0.02
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.1.00
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
 Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
 
@@ -90,6 +90,7 @@ catch {
 . lib\job-archive-functions.ps1   # Depends on logging-functions, message-functions.
 . lib\inifile-functions.ps1       # Depends on message-functions.
 . lib\robocopy-functions.ps1      # Depends on logging-functions.
+. lib\job-type-functions.ps1      # TODO Depends on?
 
 #endregion Import function libraries ###########################################
 
@@ -136,6 +137,10 @@ Some folders/files are mandatory. The rest can be created automatically.
 CheckNecessaryDirectory 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
 CheckNecessaryFile 'DIRLIST_TEMPLATE' "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
 CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_INCR' "${ROBOCOPY_JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
+CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_FULL' "${ROBOCOPY_JOB_TEMPLATE_FULL}" "${BACKUP_LOGFILE}"
+CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_PURGE' "${ROBOCOPY_JOB_TEMPLATE_PURGE}" "${BACKUP_LOGFILE}"
+CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_ARCHIVE' "${ROBOCOPY_JOB_TEMPLATE_ARCHIVE}" "${BACKUP_LOGFILE}"
+CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS' "${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" "${BACKUP_LOGFILE}"
 
 # Different cases for $BACKUP_BASE_DIR (some cannot be created)!
 $dir_type = SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
@@ -167,6 +172,9 @@ switch ("${dir_type}") {
   }
 }
 
+#TODO Report creation of these dirs (as INFO).
+#TODO And store a variable to prepend this info when the logging starts? (Until now the log-file starts with "Dir-list created from template.")
+#     -> Maybe add all log messages to a list before the log-file exists, and add all of them when it exists?
 CreateNecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}"
 CreateNecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}"
 CreateNecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}"
@@ -189,6 +197,28 @@ if ($dirlist_created)
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files checked."
 
 #endregion Check necessary directories and files ###############################
+
+
+
+#region Ask for job type
+
+$selected_job_type = UserSelectedJobType "${DEFAULT_JOB_TYPE}" "${BACKUP_LOGFILE}"
+
+switch ($selected_job_type)
+{
+  "Incremental" { $robocopy_job_type_template = $ROBOCOPY_JOB_TEMPLATE_INCR }
+  "Full"        { $robocopy_job_type_template = $ROBOCOPY_JOB_TEMPLATE_FULL }
+  "Purge"       { $robocopy_job_type_template = $ROBOCOPY_JOB_TEMPLATE_PURGE }
+  "Archive"     { $robocopy_job_type_template = $ROBOCOPY_JOB_TEMPLATE_ARCHIVE }
+  "Cancel"      { exit 0 }
+  Default       # Illegal choice
+  {
+    #TODO Maybe a different exit code? (1 was for syntax errors, 2 for missing files, more?)
+    exit 2
+  }
+}
+
+#endregion Ask for job type ####################################################
 
 
 
@@ -411,7 +441,7 @@ ForEach($line in $dir_list_content)
 
     #TODO: Check here whether source exists?
     #TODO: Also determine whether the type is correct? (e.g. missing trailing "\" on a folder)
-    Write-Host "expanded: ${expanded}" -ForegroundColor Yellow
+    #Write-Host "expanded: ${expanded}" -ForegroundColor Yellow
 
     # Determine basic information for the job.
     switch -Wildcard ("${current_source_type}")
@@ -501,10 +531,6 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$jobs_created_count job file(s) crea
 #Write-Host "jobs_created_count  : $jobs_created_count" -ForegroundColor DarkCyan
 #Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkCyan
 
-#TODO: Remove the next 2 lines after testing
-#Write-Host "Abort test" -ForegroundColor Red
-#return
-
 #endregion Create job files ####################################################
 
 
@@ -530,7 +556,9 @@ else
 
     $process = Start-Process -Wait -PassThru -NoNewWindow `
       -FilePath "${robocopy_exe}" `
-      -ArgumentList "/job:""${ROBOCOPY_JOB_TEMPLATE_INCR}""", "/job:""${user_defined_job}"""
+      -ArgumentList "/job:""${robocopy_job_type_template}""", `
+                    "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
+                    "/job:""${user_defined_job}"""
 
     [Int32]$exit_code = $process.ExitCode
     ShowDebugMsg "Exit code: $exit_code"
