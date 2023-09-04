@@ -1,3 +1,9 @@
+# Info:
+# https://stackoverflow.com/a/2688572/5944475
+# https://www.reddit.com/r/PowerShell/comments/d74lce/how_to_underline_text_in_output_using_writehost/
+
+
+
 #region Helper functions
 
 # https://stackoverflow.com/a/2688572/5944475
@@ -18,34 +24,54 @@ function _showOptions
 {
   Param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('incr', 'full', 'cleanup')]
-    [String]$standard_job_type
+    [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
+    [String]$default_job_type
   )
 
   Write-Host "__________________________________________________"
   Write-Host ""
-  Write-Host "  Press a key to select the job-type:"
+  Write-Host "  Press a key to select the backup job-type:"
   Write-Host ""
 
-  if ( "${standard_job_type}" -eq "incr")
+  if ( "${default_job_type}" -eq "Incremental")
   {
-    Write-Color -Text "  [I] ", "I", "ncremental backup (standard)" -Color White, DarkCyan, White
-    Write-Color -Text "  [F] ", "F", "ull backup" -Color White, DarkCyan, White
-    Write-Color -Text "  [C] ", "C", "leanup" -Color White, DarkCyan, White
+    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup (", "default", ")" -Color White, Yellow, White, Green, White
+    Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
+    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
   }
-  elseif ( "${standard_job_type}" -eq "full")
+  elseif ( "${default_job_type}" -eq "Full")
   {
-    Write-Color -Text "  [I] ", "I", "ncremental backup" -Color White, DarkCyan, White
-    Write-Color -Text "  [F] ", "F", "ull backup (standard)" -Color White, DarkCyan, White
-    Write-Color -Text "  [C] ", "C", "leanup" -Color White, DarkCyan, White
+    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
+    Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup (", "default", ")" -Color White, Yellow, White, Green, White
+    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
+
   }
-  elseif ( "${standard_job_type}" -eq "cleanup")
+  elseif ( "${default_job_type}" -eq "Purge")
   {
-    Write-Color -Text "  [I] ", "I", "ncremental backup" -Color White, DarkCyan, White
-    Write-Color -Text "  [F] ", "F", "ull backup" -Color White, DarkCyan, White
-    Write-Color -Text "  [C] ", "C", "leanup (standard)" -Color White, DarkCyan, White
+    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
+    Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
+    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files) (", "default", ")" -Color White, Yellow, White, Green, White
+    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
+  }
+  elseif ( "${default_job_type}" -eq "Archive")
+  {
+    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
+    Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
+    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute) (", "default", ")" -Color White, Yellow, White, Green, White
+  }
+  else  #if ( "${default_job_type}" -eq "Cancel")
+  {
+    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
+    Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
+    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
+    Write-Color -Text "  [A]    Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Yellow, White
   }
 
+  Write-Host ""
+  Write-Color -Text "  [", "ESC", "]", "  Cancel" -Color White, Red, White, Red
   Write-Host "__________________________________________________"
 
 }
@@ -54,16 +80,20 @@ function UserSelectedJobType
 {
   Param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('incr', 'full', 'cleanup')]
-    [String]$standard_job_type,
+    [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
+    [String]$default_job_type,
     [String]$logfile
   )
 
-  _showOptions "${standard_job_type}"
+  LogAndShowMessage "${logfile}" DEBUG "UserSelectedJobType()"
 
   [Int32]$max_wait_time_ms = ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} * 1000
   [Int32]$check_interval_ms = 100
   [Int32]$already_waited_ms = 0
+  [String]$result = ""
+
+  _showOptions "${default_job_type}"
+  Write-Host "Automatic start in ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} seconds."
 
   # https://powershell.one/tricks/input-devices/detect-key-press
   do
@@ -72,8 +102,7 @@ function UserSelectedJobType
     if ([Console]::KeyAvailable)
     {
       # Read the key, and consume it so it won't be echoed to the console:
-      #$keyInfo = [Console]::ReadKey($true)
-      $keyInfo = [Console]::ReadKey()
+      $keyInfo = [Console]::ReadKey($true)
       break
     }
 
@@ -96,30 +125,59 @@ function UserSelectedJobType
   {
     'i'
     {
-      Write-Host "You selected Incremental Backup."
-      return "incr"
+      $result = "Incremental"
+      LogMessage "${logfile}" INFO "Incremental selected."
     }
+
     'f'
     {
-      Write-Host "You selected Full Backup."
-      return "full"
+      $result = "Full"
+      LogMessage "${logfile}" INFO "Full selected."
     }
-    'c'
+
+    'p'
     {
-      Write-Host "You selected Cleanup."
-      return "cleanup"
+      $result = "Purge"
+      LogMessage "${logfile}" INFO "Purge selected."
     }
-    'Enter'   # User just pressed ENTER.
+
+    'a'
     {
-      Write-Host "You didn't select a job-type. Using the default: Incremental Backup"
-      return "${standard_job_type}"
+      $result = "Archive"
+      LogMessage "${logfile}" INFO "Archive selected."
     }
-    ''        # User didn't press a key.
+
+    'Escape'
     {
-      Write-Host "You didn't select a job-type. Using the default: Incremental Backup"
-      return "${standard_job_type}"
+      $result = "Cancel"
+      LogMessage "${logfile}" INFO "User pressed ESCAPE. Cancel."
     }
-    Default { Write-Host "Unknown job type selected! Aborting." }
+
+    'Enter'
+    {
+      Write-Host "Using the default."
+      $result = "${default_job_type}"
+      LogMessage "${logfile}" INFO "User just pressed ENTER. Using the default: ${default_job_type}"
+    }
+
+    ''        # User didn't press any key.
+    {
+      Write-Host "Using the default."
+      $result = "${default_job_type}"
+      LogMessage "${logfile}" INFO "User didn't select a job-type. Using the default: ${default_job_type}"
+    }
+
+    Default   # Illegal choice
+    {
+      LogAndShowMessage "${logfile}" WARN "Illegal choice. Cancel."
+      $result = "Cancel"
+      LogMessage "${logfile}" DEBUG "User clicked: $($keyInfo.key)"
+    }
+
   }
+
+  Write-Host "${result}"
+
+  return "${result}"
 
 }
