@@ -30,5 +30,7 @@
 :: ----- User settings ---------------------------------------------------------
 
 :: Copy options
+/S      :: copy Subdirectories, but not empty ones.
 /PURGE  :: delete dest files/dirs that no longer exist in source.
+/NOCOPY :: COPY NO file info (useful with /PURGE).
 ::/XL     :: eXclude Lonely files and directories.  -> https://superuser.com/a/314511/1792888: Prevents any new files being added to the destination.
