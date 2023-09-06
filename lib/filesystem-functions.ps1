@@ -35,10 +35,19 @@ function RealFsObjectType
   {
     "network share"     { return "${specified_type}" }
     "network computer"  { return "${specified_type}" }
-    Default {}
   }
 
   # Existing directory/file
+  <#
+    ----------------------------------------------------------------------------
+    https://github.com/PowerShell/PowerShell/issues/6473
+    [...]
+    Given that they lack a -Force switch, the following cmdlets are currently fundamentally incapable of finding hidden items via wildcards:
+
+        Test-Path, Convert-Path, Resolve-Path, Split-Path -Resolve, Join-Path -Resolve, Invoke-Item
+    [...]
+    ----------------------------------------------------------------------------
+  #>
   if (Test-Path -Path "${path_spec}" -PathType Container)
   {
     if ("${specified_type}" -eq "drive letter")
@@ -126,6 +135,7 @@ function SpecifiedFsObjectType
   $is_pattern = $false
   $is_directory = $false
   $is_file = $false
+  $is_directory_entry = $false
   $result = ""
 
   # conditions
@@ -134,7 +144,7 @@ function SpecifiedFsObjectType
     $is_pattern = $true
   }
 
-  if ("${path_spec}".EndsWith("$PATH_SEPARATOR"))
+  if ("${path_spec}".EndsWith("${PATH_SEPARATOR}"))
   {
     $is_directory = $true
   }
@@ -143,10 +153,19 @@ function SpecifiedFsObjectType
     $is_file = $true
   }
 
+  if ("${path_spec}".EndsWith("${PATH_SEPARATOR}.") -or "${path_spec}".EndsWith("${PATH_SEPARATOR}.."))
+  {
+    $is_directory_entry = $true
+  }
+
   # Combine the conditions.
   if ($is_directory -and ! $is_pattern)
   {
     $result = "directory"
+  }
+  elseif ($is_directory_entry)
+  {
+    $result = "directory entry"
   }
   elseif ($is_file -and ! $is_pattern)
   {
