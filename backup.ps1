@@ -332,11 +332,11 @@ ForEach($line in $dir_list_content)
   $expanded = expandedPath "${line}"
 
   <# Determine what to do depending on the type of the current line.
-  A job definition ends with:
-  - an empty line or comment;
-  - the next source-dir, source-file or source-file-pattern;
-  - on errors; or
-  - EOF
+    A job definition ends with:
+    - an empty line or comment;
+    - the next source-dir, source-file or source-file-pattern;
+    - on errors; or
+    - EOF
   #>
   $line_type = dirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
   ShowDebugMsg "${line_type}: ${expanded}"

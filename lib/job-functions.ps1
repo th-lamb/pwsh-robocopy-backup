@@ -112,6 +112,7 @@ function dirlistLineType
 
   Not implemented:
   - source-dir-pattern  -> invalid
+  - directory-entry     -> invalid
   #>
   param (
     [String]$entry,
@@ -141,8 +142,16 @@ function dirlistLineType
   # source-dir, source-file, or source-file-pattern
   if ( (! $entry.StartsWith(" ")) )
   {
-    #TODO: Check specified and real type, then compare and warn if necessary!
+    # Check specified and real type, then compare and warn if necessary!
     $specified_type = SpecifiedFsObjectType "${entry}"
+
+    # Ignore invalid entries.
+    switch ("${specified_type}")
+    {
+      "directory pattern" {return "invalid: source directory pattern"}
+      "directory entry"   {return "invalid: directory entry (for current or parent folder)"}
+    }
+
     $existing_type = RealFsObjectType "${entry}"
     $result = checkFsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
 
@@ -175,7 +184,6 @@ function dirlistLineType
     {
       "directory"         {return "source-dir"}
       "file"              {return "source-file"}
-      "directory pattern" {return "invalid: source directory pattern"}
       "file pattern"      {return "source-file-pattern"}
       "missing"           {return "error: not found"}
     }
