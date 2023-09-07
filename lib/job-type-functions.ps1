@@ -71,6 +71,8 @@ function _showOptions
   }
 
   Write-Host ""
+  Write-Color -Text "  [S]    ", "`e[4mS`e[24m", "tart (use the default)" -Color White, Yellow, White
+  Write-Host ""
   Write-Color -Text "  [", "ESC", "]", "  Cancel" -Color White, Red, White, Red
   Write-Host "__________________________________________________"
 
@@ -145,6 +147,12 @@ function UserSelectedJobType
     {
       $result = "Archive"
       LogMessage "${logfile}" INFO "Archive selected."
+    }
+
+    's'
+    {
+      $result = "${default_job_type}"
+      LogMessage "${logfile}" INFO "Start selected. Using the default: ${default_job_type}"
     }
 
     'Escape'
