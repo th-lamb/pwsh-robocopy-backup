@@ -561,18 +561,18 @@ else
                     "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
                     "/job:""${user_defined_job}"""
 
-    [Int32]$exit_code = $process.ExitCode
-    ShowDebugMsg "Exit code: $exit_code"
+    [Int32]$robocopy_exit_code = $process.ExitCode
+    ShowDebugMsg "Robocopy exit code: $robocopy_exit_code"
 
     # Log errors. Use the jobname (Job1..n) from the filename.
     [Int32]$job_name_pos = ("${user_defined_job}".LastIndexOf("-") + 1)
     [Int32]$job_name_length = ("${user_defined_job}".LastIndexOf(".") - $job_name_pos)
     [String]$job_name = "${user_defined_job}".Substring($job_name_pos, $job_name_length)
 
-    logAndShowRobocopyErrors "${BACKUP_LOGFILE}" "${job_name}" $exit_code
+    logAndShowRobocopyErrors "${BACKUP_LOGFILE}" "${job_name}" $robocopy_exit_code
 
     # Update counters.
-    switch ($exit_code)
+    switch ($robocopy_exit_code)
     {
       {$_ -in 0..7}
       {
