@@ -1,4 +1,4 @@
-:: Robocopy Job incr_backup.RCJ
+:: Robocopy Job only_archive_attr.RCJ
 
 :: Source Directory
 /NOSD   :: Use parameter 1
