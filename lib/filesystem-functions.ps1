@@ -815,45 +815,30 @@ function getParentDir
   }
   #endregion
 
-  ShowDebugMsg "getParentDir(): file_spec : ${file_spec}"
+  ShowDebugMsg "getParentDir(): file_spec     : ${file_spec}"
+
+  # Handle "dot" files.
+  # -> Resolve-Path -Path returns an array of all matching directories!
+  if ( "${file_spec}".EndsWith("${PATH_SEPARATOR}.") )
+  {
+    $dot_evaluated = "${file_spec}".Replace("${PATH_SEPARATOR}.", "${PATH_SEPARATOR}")
+  }
+  elseif ( "${file_spec}".EndsWith("${PATH_SEPARATOR}..") )
+  {
+    $dot_evaluated = "${file_spec}".Replace("${PATH_SEPARATOR}..", "")
+    $pos = "${dot_evaluated}".LastIndexOf("${PATH_SEPARATOR}")
+    $dot_evaluated = "${dot_evaluated}".Substring(0, $pos + 1)
+  }
+  else
+  {
+    $dot_evaluated = "${file_spec}"
+  }
+
+  ShowDebugMsg "getParentDir(): dots_evaluated: ${dot_evaluated}"
 
   #TODO: Currently the most reliable way?
-  $parent_dir = Split-Path -Path "${file_spec}"
-  ShowDebugMsg "getParentDir(): parent_dir: ${parent_dir}"
-
-#region tests
-
-#  $parent_dir = (get-item "${file_spec}")
-  # -> All filenames for C:\Users\lambecth\AppData\Roaming\*.ini or similar
-
-#  $parent_dir = (get-item "${file_spec}").Directory
-  # -> Doesn't work for C:\Users\*\AppData\Roaming\ (because there are >1 matching directory item?)
-
-#  $parent_dir = (get-item "${file_spec}").Length
-  # -> 2 for C:\Users\*\AppData\Roaming\
-  # -> 3 for C:\Users\*\AppData\Roaming\*.ini
-  # -> 2 for C:\Users\lambecth\AppData\Roaming\*.ini
-  # -> 45421 (The *length* of the 1 found *file*) for C:\Users\lambecth\AppData\Roaming\*.xml
-
-#  $parent_dir = (get-item "${file_spec}")[0]
-
-#  $parent_dir = (get-item "${file_spec}")[0].FullName
-  #$first_result_fullname = (get-item "${file_spec}")[0].FullName
-  #Write-Host "getParentDir(): first_result_fullname : ${first_result_fullname}" -ForegroundColor Cyan
-
-#  $parent_dir = (get-item "${file_spec}")[0].Directory
-
-
-
-  #TODO: What did `get-item` return? A list?
-  #TODO: Return only the 1st result?
-  #TODO: What do we return if NO matching file has been found?
-
-#  (get-item "${file_spec}")            # 2 results!: "Notepad2.ini" and "WinSCP.ini"
-#  Write-Host "########################################" -ForegroundColor Yellow
-#  (get-item "${file_spec}").Directory  # 2 results!: 2x "Roaming" (parent folder of "Notepad2.ini" and "WinSCP.ini")
-
-#endregion tests
+  $parent_dir = Split-Path -Path "${dot_evaluated}"
+  ShowDebugMsg "getParentDir(): parent_dir    : ${parent_dir}"
 
   # Append trailing backslash?
   if (
@@ -862,7 +847,7 @@ function getParentDir
   )
   {
     $parent_dir = "${parent_dir}${PATH_SEPARATOR}"
-    ShowDebugMsg "getParentDir(): parent_dir: ${parent_dir}"
+    ShowDebugMsg "getParentDir(): parent_dir    : ${parent_dir}"
   }
 
   return "${parent_dir}"
