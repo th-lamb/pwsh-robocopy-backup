@@ -9,12 +9,12 @@
 #region ChangeLog
 
 <#
-- 2023-03-02, Version 0.0.01, Thomas Lambeck
-  - File created
-- 2023-05-08, Version 0.0.02, Thomas Lambeck
-  - Better check for $ROBOCOPY (search in Windows PATH environment variable if no path is provided).
-- 2023-06-18, Version 0.1.00, Thomas Lambeck
-  - Checks for necessary directories and files, including creation where possible.
+  - 2023-03-02, Version 0.0.01, Thomas Lambeck
+    - File created
+  - 2023-05-08, Version 0.0.02, Thomas Lambeck
+    - Better check for $ROBOCOPY (search in Windows PATH environment variable if no path is provided).
+  - 2023-06-18, Version 0.1.00, Thomas Lambeck
+    - Checks for necessary directories and files, including creation where possible.
 #>
 
 #endregion ChangeLog ###########################################################
@@ -24,21 +24,13 @@
 #region TODO
 
 <#
-- Sections?
-  - ...
-  - Get options and option arguments.
-  - Check the plausibility of the provided option arguments.
-  - ...
-  - Show a message and ask for the job type (full, incremental, cleanup, ...?).
-    +-----------------------+-----------+-------------+-----------------+
-    | Job type              | Command   | Parameters  | More?           |
-    +-----------------------+-----------+-------------+-----------------+
-    | full backup (folders) | /MIR      | /XJ         | /XF *.tmp *.wbk |
-    | incremental (folders) | /E        | /XJ         | same?           |
-    | cleanup (folders)     | /E /PURGE | /XL /XJ     | none?           |
-    +-----------------------+-----------+-------------+-----------------+
-  - ??? more?
-  - Is it possible to log errors directly?
+  - Sections?
+    - ...
+    - Get options and option arguments.
+    - Check the plausibility of the provided option arguments.
+    - ...
+    - ??? more?
+    - Is it possible to log errors directly?
 #>
 
 #TODO: Use more ShowNormalMessage() and ShowVerboseMessage() instead of ShowDebugMsg() or ShowInfoMsg()?
@@ -90,7 +82,7 @@ catch {
 . lib\job-archive-functions.ps1   # Depends on logging-functions, message-functions.
 . lib\inifile-functions.ps1       # Depends on message-functions.
 . lib\robocopy-functions.ps1      # Depends on logging-functions.
-. lib\job-type-functions.ps1      # TODO Depends on?
+. lib\job-type-functions.ps1      # Depends on logging-functions, message-functions.
 
 #endregion Import function libraries ###########################################
 
@@ -239,11 +231,11 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 
 <#
-Creates a job file for each dir in the dir-list.
-- Loop over all lines.
-- Start new job for every directory (lines without leading spaces).
-- Add included/excluded files/directories (lines with leading "  + " or "  - ") to 
-  the job file (robocopy options /IF, /XF, /XD).
+  Creates a job file for each dir in the dir-list.
+  - Loop over all lines.
+  - Start new job for every directory (lines without leading spaces).
+  - Add included/excluded files/directories (lines with leading "  + " or "  - ") to 
+    the job file (robocopy options /IF, /XF, /XD).
 #>
 
 # Local variables
@@ -449,7 +441,7 @@ ForEach($line in $dir_list_content)
       "source-dir"  { $source_dir = "${expanded}" }
       "source-file*"  # <--- pattern!
       {
-        $source_dir = getParentDir "${expanded}"
+        $source_dir = Get-ParentDir "${expanded}"
 
         # Add the filename (pattern) to $included_files because we must NOT use *.* later!
         $source_filename = Split-Path -Leaf "${expanded}"
@@ -554,6 +546,7 @@ else
     $user_defined_job = $jobfiles[$i]
     ShowInfoMsg "Job: ${user_defined_job}..."
 
+    #TODO Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
     $process = Start-Process -Wait -PassThru -NoNewWindow `
       -FilePath "${robocopy_exe}" `
       -ArgumentList "/job:""${robocopy_job_type_template}""", `

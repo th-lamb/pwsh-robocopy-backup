@@ -1,5 +1,5 @@
 BeforeAll {
-  . $PSScriptRoot/../../lib/filesystem-functions.ps1
+  . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
 
   # For messages and logging in tested functions
   . $PSScriptRoot/../../lib/message-functions.ps1
