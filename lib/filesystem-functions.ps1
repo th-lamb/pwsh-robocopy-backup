@@ -1,7 +1,3 @@
-$PATH_SEPARATOR = '\'
-
-
-
 #region Object types
 
 function RealFsObjectType
@@ -144,7 +140,7 @@ function SpecifiedFsObjectType
     $is_pattern = $true
   }
 
-  if ("${path_spec}".EndsWith("${PATH_SEPARATOR}"))
+  if ("${path_spec}".EndsWith("\"))
   {
     $is_directory = $true
   }
@@ -153,7 +149,7 @@ function SpecifiedFsObjectType
     $is_file = $true
   }
 
-  if ("${path_spec}".EndsWith("${PATH_SEPARATOR}.") -or "${path_spec}".EndsWith("${PATH_SEPARATOR}.."))
+  if ("${path_spec}".EndsWith("\.") -or "${path_spec}".EndsWith("\.."))
   {
     $is_directory_entry = $true
   }
@@ -177,8 +173,8 @@ function SpecifiedFsObjectType
 
     # We cannot just use (Split-Path -Path "${path_spec}").Contains("*") because 
     # it would give us the parent directory if $path_spec itself is a directory!
-    $first_placeholder_pos = "${path_spec}".IndexOf('*')                          # -1 if not found
-    $last_path_separator_pos = "${path_spec}".LastIndexOf("${PATH_SEPARATOR}")    # -1 if not found
+    $first_placeholder_pos = "${path_spec}".IndexOf('*')            # -1 if not found
+    $last_path_separator_pos = "${path_spec}".LastIndexOf("\")      # -1 if not found
 
     if ( ($first_placeholder_pos -lt $last_path_separator_pos) )
     {
@@ -797,7 +793,7 @@ function expandedPath
 
 }
 
-function getParentDir
+function Get-ParentDir
 {
   <#
   Returns the parent directory of the specified file (pattern).
@@ -810,23 +806,23 @@ function getParentDir
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
-    Write-Error "getParentDir(): Parameter file_spec not provided!"
+    Write-Error "Get-ParentDir(): Parameter file_spec not provided!"
     exit 1
   }
   #endregion
 
-  ShowDebugMsg "getParentDir(): file_spec     : ${file_spec}"
+  ShowDebugMsg "Get-ParentDir(): file_spec     : ${file_spec}"
 
   # Handle "dot" files.
   # -> Resolve-Path -Path returns an array of all matching directories!
-  if ( "${file_spec}".EndsWith("${PATH_SEPARATOR}.") )
+  if ( "${file_spec}".EndsWith("\.") )
   {
-    $dot_evaluated = "${file_spec}".Replace("${PATH_SEPARATOR}.", "${PATH_SEPARATOR}")
+    $dot_evaluated = "${file_spec}".Replace("\.", "\")
   }
-  elseif ( "${file_spec}".EndsWith("${PATH_SEPARATOR}..") )
+  elseif ( "${file_spec}".EndsWith("\..") )
   {
-    $dot_evaluated = "${file_spec}".Replace("${PATH_SEPARATOR}..", "")
-    $pos = "${dot_evaluated}".LastIndexOf("${PATH_SEPARATOR}")
+    $dot_evaluated = "${file_spec}".Replace("\..", "")
+    $pos = "${dot_evaluated}".LastIndexOf("\")
     $dot_evaluated = "${dot_evaluated}".Substring(0, $pos + 1)
   }
   else
@@ -834,20 +830,20 @@ function getParentDir
     $dot_evaluated = "${file_spec}"
   }
 
-  ShowDebugMsg "getParentDir(): dots_evaluated: ${dot_evaluated}"
+  ShowDebugMsg "Get-ParentDir(): dots evaluated: ${dot_evaluated}"
 
   #TODO: Currently the most reliable way?
   $parent_dir = Split-Path -Path "${dot_evaluated}"
-  ShowDebugMsg "getParentDir(): parent_dir    : ${parent_dir}"
+  ShowDebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
 
   # Append trailing backslash?
   if (
     (Test-Path "${parent_dir}" -PathType Container) -and
-    (! "${parent_dir}".EndsWith("${PATH_SEPARATOR}") )
+    (! "${parent_dir}".EndsWith("\") )
   )
   {
-    $parent_dir = "${parent_dir}${PATH_SEPARATOR}"
-    ShowDebugMsg "getParentDir(): parent_dir    : ${parent_dir}"
+    $parent_dir = "${parent_dir}\"
+    ShowDebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
   }
 
   return "${parent_dir}"

@@ -7,18 +7,18 @@ BeforeAll {
 
   # For dirlistLineType()
   . $PSScriptRoot/../../lib/job-functions.ps1
-  $logfile = "${PSScriptRoot}/GetParentDir.Tests.log"
+  $logfile = "${PSScriptRoot}/Get-ParentDir.Tests.log"
 }
 
 
 
-Describe 'getParentDir' {
+Describe 'Get-ParentDir' {
   Context 'no placeholders' {
     It 'returns parent folder for existing file' {
       $path_spec  = "${PSScriptRoot}\test_files\Test1\test.ini"
       $expected   = "${PSScriptRoot}\test_files\Test1\"
 
-      $parent_dir = getParentDir "${path_spec}"
+      $parent_dir = Get-ParentDir "${path_spec}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -26,7 +26,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test1\test.xml"
       $expected = "${PSScriptRoot}\test_files\Test1\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -34,7 +34,7 @@ Describe 'getParentDir' {
       $pattern  = "C:\test\"
       $expected = "C:\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -42,7 +42,7 @@ Describe 'getParentDir' {
       $pattern  = "C:\"
       $expected = ""
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
   }
@@ -52,7 +52,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test1\test*.ini"
       $expected = "${PSScriptRoot}\test_files\Test1\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -60,7 +60,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test1\test*.txt"
       $expected = "${PSScriptRoot}\test_files\Test1\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -68,7 +68,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test1\test*.xml"
       $expected = "${PSScriptRoot}\test_files\Test1\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
   }
@@ -82,7 +82,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Tes*1\test.ini"
       $expected = "${PSScriptRoot}\test_files\Tes*1\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -90,7 +90,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test*\test.ini"
       $expected = "${PSScriptRoot}\test_files\Test*\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -98,7 +98,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test*\test*.ini"
       $expected = "${PSScriptRoot}\test_files\Test*\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
   }
@@ -108,7 +108,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test1\."
       $expected = "${PSScriptRoot}\test_files\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -116,7 +116,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test1\.."
       $expected = "${PSScriptRoot}\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -124,7 +124,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test*\."
       $expected = "${PSScriptRoot}\test_files\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -132,7 +132,7 @@ Describe 'getParentDir' {
       $pattern  = "${PSScriptRoot}\test_files\Test*\.."
       $expected = "${PSScriptRoot}\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -140,7 +140,7 @@ Describe 'getParentDir' {
       $pattern  = "C:\test\."
       $expected = "C:\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -148,7 +148,7 @@ Describe 'getParentDir' {
       $pattern  = "C:\test1\test2\.."
       $expected = "C:\"
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -156,7 +156,7 @@ Describe 'getParentDir' {
       $pattern  = "C:\."
       $expected = ""
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
@@ -164,7 +164,7 @@ Describe 'getParentDir' {
       $pattern  = "C:\test\.."
       $expected = ""
 
-      $parent_dir = getParentDir "${pattern}"
+      $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
   }

@@ -19,8 +19,8 @@ Example output:
     Discovery found 18 tests in 18ms.
     Running tests.
 
-    Running tests from 'C:\dev\pwsh-robocopy-backup\Pester\filesystem-functions\GetParentDir.Tests.ps1'
-    Describing getParentDir
+    Running tests from 'C:\dev\pwsh-robocopy-backup\Pester\filesystem-functions\Get-ParentDir.Tests.ps1'
+    Describing Get-ParentDir
     Context no placeholders
       [+] returns parent folder for existing file 3ms (2ms|1ms)
       [+] returns parent folder for non-existing file 2ms (2ms|0ms)
