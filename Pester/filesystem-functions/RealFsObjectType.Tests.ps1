@@ -6,7 +6,7 @@ BeforeAll {
 
 Describe 'RealFsObjectType' {
   Context 'Existing directories/files' {
-    It 'A1  existing directory                        e.g. C:\Users\...\Music\' {
+    It 'recognizes existing directory                       e.g. C:\Users\...\Music\' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\"
       $expected   = "directory"
 
@@ -14,7 +14,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'A2  existing directory with placeholders (*)  e.g. C:\Users\...\Mu*ic\' {
+    It 'recognizes existing directory with placeholder (*)  e.g. C:\Users\...\Mu*ic\' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic\"
       $expected   = "directory"
 
@@ -22,7 +22,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'A3  existing file                             e.g. C:\Users\...\Music\title1.mp3' {
+    It 'recognizes existing file                            e.g. C:\Users\...\Music\title1.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\title1.mp3"
       $expected   = "file"
 
@@ -30,7 +30,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'A4  existing file with placeholders           e.g. C:\Users\...\Music\title*.mp3' {
+    It 'recognizes existing file with placeholders          e.g. C:\Users\...\Music\title*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\title*.mp3"
       $expected   = "file"
 
@@ -38,13 +38,13 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    #TODO: A5  hidden files with patterns
+    #TODO: recognizes hidden files with patterns
     # -> "C:\Users\*.ini"
     # -> Currently not working: https://github.com/PowerShell/PowerShell/issues/6473
   }
 
   Context 'Non-existing directories/files' {
-    It 'B1  non-existing directory                    e.g. C:\Users\...\Music2\' {
+    It 'recognizes non-existing directory                   e.g. C:\Users\...\Music2\' {
       $path_spec  = "${PSScriptRoot}\test_files\Music2\"
       $expected   = $false
 
@@ -52,7 +52,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'B2  non-existing directory with placeholders  e.g. C:\Users\...\Mu*ic2\' {
+    It 'recognizes non-existing directory with placeholder  e.g. C:\Users\...\Mu*ic2\' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic2\"
       $expected   = $false
 
@@ -60,7 +60,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'B3  non-existing file                         e.g. C:\Users\...\Music\title0.mp3' {
+    It 'recognizes non-existing file                        e.g. C:\Users\...\Music\title0.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\title0.mp3"
       $expected   = $false
 
@@ -68,7 +68,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'B4  non-existing file with placeholders       e.g. C:\Users\...\Music\title0*.mp3' {
+    It 'recognizes non-existing file with placeholder       e.g. C:\Users\...\Music\title0*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\title0*.mp3"
       $expected   = $false
 
@@ -78,7 +78,7 @@ Describe 'RealFsObjectType' {
   }
 
   Context 'Placeholders in both, directory and filename' {
-    It 'C1  existing directory and file               e.g. C:\Users\...\Mu*ic\title1*.mp3' {
+    It 'recognizes existing directory and file              e.g. C:\Users\...\Mu*ic\title1*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic\title1*.mp3"
       $expected   = "file"
 
@@ -86,7 +86,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'C2  non-existing directory                    e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
+    It 'recognizes non-existing directory                   e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic2\title1*.mp3"
       $expected   = $false
 
@@ -94,7 +94,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'C3  non-existing file                         e.g. C:\Users\...\Mu*ic\title0*.mp3' {
+    It 'recognizes non-existing file                        e.g. C:\Users\...\Mu*ic\title0*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic\title0*.mp3"
       $expected   = $false
 
@@ -104,7 +104,7 @@ Describe 'RealFsObjectType' {
   }
 
   Context 'Type mismatch' {
-    It 'D1  folder defined as file (no trailing "\")  e.g. C:\Users\...\Music' {
+    It 'recognizes folder defined as file (no trailing \)   e.g. C:\Users\...\Music' {
       $path_spec  = "${PSScriptRoot}\test_files\Music"
       $expected   = "directory"
 
@@ -112,7 +112,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'D2  file defined as folder (trailing "\")     e.g. C:\Users\...\Music\title1.mp3\' {
+    It 'recognizes file defined as folder (trailing \)      e.g. C:\Users\...\Music\title1.mp3\' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\title1.mp3\"
       $expected   = "file"
 
@@ -122,7 +122,7 @@ Describe 'RealFsObjectType' {
   }
 
   Context 'Drive letters' {
-    It 'E1  existing drive letter without trailing "\"      e.g. C:' {
+    It 'recognizes existing drive letter without \          e.g. C:' {
       $path_spec  = "C:"
       $expected   = "drive letter"
 
@@ -130,7 +130,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'E2  existing drive letter with trailing "\"         e.g. C:\' {
+    It 'recognizes existing drive letter with \             e.g. C:\' {
       $path_spec  = "C:\"
       $expected   = "drive letter"
 
@@ -138,7 +138,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'E3  non-existing drive letter without trailing "\"  e.g. Z:' {
+    It 'recognizes non-existing drive letter without \      e.g. Z:' {
       $path_spec  = "Z:"
       $expected   = $false
 
@@ -146,7 +146,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'E4  non-existing drive letter with trailing "\"     e.g. Z:\' {
+    It 'recognizes non-existing drive letter with \         e.g. Z:\' {
       $path_spec  = "Z:\"
       $expected   = $false
 
@@ -156,7 +156,7 @@ Describe 'RealFsObjectType' {
   }
 
   Context 'Network shares' {
-    It 'F1  Network share with trailing backslash' {
+    It 'recognizes network share with trailing backslash' {
       $path_spec  = "\\NODE304\Backup\"
       $expected   = "network share"
 
@@ -164,7 +164,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'F2  Network share without trailing backslash' {
+    It 'recognizes network share without trailing backslash' {
       $path_spec  = "\\NODE304\Backup"
       $expected   = "network share"
 
@@ -172,7 +172,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'F3  Subfolder of a network share' {
+    It 'recognizes subfolder of a network share' {
       $path_spec  = "\\NODE304\Backup\win-backup\"
       $expected   = "directory"
 
@@ -181,7 +181,7 @@ Describe 'RealFsObjectType' {
     }
 
     #TODO: File on a network share
-#    It 'F4  File on a network share' {
+#    It 'recognizes file on a network share' {
 #      $path_spec  = "\\NODE304\Backup\..."
 #      $expected   = "file"
 #
@@ -191,7 +191,7 @@ Describe 'RealFsObjectType' {
   }
 
   Context 'Network computer' {
-    It 'G1  Network computer with trailing backslash' {
+    It 'recognizes network computer with trailing backslash' {
       $path_spec  = "\\NODE304\"
       $expected   = "network computer"
 
@@ -199,7 +199,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'G2  Network computer without trailing backslash' {
+    It 'recognizes network computer without trailing backslash' {
       $path_spec  = "\\NODE304"
       $expected   = "network computer"
 
