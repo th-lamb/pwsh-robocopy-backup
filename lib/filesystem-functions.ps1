@@ -3,7 +3,7 @@
 function RealFsObjectType
 {
   <#
-  Returns the type of the specified FS object; or $false for non-existing directory/file.
+  Returns the type of the specified FS object; or $false for non-existent directory/file.
   #>
   param (
     [String]$path_spec
@@ -61,7 +61,7 @@ function RealFsObjectType
   }
 
   # In case the type is not known yet (e.g. Test-Path found no matching file).
-  Test-Path -Path "${path_spec}" -PathType Any  # False for non-existing directory/file
+  Test-Path -Path "${path_spec}" -PathType Any  # False for non-existent directory/file
 
 }
 
@@ -325,6 +325,8 @@ function CheckNecessaryDirectory
     exit 2
 
   }
+
+  return 0
 
 }
 
