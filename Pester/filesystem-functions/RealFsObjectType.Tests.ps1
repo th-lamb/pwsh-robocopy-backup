@@ -5,6 +5,11 @@ BeforeAll {
 
 
 Describe 'RealFsObjectType' {
+  BeforeDiscovery {
+    . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
+    $skip_network_share_subfolder = ! ( FolderExists "\\NODE304" )
+  }
+
   Context 'Existing directories/files' {
     It 'recognizes existing directory                       e.g. C:\Users\...\Music\' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\"
@@ -172,7 +177,8 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes subfolder of a network share' {
+    #TODO: Skip if not in the correct network?
+    It 'recognizes subfolder of a network share' -Skip:$skip_network_share_subfolder {
       $path_spec  = "\\NODE304\Backup\win-backup\"
       $expected   = "directory"
 
