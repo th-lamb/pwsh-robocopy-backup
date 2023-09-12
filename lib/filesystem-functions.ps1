@@ -370,6 +370,8 @@ function CheckNecessaryFile
 
   }
 
+  return 0
+
 }
 
 function GetExecutablePath
