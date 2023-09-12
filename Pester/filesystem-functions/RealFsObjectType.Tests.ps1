@@ -6,8 +6,9 @@ BeforeAll {
 
 Describe 'RealFsObjectType' {
   BeforeDiscovery {
-    . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
-    $skip_network_share_subfolder = ! ( FolderExists "\\NODE304" )
+    #. "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
+    $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "NODE304" -Quiet
+    $skip_network_share_subfolder = !$available
   }
 
   Context 'Existing directories/files' {
