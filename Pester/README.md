@@ -23,7 +23,7 @@ Example output:
     Describing Get-ParentDir
     Context no placeholders
       [+] returns parent folder for existing file 3ms (2ms|1ms)
-      [+] returns parent folder for non-existing file 2ms (2ms|0ms)
+      [+] returns parent folder for non-existent file 2ms (2ms|0ms)
       [+] returns the drive for a short path 1ms (1ms|0ms)
       [+] returns an empty value for a too short path 1ms (1ms|0ms)
     Context filename patterns

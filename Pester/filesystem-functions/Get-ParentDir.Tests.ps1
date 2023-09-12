@@ -2,12 +2,8 @@ BeforeAll {
   . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
 
   # For messages and logging in tested functions
-  . $PSScriptRoot/../../lib/message-functions.ps1
+  . "${PSScriptRoot}/../../lib/message-functions.ps1"
   $__VERBOSE = 6
-
-  # For dirlistLineType()
-  . $PSScriptRoot/../../lib/job-functions.ps1
-  $logfile = "${PSScriptRoot}/Get-ParentDir.Tests.log"
 }
 
 
@@ -22,7 +18,7 @@ Describe 'Get-ParentDir' {
       "${parent_dir}" | Should -eq "${expected}"
     }
 
-    It 'returns parent folder for non-existing file' {
+    It 'returns parent folder for non-existent file' {
       $pattern  = "${PSScriptRoot}\test_files\Test1\test.xml"
       $expected = "${PSScriptRoot}\test_files\Test1\"
 

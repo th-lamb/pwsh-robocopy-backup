@@ -43,8 +43,8 @@ Describe 'RealFsObjectType' {
     # -> Currently not working: https://github.com/PowerShell/PowerShell/issues/6473
   }
 
-  Context 'Non-existing directories/files' {
-    It 'recognizes non-existing directory                   e.g. C:\Users\...\Music2\' {
+  Context 'non-existent directories/files' {
+    It 'recognizes non-existent directory                   e.g. C:\Users\...\Music2\' {
       $path_spec  = "${PSScriptRoot}\test_files\Music2\"
       $expected   = $false
 
@@ -52,7 +52,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes non-existing directory with placeholder  e.g. C:\Users\...\Mu*ic2\' {
+    It 'recognizes non-existent directory with placeholder  e.g. C:\Users\...\Mu*ic2\' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic2\"
       $expected   = $false
 
@@ -60,7 +60,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes non-existing file                        e.g. C:\Users\...\Music\title0.mp3' {
+    It 'recognizes non-existent file                        e.g. C:\Users\...\Music\title0.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\title0.mp3"
       $expected   = $false
 
@@ -68,7 +68,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes non-existing file with placeholder       e.g. C:\Users\...\Music\title0*.mp3' {
+    It 'recognizes non-existent file with placeholder       e.g. C:\Users\...\Music\title0*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Music\title0*.mp3"
       $expected   = $false
 
@@ -86,7 +86,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes non-existing directory                   e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
+    It 'recognizes non-existent directory                   e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic2\title1*.mp3"
       $expected   = $false
 
@@ -94,7 +94,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes non-existing file                        e.g. C:\Users\...\Mu*ic\title0*.mp3' {
+    It 'recognizes non-existent file                        e.g. C:\Users\...\Mu*ic\title0*.mp3' {
       $path_spec  = "${PSScriptRoot}\test_files\Mu*ic\title0*.mp3"
       $expected   = $false
 
@@ -138,7 +138,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes non-existing drive letter without \      e.g. Z:' {
+    It 'recognizes non-existent drive letter without \      e.g. Z:' {
       $path_spec  = "Z:"
       $expected   = $false
 
@@ -146,7 +146,7 @@ Describe 'RealFsObjectType' {
       "${object_type}" | Should -eq "${expected}"
     }
 
-    It 'recognizes non-existing drive letter with \         e.g. Z:\' {
+    It 'recognizes non-existent drive letter with \         e.g. Z:\' {
       $path_spec  = "Z:\"
       $expected   = $false
 
