@@ -526,13 +526,16 @@ function CreateNecessaryFile
   }
   #endregion
 
-  if (FileExists "${file_spec}")
-  {
+  if (FileExists "${file_spec}") {
     return $false
   }
 
+  if (FolderExists "${file_spec}") {
+    LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${file_spec} because a folder with the same name already exists!"
+    Throw
+  }
+
   try {
-    #TODO: Copy-Item doesn't warn if it failed because a directory with the same name exists!
     Copy-Item -Path "${template}" -Destination "${file_spec}"
     LogAndShowMessage "${logfile}" INFO "File created from template."
     return $true
@@ -820,23 +823,24 @@ function Get-ParentDir
   # -> Resolve-Path -Path returns an array of all matching directories!
   if ( "${file_spec}".EndsWith("\.") )
   {
-    $dot_evaluated = "${file_spec}".Replace("\.", "\")
+    $dots_evaluated = "${file_spec}".TrimEnd('.')
   }
   elseif ( "${file_spec}".EndsWith("\..") )
   {
-    $dot_evaluated = "${file_spec}".Replace("\..", "")
-    $pos = "${dot_evaluated}".LastIndexOf("\")
-    $dot_evaluated = "${dot_evaluated}".Substring(0, $pos + 1)
+    $dots_evaluated = "${file_spec}".TrimEnd('.')
+    $dots_evaluated = "${dots_evaluated}".TrimEnd('\')
+    $pos = "${dots_evaluated}".LastIndexOf("\")
+    $dots_evaluated = "${dots_evaluated}".Substring(0, $pos + 1)
   }
   else
   {
-    $dot_evaluated = "${file_spec}"
+    $dots_evaluated = "${file_spec}"
   }
 
-  ShowDebugMsg "Get-ParentDir(): dots evaluated: ${dot_evaluated}"
+  ShowDebugMsg "Get-ParentDir(): dots evaluated: ${dots_evaluated}"
 
   #TODO: Currently the most reliable way?
-  $parent_dir = Split-Path -Path "${dot_evaluated}"
+  $parent_dir = Split-Path -Path "${dots_evaluated}"
   ShowDebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
 
   # Append trailing backslash?
