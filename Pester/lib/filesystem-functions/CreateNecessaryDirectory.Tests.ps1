@@ -1,4 +1,4 @@
-  BeforeAll {
+BeforeAll {
   . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
 
   # For messages in tested functions
@@ -38,16 +38,20 @@ Describe 'CreateNecessaryDirectory' {
   Context 'Unexpected situations' {
     It 'Fails if there already is a *file* with the same name' {
       $dir_to_create    = "${PSScriptRoot}/test_files/existing_file"
-      $expected_message = "* a file or directory with the same name already exists.`""  # Using wildcard ()
+      $expected_message = "* a file or directory with the same name already exists.`""  # Using wildcard
 
       {
         CreateNecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
       } | Should -Throw -ExpectedMessage "${expected_message}"
 
-      #TODO: Delete the logfile?
-
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
       $exists | Should -be $false
     }
   }
+}
+
+
+
+AfterAll {
+  #TODO: Delete the logfile?
 }
