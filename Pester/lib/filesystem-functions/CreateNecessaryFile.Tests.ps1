@@ -65,5 +65,5 @@ Describe 'CreateNecessaryFile' {
 
 
 AfterAll {
-  #TODO: Delete the logfile?
+  Remove-Item "${logfile}"
 }

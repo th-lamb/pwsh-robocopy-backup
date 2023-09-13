@@ -53,5 +53,5 @@ Describe 'CreateNecessaryDirectory' {
 
 
 AfterAll {
-  #TODO: Delete the logfile?
+  Remove-Item "${logfile}"
 }
