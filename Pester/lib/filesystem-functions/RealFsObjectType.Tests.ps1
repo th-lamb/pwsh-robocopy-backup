@@ -1,5 +1,5 @@
 BeforeAll {
-  . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
+  . "${PSScriptRoot}/../../../lib/filesystem-functions.ps1"
 }
 
 
@@ -13,7 +13,7 @@ Describe 'RealFsObjectType' {
 
   Context 'Existing directories/files' {
     It 'recognizes existing directory                       e.g. C:\Users\...\Music\' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music\"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/"
       $expected   = "directory"
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -21,7 +21,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes existing directory with placeholder (*)  e.g. C:\Users\...\Mu*ic\' {
-      $path_spec  = "${PSScriptRoot}\test_files\Mu*ic\"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic/"
       $expected   = "directory"
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -29,7 +29,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes existing file                            e.g. C:\Users\...\Music\title1.mp3' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music\title1.mp3"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title1.mp3"
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -37,7 +37,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes existing file with placeholders          e.g. C:\Users\...\Music\title*.mp3' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music\title*.mp3"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title*.mp3"
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -51,7 +51,7 @@ Describe 'RealFsObjectType' {
 
   Context 'non-existent directories/files' {
     It 'recognizes non-existent directory                   e.g. C:\Users\...\Music2\' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music2\"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music2/"
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -59,7 +59,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes non-existent directory with placeholder  e.g. C:\Users\...\Mu*ic2\' {
-      $path_spec  = "${PSScriptRoot}\test_files\Mu*ic2\"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic2/"
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -67,7 +67,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Music\title0.mp3' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music\title0.mp3"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title0.mp3"
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -75,7 +75,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes non-existent file with placeholder       e.g. C:\Users\...\Music\title0*.mp3' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music\title0*.mp3"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title0*.mp3"
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -85,7 +85,7 @@ Describe 'RealFsObjectType' {
 
   Context 'Placeholders in both, directory and filename' {
     It 'recognizes existing directory and file              e.g. C:\Users\...\Mu*ic\title1*.mp3' {
-      $path_spec  = "${PSScriptRoot}\test_files\Mu*ic\title1*.mp3"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic/title1*.mp3"
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -93,7 +93,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes non-existent directory                   e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
-      $path_spec  = "${PSScriptRoot}\test_files\Mu*ic2\title1*.mp3"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic2/title1*.mp3"
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -101,7 +101,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Mu*ic\title0*.mp3' {
-      $path_spec  = "${PSScriptRoot}\test_files\Mu*ic\title0*.mp3"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic/title0*.mp3"
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -111,7 +111,7 @@ Describe 'RealFsObjectType' {
 
   Context 'Type mismatch' {
     It 'recognizes folder defined as file (no trailing \)   e.g. C:\Users\...\Music' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music"
       $expected   = "directory"
 
       $object_type = RealFsObjectType "${path_spec}"
@@ -119,7 +119,7 @@ Describe 'RealFsObjectType' {
     }
 
     It 'recognizes file defined as folder (trailing \)      e.g. C:\Users\...\Music\title1.mp3\' {
-      $path_spec  = "${PSScriptRoot}\test_files\Music\title1.mp3\"
+      $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title1.mp3/"
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"

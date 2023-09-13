@@ -1,5 +1,5 @@
 BeforeAll {
-  . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
+  . "${PSScriptRoot}/../../../lib/filesystem-functions.ps1"
 }
 
 

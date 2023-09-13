@@ -1,8 +1,8 @@
 BeforeAll {
-  . "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
+  . "${PSScriptRoot}/../../../lib/filesystem-functions.ps1"
 
   # For messages and logging in tested functions
-  . "${PSScriptRoot}/../../lib/message-functions.ps1"
+  . "${PSScriptRoot}/../../../lib/message-functions.ps1"
   $__VERBOSE = 6
 }
 
@@ -11,16 +11,16 @@ BeforeAll {
 Describe 'Get-ParentDir' {
   Context 'no placeholders' {
     It 'returns parent folder for existing file' {
-      $path_spec  = "${PSScriptRoot}\test_files\Test1\test.ini"
-      $expected   = "${PSScriptRoot}\test_files\Test1\"
+      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Test1\test.ini"
+      $expected   = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${path_spec}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns parent folder for non-existent file' {
-      $pattern  = "${PSScriptRoot}\test_files\Test1\test.xml"
-      $expected = "${PSScriptRoot}\test_files\Test1\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test1\test.xml"
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
@@ -45,24 +45,24 @@ Describe 'Get-ParentDir' {
 
   Context 'filename patterns' {
     It 'returns parent folder for pattern with 1 matching file' {
-      $pattern  = "${PSScriptRoot}\test_files\Test1\test*.ini"
-      $expected = "${PSScriptRoot}\test_files\Test1\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test1\test*.ini"
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns parent folder for pattern with 2 or more matching files' {
-      $pattern  = "${PSScriptRoot}\test_files\Test1\test*.txt"
-      $expected = "${PSScriptRoot}\test_files\Test1\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test1\test*.txt"
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns parent folder for pattern with no matching file' {
-      $pattern  = "${PSScriptRoot}\test_files\Test1\test*.xml"
-      $expected = "${PSScriptRoot}\test_files\Test1\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test1\test*.xml"
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
@@ -75,24 +75,24 @@ Describe 'Get-ParentDir' {
     # -> The Backup checks the line type first.
 
     It 'returns path with placeholder for dir pattern with 1 matching *directory*' {
-      $pattern  = "${PSScriptRoot}\test_files\Tes*1\test.ini"
-      $expected = "${PSScriptRoot}\test_files\Tes*1\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Tes*1\test.ini"
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\Tes*1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern with 2 or more matching *directories*' {
-      $pattern  = "${PSScriptRoot}\test_files\Test*\test.ini"
-      $expected = "${PSScriptRoot}\test_files\Test*\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test*\test.ini"
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\Test*\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns path with placeholder for dir and file pattern with matching files in different directories' {
-      $pattern  = "${PSScriptRoot}\test_files\Test*\test*.ini"
-      $expected = "${PSScriptRoot}\test_files\Test*\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test*\test*.ini"
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\Test*\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
@@ -101,32 +101,32 @@ Describe 'Get-ParentDir' {
 
   Context 'directory entries' {
     It 'returns the parent path for . (link to the current dir)' {
-      $pattern  = "${PSScriptRoot}\test_files\Test1\."
-      $expected = "${PSScriptRoot}\test_files\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test1\."
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns the parents parent path for .. (link to the parent dir)' {
-      $pattern  = "${PSScriptRoot}\test_files\Test1\.."
-      $expected = "${PSScriptRoot}\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test1\.."
+      $expected = "${PSScriptRoot}\..\..\resources\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern and .' {
-      $pattern  = "${PSScriptRoot}\test_files\Test*\."
-      $expected = "${PSScriptRoot}\test_files\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test*\."
+      $expected = "${PSScriptRoot}\..\..\resources\test_files\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern and ..' {
-      $pattern  = "${PSScriptRoot}\test_files\Test*\.."
-      $expected = "${PSScriptRoot}\"
+      $pattern  = "${PSScriptRoot}\..\..\resources\test_files\Test*\.."
+      $expected = "${PSScriptRoot}\..\..\resources\"
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -eq "${expected}"
