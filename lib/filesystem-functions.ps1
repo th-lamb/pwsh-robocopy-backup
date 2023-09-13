@@ -532,8 +532,9 @@ function CreateNecessaryFile
   }
 
   try {
+    #TODO: Copy-Item doesn't warn if it failed because a directory with the same name exists!
     Copy-Item -Path "${template}" -Destination "${file_spec}"
-    LogAndShowMessage "${logfile}" INFO "Dir-list created from template."
+    LogAndShowMessage "${logfile}" INFO "File created from template."
     return $true
   }
   catch
