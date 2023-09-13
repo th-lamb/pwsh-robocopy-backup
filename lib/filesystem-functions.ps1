@@ -491,8 +491,7 @@ function CreateNecessaryFile
 {
   <#
   Creates the specified file from the specified template.
-  Returns $true if the file has been copied, otherwise $false.
-  Exits the script with exit-code 2 on errors.
+  Returns $true if the file has been copied; otherwise $false.
   #>
   param (
     [String]$definition_name,
@@ -505,25 +504,25 @@ function CreateNecessaryFile
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
     Write-Error "CreateNecessaryFile(): Parameter definition_name not provided!"
-    exit 1
+    Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
     Write-Error "CreateNecessaryFile(): Parameter file_spec not provided!"
-    exit 1
+    Throw "Parameter file_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('template'))
   {
     Write-Error "CreateNecessaryFile(): Parameter template not provided!"
-    exit 1
+    Throw "Parameter template not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "CreateNecessaryFile(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
   #endregion
 
@@ -540,7 +539,7 @@ function CreateNecessaryFile
   catch
   {
     LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${file_spec}. Error: $_"
-    exit 2
+    Throw
   }
 
 }
