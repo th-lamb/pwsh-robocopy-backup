@@ -442,7 +442,6 @@ function CreateNecessaryDirectory
 {
   <#
   Creates the specified directory and all parent folders if necessary.
-  Exits the script with exit-code 2 on errors.
   #>
   param (
     [String]$definition_name,
@@ -454,19 +453,19 @@ function CreateNecessaryDirectory
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
     Write-Error "CreateNecessaryDirectory(): Parameter definition_name not provided!"
-    exit 1
+    Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('dir_spec'))
   {
     Write-Error "CreateNecessaryDirectory(): Parameter dir_spec not provided!"
-    exit 1
+    Throw "Parameter dir_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "CreateNecessaryDirectory(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
   #endregion
 
@@ -483,7 +482,7 @@ function CreateNecessaryDirectory
   catch
   {
     LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${dir_spec}. Error: $_"
-    exit 2
+    Throw
   }
 
 }
