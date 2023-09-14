@@ -3,7 +3,8 @@
 function RealFsObjectType
 {
   <#
-  Returns the type of the specified FS object; or $false for non-existent directory/file.
+  Returns the type of the real filesystem object, specified by the path; or
+  $false for non-existent directory/file.
   #>
   param (
     [String]$path_spec
@@ -13,7 +14,7 @@ function RealFsObjectType
   if (! $PSBoundParameters.ContainsKey('path_spec'))
   {
     Write-Error "RealFsObjectType(): Parameter path_spec not provided!"
-    exit 1
+    Throw "Parameter path_spec not provided!"
   }
   #endregion
 
@@ -67,6 +68,10 @@ function RealFsObjectType
 
 function SpecifiedFsObjectType
 {
+  <#
+  Returns the type of the specified filesystem object.
+  Note: Based on the string only. Reason: may refer to objects that may not have been created yet.
+  #>
   param (
     [String]$path_spec
   )
@@ -75,7 +80,7 @@ function SpecifiedFsObjectType
   if (! $PSBoundParameters.ContainsKey('path_spec'))
   {
     Write-Error "SpecifiedFsObjectType(): Parameter path_spec not provided!"
-    exit 1
+    Throw "Parameter path_spec not provided!"
   }
   #endregion
 
@@ -193,6 +198,13 @@ function SpecifiedFsObjectType
 
 function SpecifiedBackupBaseDirType
 {
+  <#
+  Returns the type of the specified backup base-dir.
+  Note: Based on the string only.
+  Return values:
+  - "directory" for UNC paths ("\\...") and local paths (e.g. "C:\..."); or
+  - "relative path"
+  #>
   param (
     [String]$path_spec
   )
@@ -201,7 +213,7 @@ function SpecifiedBackupBaseDirType
   if (! $PSBoundParameters.ContainsKey('path_spec'))
   {
     Write-Error "SpecifiedBackupBaseDirType(): Parameter path_spec not provided!"
-    exit 1
+    Throw "Parameter path_spec not provided!"
   }
   #endregion
 
@@ -249,7 +261,7 @@ function FolderExists
   if (! $PSBoundParameters.ContainsKey('folder_spec'))
   {
     Write-Error "FolderExists(): Parameter folder_spec not provided!"
-    exit 1
+    Throw "Parameter folder_spec not provided!"
   }
   #endregion
 
@@ -273,7 +285,7 @@ function FileExists
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
     Write-Error "FileExists(): Parameter file_spec not provided!"
-    exit 1
+    Throw "Parameter file_spec not provided!"
   }
   #endregion
 
@@ -288,7 +300,7 @@ function FileExists
 
 function CheckNecessaryDirectory
 {
-  # Exits the script with exit-code 2 if the specified directory doesn't exist.
+  # Throws an exception if the specified directory doesn't exist.
   param (
     [String]$definition_name,
     [String]$directory_spec,
@@ -299,19 +311,19 @@ function CheckNecessaryDirectory
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
     Write-Error "CheckNecessaryDirectory(): Parameter definition_name not provided!"
-    exit 1
+    Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('directory_spec'))
   {
     Write-Error "CheckNecessaryDirectory(): Parameter directory_spec not provided!"
-    exit 1
+    Throw "Parameter directory_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "CheckNecessaryDirectory(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
   #endregion
 
@@ -322,7 +334,7 @@ function CheckNecessaryDirectory
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
 
-    exit 2
+    Throw
 
   }
 
@@ -332,7 +344,7 @@ function CheckNecessaryDirectory
 
 function CheckNecessaryFile
 {
-  # Exits the script with exit-code 2 if the specified file doesn't exist.
+  # Throws an exception if the specified file doesn't exist.
   param (
     [String]$definition_name,
     [String]$file_spec,
@@ -343,19 +355,19 @@ function CheckNecessaryFile
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
     Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
-    exit 1
+    Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
     Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
-    exit 1
+    Throw "Parameter file_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
   #endregion
 
@@ -366,7 +378,7 @@ function CheckNecessaryFile
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
 
-    exit 2
+    Throw
 
   }
 
@@ -379,7 +391,7 @@ function GetExecutablePath
   <#
   Returns the path to the specified executable if it exists.
   Also searches in the Windows PATH environment variable.
-  Exits the script with exit-code 2 if the specified file doesn't exist.
+  Throws an exception if the specified file doesn't exist.
   #>
   param (
     [String]$definition_name,
@@ -391,19 +403,19 @@ function GetExecutablePath
   if (! $PSBoundParameters.ContainsKey('definition_name'))
   {
     Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
-    exit 1
+    Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
     Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
-    exit 1
+    Throw "Parameter file_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
   #endregion
 
@@ -426,7 +438,7 @@ function GetExecutablePath
     Write-Host -NoNewLine "Press any key to abort..."
     [void][System.Console]::ReadKey($true)
 
-    exit 2
+    Throw
 
   }
 
@@ -747,7 +759,7 @@ function expandedPath
   if (! $PSBoundParameters.ContainsKey('path_spec'))
   {
     Write-Error "expandedPath(): Parameter path_spec not provided!"
-    exit 1
+    Throw "Parameter path_spec not provided!"
   }
   #endregion
 
@@ -813,7 +825,7 @@ function Get-ParentDir
   if (! $PSBoundParameters.ContainsKey('file_spec'))
   {
     Write-Error "Get-ParentDir(): Parameter file_spec not provided!"
-    exit 1
+    Throw "Parameter file_spec not provided!"
   }
   #endregion
 
