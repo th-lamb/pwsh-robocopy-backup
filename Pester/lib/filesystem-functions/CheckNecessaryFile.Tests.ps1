@@ -32,5 +32,5 @@ Describe 'CheckNecessaryFile' {
 
 
 AfterAll {
-  Remove-Item "${logfile}"
+  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

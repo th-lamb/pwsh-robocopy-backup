@@ -32,5 +32,5 @@ Describe 'CheckNecessaryDirectory' {
 
 
 AfterAll {
-  Remove-Item "${logfile}"
+  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

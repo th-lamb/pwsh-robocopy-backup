@@ -65,5 +65,5 @@ Describe 'CreateNecessaryFile' {
 
 
 AfterAll {
-  Remove-Item "${logfile}"
+  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }
