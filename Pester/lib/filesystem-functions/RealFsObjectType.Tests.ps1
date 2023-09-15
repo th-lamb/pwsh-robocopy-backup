@@ -17,7 +17,7 @@ Describe 'RealFsObjectType' {
       $expected   = "directory"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes existing directory with placeholder (*)  e.g. C:\Users\...\Mu*ic\' {
@@ -25,7 +25,7 @@ Describe 'RealFsObjectType' {
       $expected   = "directory"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes existing file                            e.g. C:\Users\...\Music\title1.mp3' {
@@ -33,7 +33,7 @@ Describe 'RealFsObjectType' {
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes existing file with placeholders          e.g. C:\Users\...\Music\title*.mp3' {
@@ -41,7 +41,7 @@ Describe 'RealFsObjectType' {
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     #TODO: recognizes hidden files with patterns
@@ -55,7 +55,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent directory with placeholder  e.g. C:\Users\...\Mu*ic2\' {
@@ -63,7 +63,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Music\title0.mp3' {
@@ -71,7 +71,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent file with placeholder       e.g. C:\Users\...\Music\title0*.mp3' {
@@ -79,7 +79,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -89,7 +89,7 @@ Describe 'RealFsObjectType' {
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent directory                   e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
@@ -97,7 +97,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Mu*ic\title0*.mp3' {
@@ -105,7 +105,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -115,7 +115,7 @@ Describe 'RealFsObjectType' {
       $expected   = "directory"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes file defined as folder (trailing \)      e.g. C:\Users\...\Music\title1.mp3\' {
@@ -123,7 +123,7 @@ Describe 'RealFsObjectType' {
       $expected   = "file"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -133,7 +133,7 @@ Describe 'RealFsObjectType' {
       $expected   = "drive letter"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes existing drive letter with \             e.g. C:\' {
@@ -141,7 +141,7 @@ Describe 'RealFsObjectType' {
       $expected   = "drive letter"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent drive letter without \      e.g. Z:' {
@@ -149,7 +149,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent drive letter with \         e.g. Z:\' {
@@ -157,7 +157,7 @@ Describe 'RealFsObjectType' {
       $expected   = $false
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -167,7 +167,7 @@ Describe 'RealFsObjectType' {
       $expected   = "network share"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes network share without trailing backslash' {
@@ -175,7 +175,7 @@ Describe 'RealFsObjectType' {
       $expected   = "network share"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     #TODO: Skip if not in the correct network?
@@ -184,7 +184,7 @@ Describe 'RealFsObjectType' {
       $expected   = "directory"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     #TODO: File on a network share
@@ -193,7 +193,7 @@ Describe 'RealFsObjectType' {
 #      $expected   = "file"
 #
 #      $object_type = RealFsObjectType "${path_spec}"
-#      "${object_type}" | Should -eq "${expected}"
+#      "${object_type}" | Should -Be "${expected}"
 #    }
   }
 
@@ -203,7 +203,7 @@ Describe 'RealFsObjectType' {
       $expected   = "network computer"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes network computer without trailing backslash' {
@@ -211,7 +211,7 @@ Describe 'RealFsObjectType' {
       $expected   = "network computer"
 
       $object_type = RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 }

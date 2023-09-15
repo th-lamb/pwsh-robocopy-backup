@@ -10,7 +10,7 @@ Describe 'FileExists' {
     $expected   = $true
 
     $result = FileExists "${path_spec}"
-    $result | Should -be $expected
+    $result | Should -Be $expected
   }
 
   It 'Returns $false for a non-existent file' {
@@ -18,7 +18,7 @@ Describe 'FileExists' {
     $expected   = $false
 
     $result = FileExists "${path_spec}"
-    $result | Should -be $expected
+    $result | Should -Be $expected
   }
 
   It 'Returns $false for an existing directory' {
@@ -26,7 +26,7 @@ Describe 'FileExists' {
     $expected   = $false
 
     $result = FileExists "${path_spec}"
-    $result | Should -be $expected
+    $result | Should -Be $expected
   }
 
   It 'Returns $false for a non-existent directory' {
@@ -34,6 +34,6 @@ Describe 'FileExists' {
     $expected   = $false
 
     $result = FileExists "${path_spec}"
-    $result | Should -be $expected
+    $result | Should -Be $expected
   }
 }

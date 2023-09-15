@@ -19,7 +19,7 @@ Describe 'GetExecutablePath' {
       $expected   = "C:\TOOLS\CMD\robocopy\Win10_engl\Robocopy.exe"
 
       $result = GetExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
-      "${result}" | Should -eq "${expected}"
+      "${result}" | Should -Be "${expected}"
     }
 
     It 'Returns the file from the Windows PATH if it exists' {
@@ -27,7 +27,7 @@ Describe 'GetExecutablePath' {
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
       $result = GetExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
-      "${result}" | Should -eq "${expected}"
+      "${result}" | Should -Be "${expected}"
     }
 
     It 'Returns the file from the Windows PATH if it exists' {
@@ -35,7 +35,7 @@ Describe 'GetExecutablePath' {
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
       $result = GetExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
-      "${result}" | Should -eq "${expected}"
+      "${result}" | Should -Be "${expected}"
     }
   }
 

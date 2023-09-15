@@ -23,7 +23,7 @@ Describe 'CreateNecessaryFile' {
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
 
-      $exists | Should -be $true
+      $exists | Should -Be $true
     }
 
     It 'Returns $true after successful copying' {
@@ -57,7 +57,7 @@ Describe 'CreateNecessaryFile' {
       } | Should -Throw
 
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
-      $exists | Should -be $false
+      $exists | Should -Be $false
     }
   }
 }

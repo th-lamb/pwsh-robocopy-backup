@@ -15,7 +15,7 @@ Describe 'Get-ParentDir' {
       $expected   = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${path_spec}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns parent folder for non-existent file' {
@@ -23,7 +23,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns the drive for a short path' {
@@ -31,7 +31,7 @@ Describe 'Get-ParentDir' {
       $expected = "C:\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns an empty value for a too short path' {
@@ -39,7 +39,7 @@ Describe 'Get-ParentDir' {
       $expected = ""
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
   }
 
@@ -49,7 +49,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns parent folder for pattern with 2 or more matching files' {
@@ -57,7 +57,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns parent folder for pattern with no matching file' {
@@ -65,7 +65,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\Test1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
   }
 
@@ -79,7 +79,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\Tes*1\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern with 2 or more matching *directories*' {
@@ -87,7 +87,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\Test*\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir and file pattern with matching files in different directories' {
@@ -95,7 +95,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\Test*\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
   }
 
@@ -105,7 +105,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns the parents parent path for .. (link to the parent dir)' {
@@ -113,7 +113,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern and .' {
@@ -121,7 +121,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\test_files\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern and ..' {
@@ -129,7 +129,7 @@ Describe 'Get-ParentDir' {
       $expected = "${PSScriptRoot}\..\..\resources\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns the drive for a short path and .' {
@@ -137,7 +137,7 @@ Describe 'Get-ParentDir' {
       $expected = "C:\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns the drive for a short path and ..' {
@@ -145,7 +145,7 @@ Describe 'Get-ParentDir' {
       $expected = "C:\"
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns an empty value for a too short path and .' {
@@ -153,7 +153,7 @@ Describe 'Get-ParentDir' {
       $expected = ""
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
 
     It 'returns an empty value for a too short path and ..' {
@@ -161,7 +161,7 @@ Describe 'Get-ParentDir' {
       $expected = ""
 
       $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -eq "${expected}"
+      "${parent_dir}" | Should -Be "${expected}"
     }
   }
 }

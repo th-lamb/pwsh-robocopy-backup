@@ -11,7 +11,7 @@ Describe 'SpecifiedBackupBaseDirType' {
       $expected   = "relative path"
 
       $object_type = SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'Drive letter' {
@@ -19,7 +19,7 @@ Describe 'SpecifiedBackupBaseDirType' {
       $expected   = "drive letter"
 
       $object_type = SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'Local path' {
@@ -27,7 +27,7 @@ Describe 'SpecifiedBackupBaseDirType' {
       $expected   = "directory"
 
       $object_type = SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'Network computer' {
@@ -35,7 +35,7 @@ Describe 'SpecifiedBackupBaseDirType' {
       $expected   = "network computer"
 
       $object_type = SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'Network share' {
@@ -43,7 +43,7 @@ Describe 'SpecifiedBackupBaseDirType' {
       $expected   = "network share"
 
       $object_type = SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'Network folder' {
@@ -51,7 +51,7 @@ Describe 'SpecifiedBackupBaseDirType' {
       $expected   = "directory"
 
       $object_type = SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -61,7 +61,7 @@ Describe 'SpecifiedBackupBaseDirType' {
       $expected   = "empty string"
 
       $object_type = SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 }

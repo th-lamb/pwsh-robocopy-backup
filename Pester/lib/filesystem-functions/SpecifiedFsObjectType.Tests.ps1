@@ -11,7 +11,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "directory"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes a file                                   e.g. C:\Users\...\Music\title1.mp3' {
@@ -19,7 +19,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "file"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -29,7 +29,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "directory pattern"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes a file pattern                           e.g. C:\Users\...\Music\title*.mp3' {
@@ -37,7 +37,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "file pattern"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -47,7 +47,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "directory pattern"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -57,7 +57,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "empty string"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes Known Folder without first %             e.g. UserProfile%\' {
@@ -65,7 +65,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "directory"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes files in Known Folder without first %    e.g. UserProfile%\.gitconfig' {
@@ -73,7 +73,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "file"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -83,7 +83,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "drive letter"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes existing drive letter with \             e.g. C:\' {
@@ -91,7 +91,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "drive letter"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -101,7 +101,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "network share"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes network share without trailing backslash' {
@@ -109,7 +109,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "network share"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes subfolder of a network share' {
@@ -117,7 +117,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "directory"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     #TODO: File on a network share
@@ -126,7 +126,7 @@ Describe 'SpecifiedFsObjectType' {
 #      $expected   = "file"
 #
 #      $object_type = SpecifiedFsObjectType "${path_spec}"
-#      "${object_type}" | Should -eq "${expected}"
+#      "${object_type}" | Should -Be "${expected}"
 #    }
   }
 
@@ -136,7 +136,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "network computer"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes network computer without trailing backslash' {
@@ -144,7 +144,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "network computer"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 
@@ -154,7 +154,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "directory entry"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
 
     It 'recognizes ".." (parent folder)' {
@@ -162,7 +162,7 @@ Describe 'SpecifiedFsObjectType' {
       $expected   = "directory entry"
 
       $object_type = SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -eq "${expected}"
+      "${object_type}" | Should -Be "${expected}"
     }
   }
 }

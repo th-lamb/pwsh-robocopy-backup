@@ -22,7 +22,7 @@ Describe 'CreateNecessaryDirectory' {
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
 
-      $exists | Should -be $true
+      $exists | Should -Be $true
     }
 
     It 'Does nothing if the directory already exists' {
@@ -31,7 +31,7 @@ Describe 'CreateNecessaryDirectory' {
       CreateNecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
 
-      $exists | Should -be $true
+      $exists | Should -Be $true
     }
   }
 
@@ -45,7 +45,7 @@ Describe 'CreateNecessaryDirectory' {
       } | Should -Throw -ExpectedMessage "${expected_message}"
 
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
-      $exists | Should -be $false
+      $exists | Should -Be $false
     }
   }
 }
