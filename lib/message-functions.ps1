@@ -84,7 +84,7 @@ function _coloredMsg
   Notes:
   * Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
   * Colors inspired by ANSI Z535.6
-  * Exits with exit code 1 on illegal severity levels.
+  * Throws an exception on illegal severity levels.
 TODO:
   * Redirects errors (emerg...warning) to stderr and other messages to stdout.
     -> Powershell has 6 streams!
@@ -142,7 +142,7 @@ TODO:
       # Illegal severity level!
       $err_message = "_coloredMsg(): Illegal severity level specified: ${severity}"
       _coloredMsg "err" "${err_message}"
-      exit 1
+      Throw "${err_message}"
     }
   }
 
@@ -296,7 +296,7 @@ function ShowWarningMsg
   if (! (_isVerbosityDefined) )
   {
     ShowErrMsg "__VERBOSE is not defined and between 0..7!"
-    exit 1
+    Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 4 (warning).
@@ -318,7 +318,7 @@ function ShowNoticeMsg
   if (! (_isVerbosityDefined) )
   {
     ShowErrMsg "__VERBOSE is not defined and between 0..7!"
-    exit 1
+    Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 5 (notice).
@@ -340,7 +340,7 @@ function ShowInfoMsg
   if (! (_isVerbosityDefined) )
   {
     ShowErrMsg "__VERBOSE is not defined and between 0..7!"
-    exit 1
+    Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 6 (info).
@@ -362,7 +362,7 @@ function ShowDebugMsg
   if (! (_isVerbosityDefined) )
   {
     ShowErrMsg "__VERBOSE is not defined and between 0..7!"
-    exit 1
+    Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 7 (debug).
@@ -497,7 +497,7 @@ function ShowNormalMessage
   if (! (_isVerbosityDefined) )
   {
     ShowErrMsg "__VERBOSE is not defined and between 0..7!"
-    exit 1
+    Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 5 (notice).
@@ -522,7 +522,7 @@ function ShowVerboseMessage
   if (! (_isVerbosityDefined) )
   {
     ShowErrMsg "__VERBOSE is not defined and between 0..7!"
-    exit 1
+    Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} = 7 (debug).

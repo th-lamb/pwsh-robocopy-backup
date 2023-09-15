@@ -65,13 +65,13 @@ function LogMessage
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "LogMessage(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('message'))
   {
     Write-Error "LogMessage(): Parameter message not provided!"
-    exit 1
+    Throw "Parameter message not provided!"
   }
   #endregion
 
@@ -104,13 +104,13 @@ function LogAndShowMessage
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "LogAndShowMessage(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('message'))
   {
     Write-Error "LogAndShowMessage(): Parameter message not provided!"
-    exit 1
+    Throw "Parameter message not provided!"
   }
   #endregion
 
@@ -171,7 +171,7 @@ function LogInsertEmptyLine
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "LogInsertEmptyLine(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
   #endregion
 

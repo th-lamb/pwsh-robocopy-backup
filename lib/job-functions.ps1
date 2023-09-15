@@ -47,13 +47,13 @@ function checkFsObjectTypeMismatch
   if (! $PSBoundParameters.ContainsKey('specified_type'))
   {
     Write-Error "checkFsObjectTypeMismatch(): Parameter specified_type not provided!"
-    exit 1
+    Throw "Parameter specified_type not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('existing_type'))
   {
     Write-Error "checkFsObjectTypeMismatch(): Parameter existing_type not provided!"
-    exit 1
+    Throw "Parameter existing_type not provided!"
   }
   #endregion
 
@@ -123,13 +123,13 @@ function dirlistLineType
   if (! $PSBoundParameters.ContainsKey('entry'))
   {
     Write-Error "dirlistLineType(): Parameter entry not provided!"
-    exit 1
+    Throw "Parameter entry not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile'))
   {
     Write-Error "dirlistLineType(): Parameter logfile not provided!"
-    exit 1
+    Throw "Parameter logfile not provided!"
   }
   #endregion
 
@@ -174,7 +174,7 @@ function dirlistLineType
       Default
       {
         Write-Error "dirlistLineType(): Unknown result from checkFsObjectTypeMismatch(): ${result}"
-        exit 1
+        Throw "Unknown result from checkFsObjectTypeMismatch(): ${result}"
       }
     }
 
@@ -248,13 +248,13 @@ function getTargetDir
   if (! $PSBoundParameters.ContainsKey('base_dir'))
   {
     Write-Error "getTargetDir(): Parameter base_dir not provided!"
-    exit 1
+    Throw "Parameter base_dir not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('folder_spec'))
   {
     Write-Error "getTargetDir(): Parameter folder_spec not provided!"
-    exit 1
+    Throw "Parameter folder_spec not provided!"
   }
   #endregion
 
@@ -289,19 +289,19 @@ function _writeToJobfile
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_writeToJobfile(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('line'))
   {
     Write-Error "_writeToJobfile(): Parameter line not provided!"
-    exit 1
+    Throw "Parameter line not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('create_new_file'))
   {
     Write-Error "_writeToJobfile(): Parameter create_new_file not provided!"
-    exit 1
+    Throw "Parameter create_new_file not provided!"
   }
   #endregion
 
@@ -330,25 +330,25 @@ function _writeHeader
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_writeHeader(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('computername'))
   {
     Write-Error "_writeHeader(): Parameter computername not provided!"
-    exit 1
+    Throw "Parameter computername not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('current_job_num'))
   {
     Write-Error "_writeHeader(): Parameter current_job_num not provided!"
-    exit 1
+    Throw "Parameter current_job_num not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('dirlist_entry'))
   {
     Write-Error "_writeHeader(): Parameter dirlist_entry not provided!"
-    exit 1
+    Throw "Parameter dirlist_entry not provided!"
   }
   #endregion
 
@@ -374,19 +374,19 @@ function _addDirectories
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_addDirectories(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('source_dir'))
   {
     Write-Error "_addDirectories(): Parameter source_dir not provided!"
-    exit 1
+    Throw "Parameter source_dir not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('target_dir'))
   {
     Write-Error "_addDirectories(): Parameter target_dir not provided!"
-    exit 1
+    Throw "Parameter target_dir not provided!"
   }
   #endregion
 
@@ -411,13 +411,13 @@ function _addUserSettings
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_addUserSettings(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile_path'))
   {
     Write-Error "_addUserSettings(): Parameter logfile_path not provided!"
-    exit 1
+    Throw "Parameter logfile_path not provided!"
   }
   #endregion
 
@@ -445,13 +445,13 @@ function _addIncludedFiles
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_addIncludedFiles(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('included_files'))
   {
     Write-Error "_addIncludedFiles(): Parameter included_files not provided!"
-    exit 1
+    Throw "Parameter included_files not provided!"
   }
   #endregion
 
@@ -481,13 +481,13 @@ function _addExcludedDirs
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_addExcludedDirs(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_dirs'))
   {
     Write-Error "_addExcludedDirs(): Parameter excluded_dirs not provided!"
-    exit 1
+    Throw "Parameter excluded_dirs not provided!"
   }
   #endregion
 
@@ -517,13 +517,13 @@ function _addExcludedFiles
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_addExcludedFiles(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_files'))
   {
     Write-Error "_addExcludedFiles(): Parameter excluded_files not provided!"
-    exit 1
+    Throw "Parameter excluded_files not provided!"
   }
   #endregion
 
@@ -555,31 +555,31 @@ function _finalizeJob
   if (! $PSBoundParameters.ContainsKey('jobfile_path'))
   {
     Write-Error "_finalizeJob(): Parameter jobfile_path not provided!"
-    exit 1
+    Throw "Parameter jobfile_path not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('included_files'))
   {
     Write-Error "_finalizeJob(): Parameter included_files not provided!"
-    exit 1
+    Throw "Parameter included_files not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_dirs'))
   {
     Write-Error "_finalizeJob(): Parameter excluded_dirs not provided!"
-    exit 1
+    Throw "Parameter excluded_dirs not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_files'))
   {
     Write-Error "_finalizeJob(): Parameter excluded_files not provided!"
-    exit 1
+    Throw "Parameter excluded_files not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('copy_single_file'))
   {
     Write-Error "_finalizeJob(): Parameter copy_single_file not provided!"
-    exit 1
+    Throw "Parameter copy_single_file not provided!"
   }
   #endregion
 
@@ -647,111 +647,55 @@ function createJob
   if (! $PSBoundParameters.ContainsKey('computername'))
   {
     Write-Error "createJob(): Parameter computername not provided!"
-    exit 1
+    Throw "Parameter computername not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('current_job_num'))
   {
     Write-Error "createJob(): Parameter current_job_num not provided!"
-    exit 1
+    Throw "Parameter current_job_num not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('dirlist_entry'))
   {
     Write-Error "createJob(): Parameter dirlist_entry not provided!"
-    exit 1
+    Throw "Parameter dirlist_entry not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('source_dir'))
   {
     Write-Error "createJob(): Parameter source_dir not provided!"
-    exit 1
+    Throw "Parameter source_dir not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('target_dir'))
   {
     Write-Error "createJob(): Parameter target_dir not provided!"
-    exit 1
+    Throw "Parameter target_dir not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('included_files'))
   {
     Write-Error "createJob(): Parameter included_files not provided!"
-    exit 1
+    Throw "Parameter included_files not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_dirs'))
   {
     Write-Error "createJob(): Parameter excluded_dirs not provided!"
-    exit 1
+    Throw "Parameter excluded_dirs not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_files'))
   {
     Write-Error "createJob(): Parameter excluded_files not provided!"
-    exit 1
+    Throw "Parameter excluded_files not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('copy_single_file'))
   {
     Write-Error "createJob(): Parameter copy_single_file not provided!"
-    exit 1
-  }
-  #endregion
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('computername'))
-  {
-    Write-Error "createJob(): Parameter computername not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('current_job_num'))
-  {
-    Write-Error "createJob(): Parameter current_job_num not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('dirlist_entry'))
-  {
-    Write-Error "createJob(): Parameter dirlist_entry not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('source_dir'))
-  {
-    Write-Error "createJob(): Parameter source_dir not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('target_dir'))
-  {
-    Write-Error "createJob(): Parameter target_dir not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('included_files'))
-  {
-    Write-Error "createJob(): Parameter included_files not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_dirs'))
-  {
-    Write-Error "createJob(): Parameter excluded_dirs not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_files'))
-  {
-    Write-Error "createJob(): Parameter excluded_files not provided!"
-    exit 1
-  }
-
-  if (! $PSBoundParameters.ContainsKey('copy_single_file'))
-  {
-    Write-Error "createJob(): Parameter copy_single_file not provided!"
-    exit 1
+    Throw "Parameter copy_single_file not provided!"
   }
   #endregion
 

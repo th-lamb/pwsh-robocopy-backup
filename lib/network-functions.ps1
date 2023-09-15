@@ -34,7 +34,7 @@ function ServerIsAvailable
   if (! $PSBoundParameters.ContainsKey('server_path_spec'))
   {
     Write-Error "ServerIsAvailable(): Parameter server_path_spec not provided!"
-    exit 1
+    Throw "Parameter server_path_spec not provided!"
   }
   #endregion
 
