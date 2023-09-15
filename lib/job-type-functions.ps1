@@ -20,8 +20,7 @@ function Write-Color([String[]]$Text, [ConsoleColor[]]$Color) {
 
 
 
-function _showOptions
-{
+function _showOptions {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
@@ -33,37 +32,27 @@ function _showOptions
   Write-Host "  Press a key to select the backup job-type:"
   Write-Host ""
 
-  if ( "${default_job_type}" -eq "Incremental")
-  {
+  if ( "${default_job_type}" -eq "Incremental") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  }
-  elseif ( "${default_job_type}" -eq "Full")
-  {
+  } elseif ( "${default_job_type}" -eq "Full") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-
-  }
-  elseif ( "${default_job_type}" -eq "Purge")
-  {
+  } elseif ( "${default_job_type}" -eq "Purge") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files) (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  }
-  elseif ( "${default_job_type}" -eq "Archive")
-  {
+  } elseif ( "${default_job_type}" -eq "Archive") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute) (", "default", ")" -Color White, Red, White, Yellow, White, Green, White
-  }
-  else  #if ( "${default_job_type}" -eq "Cancel")
-  {
+  } elseif ( "${default_job_type}" -eq "Cancel") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mI`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
@@ -78,8 +67,7 @@ function _showOptions
 
 }
 
-function UserSelectedJobType
-{
+function UserSelectedJobType {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
@@ -98,11 +86,9 @@ function UserSelectedJobType
   Write-Host "Automatic start in ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} seconds."
 
   # https://powershell.one/tricks/input-devices/detect-key-press
-  do
-  {
+  do {
     # Wait for a key to be available:
-    if ([Console]::KeyAvailable)
-    {
+    if ([Console]::KeyAvailable) {
       # Read the key, and consume it so it won't be echoed to the console:
       $keyInfo = [Console]::ReadKey($true)
       break
@@ -113,8 +99,7 @@ function UserSelectedJobType
     $already_waited_ms = $already_waited_ms + $check_interval_ms
 
     # Write a dot every second.
-    if ( ($already_waited_ms % 1000) -eq 0 )
-    {
+    if ( ($already_waited_ms % 1000) -eq 0 ) {
       Write-Host '.' -NoNewline
     }
 
@@ -123,60 +108,52 @@ function UserSelectedJobType
   # Emit a new line
   Write-Host
 
-  switch($keyInfo.key)
-  {
-    'i'
-    {
+  switch($keyInfo.key) {
+    'i' {
       $result = "Incremental"
       LogMessage "${logfile}" INFO "Incremental selected."
     }
 
-    'f'
-    {
+    'f' {
       $result = "Full"
       LogMessage "${logfile}" INFO "Full selected."
     }
 
-    'p'
-    {
+    'p' {
       $result = "Purge"
       LogMessage "${logfile}" INFO "Purge selected."
     }
 
-    'a'
-    {
+    'a' {
       $result = "Archive"
       LogMessage "${logfile}" INFO "Archive selected."
     }
 
-    's'
-    {
+    's' {
       $result = "${default_job_type}"
       LogMessage "${logfile}" INFO "Start selected. Using the default: ${default_job_type}"
     }
 
-    'Escape'
-    {
+    'Escape' {
       $result = "Cancel"
       LogMessage "${logfile}" INFO "User pressed ESCAPE. Cancel."
     }
 
-    'Enter'
-    {
+    'Enter' {
       Write-Host "Using the default."
       $result = "${default_job_type}"
       LogMessage "${logfile}" INFO "User just pressed ENTER. Using the default: ${default_job_type}"
     }
 
-    ''        # User didn't press any key.
-    {
+    '' {
+      # User didn't press any key.
       Write-Host "Using the default."
       $result = "${default_job_type}"
       LogMessage "${logfile}" INFO "User didn't select a job-type. Using the default: ${default_job_type}"
     }
 
-    Default   # Illegal choice
-    {
+    Default {
+      # Illegal choice
       LogAndShowMessage "${logfile}" WARN "Illegal choice. Cancel."
       $result = "Cancel"
       LogMessage "${logfile}" DEBUG "User clicked: $($keyInfo.key)"

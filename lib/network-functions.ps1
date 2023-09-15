@@ -1,7 +1,6 @@
 #region Helper functions
 
-function computernameFromUncPath
-{
+function computernameFromUncPath {
   param (
     [String]$unc_path
   )
@@ -23,16 +22,14 @@ function computernameFromUncPath
 
 #region Availability checks
 
-function ServerIsAvailable
-{
+function ServerIsAvailable {
   # Returns $true if the specified server is available; otherwise $false.
   param (
     [String]$server_path_spec
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('server_path_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('server_path_spec')) {
     Write-Error "ServerIsAvailable(): Parameter server_path_spec not provided!"
     Throw "Parameter server_path_spec not provided!"
   }
@@ -56,9 +53,7 @@ function ServerIsAvailable
     #{
     #  $available = $true
     #}
-  }
-  catch [System.Net.NetworkInformation.PingException]
-  {
+  } catch [System.Net.NetworkInformation.PingException] {
     $available = $false
   }
   #Write-Host "available   : $available" -ForegroundColor Blue

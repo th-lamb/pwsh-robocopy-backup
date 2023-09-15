@@ -16,8 +16,7 @@
   FatalError = 16
 }
 
-function logAndShowRobocopyErrors
-{
+function logAndShowRobocopyErrors {
   Param(
     [String]$logfile,
     [String]$job_name,
@@ -26,27 +25,21 @@ function logAndShowRobocopyErrors
 
   $result = $([RoboCopyExitCodes]$exit_code)
 
-  switch ($exit_code)
-  {
-    {$_ -in 0..3}
-    {
+  switch ($exit_code) {
+    {$_ -in 0..3} {
       # We log only errors and warnings.
       #LogAndShowMessage "${logfile}" INFO "${job_name}: ${result}"
     }
-    {$_ -in 4..7}
-    {
+    {$_ -in 4..7} {
       LogAndShowMessage "${logfile}" NOTICE "${job_name}: ${result} (Examine the output log. Some housekeeping may be needed.)"
     }
-    {$_ -in 8..15}
-    {
+    {$_ -in 8..15} {
       LogAndShowMessage "${logfile}" WARNING "${job_name}: ${result}"
     }
-    16
-    {
+    16 {
       LogAndShowMessage "${logfile}" ERR "${job_name}: ${result}"
     }
-    Default
-    {
+    Default {
       LogAndShowMessage "${logfile}" ERR "${job_name}: Invalid robocopy exit code: $exit_code"
     }
   }

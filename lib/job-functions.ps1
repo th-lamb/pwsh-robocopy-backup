@@ -15,8 +15,7 @@
 
 #region Object types
 
-function checkFsObjectTypeMismatch
-{
+function checkFsObjectTypeMismatch {
   <#
   Warns if the real object type (e.g. "directory") does NOT match 
   the specified type (e.g. "file pattern").
@@ -44,33 +43,28 @@ function checkFsObjectTypeMismatch
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('specified_type'))
-  {
+  if (! $PSBoundParameters.ContainsKey('specified_type')) {
     Write-Error "checkFsObjectTypeMismatch(): Parameter specified_type not provided!"
     Throw "Parameter specified_type not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('existing_type'))
-  {
+  if (! $PSBoundParameters.ContainsKey('existing_type')) {
     Write-Error "checkFsObjectTypeMismatch(): Parameter existing_type not provided!"
     Throw "Parameter existing_type not provided!"
   }
   #endregion
 
   # non-existent objects
-  if ("${existing_type}" -eq $false)
-  {
+  if ("${existing_type}" -eq $false) {
     return "missing"
   }
 
   # Matching object types
-  if ("${specified_type}" -eq "${existing_type}")
-  {
+  if ("${specified_type}" -eq "${existing_type}") {
     return "match"
   }
 
-  if ("${specified_type}".Replace(" pattern", "") -eq "${existing_type}")
-  {
+  if ("${specified_type}".Replace(" pattern", "") -eq "${existing_type}") {
     return "match"
   }
 
@@ -78,16 +72,14 @@ function checkFsObjectTypeMismatch
   if (
     ("${specified_type}".Replace(" pattern", "") -eq "directory") -and
     ("${existing_type}" -eq "file")
-  )
-  {
+  ) {
     return "type mismatch"
   }
 
   if (
     ("${specified_type}".Replace(" pattern", "") -eq "file") -and
     ("${existing_type}" -eq "directory")
-  )
-  {
+  ) {
     return "type mismatch"
   }
 
@@ -95,9 +87,8 @@ function checkFsObjectTypeMismatch
 
 }
 
-function dirlistLineType
-#TODO: Use an Enum? https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#enum
-{
+function dirlistLineType {
+  #TODO: Use an Enum? https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#enum
   <#
   Returns the type of the specified line in the dir-list.
 
@@ -120,34 +111,29 @@ function dirlistLineType
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('entry'))
-  {
+  if (! $PSBoundParameters.ContainsKey('entry')) {
     Write-Error "dirlistLineType(): Parameter entry not provided!"
     Throw "Parameter entry not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "dirlistLineType(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
   # ignore
-  if (($entry -eq "") -or ($entry.StartsWith("::")))
-  {
+  if (($entry -eq "") -or ($entry.StartsWith("::"))) {
     return "ignore"
   }
 
   # source-dir, source-file, or source-file-pattern
-  if ( (! $entry.StartsWith(" ")) )
-  {
+  if ( (! $entry.StartsWith(" ")) ) {
     # Check specified and real type, then compare and warn if necessary!
     $specified_type = SpecifiedFsObjectType "${entry}"
 
     # Ignore invalid entries.
-    switch ("${specified_type}")
-    {
+    switch ("${specified_type}") {
       "directory pattern" {return "invalid: source directory pattern"}
       "directory entry"   {return "invalid: directory entry (for current or parent folder)"}
     }
@@ -155,24 +141,19 @@ function dirlistLineType
     $existing_type = RealFsObjectType "${entry}"
     $result = checkFsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
 
-    switch ("${result}")
-    {
-      "match"
-      {
+    switch ("${result}") {
+      "match" {
         $object_type = "${specified_type}"
       }
-      "missing"
-      {
+      "missing" {
         LogAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
         $object_type = "missing"
       }
-      "type mismatch"
-      {
+      "type mismatch" {
         LogAndShowMessage "${logfile}" NOTICE "Type mismatch: ${entry}"
         $object_type = "${existing_type}"   # We use the real object type!
       }
-      Default
-      {
+      Default {
         Write-Error "dirlistLineType(): Unknown result from checkFsObjectTypeMismatch(): ${result}"
         Throw "Unknown result from checkFsObjectTypeMismatch(): ${result}"
       }
@@ -180,8 +161,7 @@ function dirlistLineType
 
     ShowDebugMsg "dirlistLineType(): object_type: ${object_type}"
 
-    switch ("${object_type}")
-    {
+    switch ("${object_type}") {
       "directory"         {return "source-dir"}
       "file"              {return "source-file"}
       "file pattern"      {return "source-file-pattern"}
@@ -191,33 +171,28 @@ function dirlistLineType
   }
 
   # incl-files-pattern, excl-files-pattern, excl-dirs-pattern
-  if ($entry.StartsWith("  + "))
-  {
+  if ($entry.StartsWith("  + ")) {
     $temp = "${entry}".Substring(4)   # Remove the leading "  + "
 
     # Type of the entry
     # -> An inclusion should always be a file (pattern)!
     $object_type = SpecifiedFsObjectType "${temp}"
 
-    switch ("${object_type}")
-    {
+    switch ("${object_type}") {
       "directory"         {return "invalid: only file (patterns) can be included: ${entry}"}
       "file"              {return "incl-files-pattern"}
       "directory pattern" {return "invalid: only file (patterns) can be included: ${entry}"}
       "file pattern"      {return "incl-files-pattern"}
     }
 
-  }
-  elseif ($entry.StartsWith("  - "))
-  {
+  } elseif ($entry.StartsWith("  - ")) {
     $temp = "${entry}".Substring(4)   # Remove the leading "  + "
 
     # Type of the entry
     # -> An inclusion should always be a file (pattern)!
     $object_type = SpecifiedFsObjectType "${temp}"
 
-    switch ("${object_type}")
-    {
+    switch ("${object_type}") {
       "directory"         {return "excl-dirs-pattern"}
       "file"              {return "excl-files-pattern"}
       "directory pattern" {return "excl-dirs-pattern"}
@@ -236,8 +211,7 @@ function dirlistLineType
 
 #region Path functions
 
-function getTargetDir
-{
+function getTargetDir {
   # Returns the desired target (backup) directory for the specified directory.
   param (
     [String]$base_dir,
@@ -245,21 +219,18 @@ function getTargetDir
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('base_dir'))
-  {
+  if (! $PSBoundParameters.ContainsKey('base_dir')) {
     Write-Error "getTargetDir(): Parameter base_dir not provided!"
     Throw "Parameter base_dir not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('folder_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('folder_spec')) {
     Write-Error "getTargetDir(): Parameter folder_spec not provided!"
     Throw "Parameter folder_spec not provided!"
   }
   #endregion
 
-  if ("${folder_spec}" -eq "")
-  {
+  if ("${folder_spec}" -eq "") {
     LogAndShowMessage "${BACKUP_LOGFILE}" ERR "getTargetDir(): No folder specified!"
   }
 
@@ -276,8 +247,7 @@ function getTargetDir
 
 #region Jobfile creation
 
-function _writeToJobfile
-{
+function _writeToJobfile {
   # Writes the specified line to the specified job file.
   param (
     [String]$jobfile_path,
@@ -286,38 +256,31 @@ function _writeToJobfile
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_writeToJobfile(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('line'))
-  {
+  if (! $PSBoundParameters.ContainsKey('line')) {
     Write-Error "_writeToJobfile(): Parameter line not provided!"
     Throw "Parameter line not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('create_new_file'))
-  {
+  if (! $PSBoundParameters.ContainsKey('create_new_file')) {
     Write-Error "_writeToJobfile(): Parameter create_new_file not provided!"
     Throw "Parameter create_new_file not provided!"
   }
   #endregion
 
-  if (${create_new_file})
-  {
+  if (${create_new_file}) {
     "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding utf8
-  }
-  else
-  {
+  } else {
     "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding utf8 -Append
   }
 
 }
 
-function _writeHeader
-{
+function _writeHeader {
   # Writes the job file header.
   param (
     [String]$jobfile_path,
@@ -327,26 +290,22 @@ function _writeHeader
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_writeHeader(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('computername'))
-  {
+  if (! $PSBoundParameters.ContainsKey('computername')) {
     Write-Error "_writeHeader(): Parameter computername not provided!"
     Throw "Parameter computername not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('current_job_num'))
-  {
+  if (! $PSBoundParameters.ContainsKey('current_job_num')) {
     Write-Error "_writeHeader(): Parameter current_job_num not provided!"
     Throw "Parameter current_job_num not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('dirlist_entry'))
-  {
+  if (! $PSBoundParameters.ContainsKey('dirlist_entry')) {
     Write-Error "_writeHeader(): Parameter dirlist_entry not provided!"
     Throw "Parameter dirlist_entry not provided!"
   }
@@ -361,8 +320,7 @@ function _writeHeader
 
 }
 
-function _addDirectories
-{
+function _addDirectories {
   # Adds source and target directory to the job file.
   param (
     [String]$jobfile_path,
@@ -371,20 +329,17 @@ function _addDirectories
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_addDirectories(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('source_dir'))
-  {
+  if (! $PSBoundParameters.ContainsKey('source_dir')) {
     Write-Error "_addDirectories(): Parameter source_dir not provided!"
     Throw "Parameter source_dir not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('target_dir'))
-  {
+  if (! $PSBoundParameters.ContainsKey('target_dir')) {
     Write-Error "_addDirectories(): Parameter target_dir not provided!"
     Throw "Parameter target_dir not provided!"
   }
@@ -399,8 +354,7 @@ function _addDirectories
 
 }
 
-function _addUserSettings
-{
+function _addUserSettings {
   # Adds user settings (e.g. logging options) to the job file.
   param (
     [String]$jobfile_path,
@@ -408,14 +362,12 @@ function _addUserSettings
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_addUserSettings(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('logfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile_path')) {
     Write-Error "_addUserSettings(): Parameter logfile_path not provided!"
     Throw "Parameter logfile_path not provided!"
   }
@@ -430,8 +382,7 @@ function _addUserSettings
 
 }
 
-function _addIncludedFiles
-{
+function _addIncludedFiles {
   <#
   Adds all files in the specified list to the specified job file 
   as files to be included (robocopy option /IF).
@@ -442,14 +393,12 @@ function _addIncludedFiles
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_addIncludedFiles(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('included_files'))
-  {
+  if (! $PSBoundParameters.ContainsKey('included_files')) {
     Write-Error "_addIncludedFiles(): Parameter included_files not provided!"
     Throw "Parameter included_files not provided!"
   }
@@ -459,15 +408,13 @@ function _addIncludedFiles
   _writeToJobfile "${jobfile_path}" "/IF :: Include the following Files." $false
 
   # Append all entries
-  foreach ($entry in $included_files)
-  {
+  foreach ($entry in $included_files) {
     _writeToJobfile "${jobfile_path}" "  ${entry}" $false
   }
 
 }
 
-function _addExcludedDirs
-{
+function _addExcludedDirs {
   <#
   Adds all directories in the specified list to the specified job file 
   as directories to be excluded (robocopy option /XD).
@@ -478,14 +425,12 @@ function _addExcludedDirs
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_addExcludedDirs(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('excluded_dirs'))
-  {
+  if (! $PSBoundParameters.ContainsKey('excluded_dirs')) {
     Write-Error "_addExcludedDirs(): Parameter excluded_dirs not provided!"
     Throw "Parameter excluded_dirs not provided!"
   }
@@ -495,15 +440,13 @@ function _addExcludedDirs
   _writeToJobfile "${jobfile_path}" "/XD :: eXclude Directories matching given names/paths." $false
 
   # Append all entries
-  foreach ($entry in $excluded_dirs)
-  {
+  foreach ($entry in $excluded_dirs) {
     _writeToJobfile "${jobfile_path}" "  ${entry}" $false
   }
 
 }
 
-function _addExcludedFiles
-{
+function _addExcludedFiles {
   <#
   Adds all files in the specified list to the specified job file 
   as files to be excluded (robocopy option /XF).
@@ -514,14 +457,12 @@ function _addExcludedFiles
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_addExcludedFiles(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('excluded_files'))
-  {
+  if (! $PSBoundParameters.ContainsKey('excluded_files')) {
     Write-Error "_addExcludedFiles(): Parameter excluded_files not provided!"
     Throw "Parameter excluded_files not provided!"
   }
@@ -531,15 +472,13 @@ function _addExcludedFiles
   _writeToJobfile "${jobfile_path}" "/XF :: eXclude Files matching given names/paths/wildcards." $false
 
   # Append all entries
-  foreach ($entry in $excluded_files)
-  {
+  foreach ($entry in $excluded_files) {
     _writeToJobfile "${jobfile_path}" "  ${entry}" $false
   }
 
 }
 
-function _finalizeJob
-{
+function _finalizeJob {
   <#
   Adds all included/excluded entries to the specified job file.
   #>
@@ -552,32 +491,27 @@ function _finalizeJob
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path'))
-  {
+  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
     Write-Error "_finalizeJob(): Parameter jobfile_path not provided!"
     Throw "Parameter jobfile_path not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('included_files'))
-  {
+  if (! $PSBoundParameters.ContainsKey('included_files')) {
     Write-Error "_finalizeJob(): Parameter included_files not provided!"
     Throw "Parameter included_files not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('excluded_dirs'))
-  {
+  if (! $PSBoundParameters.ContainsKey('excluded_dirs')) {
     Write-Error "_finalizeJob(): Parameter excluded_dirs not provided!"
     Throw "Parameter excluded_dirs not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('excluded_files'))
-  {
+  if (! $PSBoundParameters.ContainsKey('excluded_files')) {
     Write-Error "_finalizeJob(): Parameter excluded_files not provided!"
     Throw "Parameter excluded_files not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('copy_single_file'))
-  {
+  if (! $PSBoundParameters.ContainsKey('copy_single_file')) {
     Write-Error "_finalizeJob(): Parameter copy_single_file not provided!"
     Throw "Parameter copy_single_file not provided!"
   }
@@ -586,8 +520,7 @@ function _finalizeJob
   $spacer_needed = $false
 
   # Always add included files. Use *.* if the list $included_files is empty.
-  if ($included_files.Count -eq 0)
-  {
+  if ($included_files.Count -eq 0) {
     $included_files.Add("*.*") > $null
   }
 
@@ -595,10 +528,8 @@ function _finalizeJob
   $spacer_needed = $true
 
   # Add excluded dirs?
-  if (! ($excluded_dirs.Count -eq 0) )
-  {
-    if ($spacer_needed)
-    {
+  if (! ($excluded_dirs.Count -eq 0) ) {
+    if ($spacer_needed) {
       _writeToJobfile "${jobfile_path}" "" $false
       $spacer_needed = $false
     }
@@ -607,10 +538,8 @@ function _finalizeJob
     $spacer_needed = $true
   }
 
-  if (! ($excluded_files.Count -eq 0) )
-  {
-    if ($spacer_needed)
-    {
+  if (! ($excluded_files.Count -eq 0) ) {
+    if ($spacer_needed) {
       _writeToJobfile "${jobfile_path}" "" $false
       $spacer_needed = $false
     }
@@ -619,16 +548,14 @@ function _finalizeJob
   }
 
   # Add robocopy option /LEV:1 to copy only a single file?
-  if ($copy_single_file)
-  {
+  if ($copy_single_file) {
     _writeToJobfile "${jobfile_path}" "" $false
     _writeToJobfile "${jobfile_path}" "/LEV:1 :: only copy the top n LEVels of the source directory tree." $false
   }
 
 }
 
-function createJob
-{
+function createJob {
   # Creates the specified job file, including a simple header.
   #TODO: Omit $computername here? (Determined at the beginning and available here.)
   param (
@@ -644,56 +571,47 @@ function createJob
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('computername'))
-  {
+  if (! $PSBoundParameters.ContainsKey('computername')) {
     Write-Error "createJob(): Parameter computername not provided!"
     Throw "Parameter computername not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('current_job_num'))
-  {
+  if (! $PSBoundParameters.ContainsKey('current_job_num')) {
     Write-Error "createJob(): Parameter current_job_num not provided!"
     Throw "Parameter current_job_num not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('dirlist_entry'))
-  {
+  if (! $PSBoundParameters.ContainsKey('dirlist_entry')) {
     Write-Error "createJob(): Parameter dirlist_entry not provided!"
     Throw "Parameter dirlist_entry not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('source_dir'))
-  {
+  if (! $PSBoundParameters.ContainsKey('source_dir')) {
     Write-Error "createJob(): Parameter source_dir not provided!"
     Throw "Parameter source_dir not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('target_dir'))
-  {
+  if (! $PSBoundParameters.ContainsKey('target_dir')) {
     Write-Error "createJob(): Parameter target_dir not provided!"
     Throw "Parameter target_dir not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('included_files'))
-  {
+  if (! $PSBoundParameters.ContainsKey('included_files')) {
     Write-Error "createJob(): Parameter included_files not provided!"
     Throw "Parameter included_files not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('excluded_dirs'))
-  {
+  if (! $PSBoundParameters.ContainsKey('excluded_dirs')) {
     Write-Error "createJob(): Parameter excluded_dirs not provided!"
     Throw "Parameter excluded_dirs not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('excluded_files'))
-  {
+  if (! $PSBoundParameters.ContainsKey('excluded_files')) {
     Write-Error "createJob(): Parameter excluded_files not provided!"
     Throw "Parameter excluded_files not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('copy_single_file'))
-  {
+  if (! $PSBoundParameters.ContainsKey('copy_single_file')) {
     Write-Error "createJob(): Parameter copy_single_file not provided!"
     Throw "Parameter copy_single_file not provided!"
   }

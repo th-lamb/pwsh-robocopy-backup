@@ -24,8 +24,7 @@
 #TODO: Create a test in a separate folder? -> as in "C:\Backup\lambecth\robocopy-jobs - Kopie"?
 #archiveOldJobs "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
-function _deleteFiles
-{
+function _deleteFiles {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
   param (
     [System.Collections.ArrayList]$files_to_delete
@@ -33,8 +32,7 @@ function _deleteFiles
 
   $num_files_deleted = 0
 
-  foreach ($file_to_delete in $files_to_delete)
-  {
+  foreach ($file_to_delete in $files_to_delete) {
     Write-Host "${file_to_delete}" -ForegroundColor DarkRed
     Remove-Item "${file_to_delete}"
     $num_files_deleted = ($num_files_deleted + 1)
@@ -51,8 +49,7 @@ function _lastDatetime {
     [System.Collections.ArrayList]$file_list
   )
 
-  if ($file_list.Count -eq 0)
-  {
+  if ($file_list.Count -eq 0) {
     return ""
   }
 
@@ -63,8 +60,7 @@ function _lastDatetime {
 
 }
 
-function archiveOldJobs
-{
+function archiveOldJobs {
   # Archives old jobfiles (zip file) and then deletes them.
   param (
     [String]$backup_job_dir,
@@ -92,8 +88,7 @@ function archiveOldJobs
   if (
     ($old_jobfiles_count -eq 0) -and
     ($old_logfiles_count -eq 0)
-  )
-  {
+  ) {
     ShowDebugMsg "No old jobs to archive."
     return
   }
@@ -106,12 +101,9 @@ function archiveOldJobs
   $old_archives_count = $old_archives.Count
   ShowDebugMsg "old_archives_count: $old_archives_count"
 
-  if ($old_archives_count -lt $max_archives_count)
-  {
+  if ($old_archives_count -lt $max_archives_count) {
     ShowDebugMsg "$old_archives_count job archive(s) (MAX=$max_archives_count), just archiving the existing jobs."
-  }
-  else
-  {
+  } else {
     ShowInfoMsg "$old_archives_count job archives (MAX=$max_archives_count), deleting the oldest one(s)."
 
     $old_archives = $old_archives | Sort-Object -Descending
@@ -129,8 +121,7 @@ function archiveOldJobs
   # Get date/time from the logfiles if there were no jobfiles.
   $last_datetime = _lastDatetime $old_jobfiles
 
-  if ("${last_datetime}" -eq "")
-  {
+  if ("${last_datetime}" -eq "") {
     $last_datetime = _lastDatetime $old_logfiles
   }
 
@@ -145,8 +136,7 @@ function archiveOldJobs
 
   Compress-Archive -Path "${backup_job_dir}${job_name_scheme}" -DestinationPath "${archive_path}" -Force        # -Force to overwrite if needed.
   # Update the archive only if logfiles exist! Otherwise the archive gets deleted.
-  if ($old_logfiles_count -gt 0)
-  {
+  if ($old_logfiles_count -gt 0) {
     Compress-Archive -Path "${backup_job_dir}${job_log_name_scheme}" -Update -DestinationPath "${archive_path}"   # -Update to add.
   }
   Write-Host "${archive_path}" -ForegroundColor DarkGreen

@@ -1,7 +1,6 @@
 #region Object types
 
-function RealFsObjectType
-{
+function RealFsObjectType {
   <#
   Returns the type of the real filesystem object, specified by the path; or
   $false for non-existent directory/file.
@@ -11,8 +10,7 @@ function RealFsObjectType
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('path_spec')) {
     Write-Error "RealFsObjectType(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
@@ -28,8 +26,7 @@ function RealFsObjectType
   #>
 
   #TODO: This doesn't test if a share really exists or is available!
-  switch ("${specified_type}")
-  {
+  switch ("${specified_type}") {
     "network share"     { return "${specified_type}" }
     "network computer"  { return "${specified_type}" }
   }
@@ -45,19 +42,13 @@ function RealFsObjectType
     [...]
     ----------------------------------------------------------------------------
   #>
-  if (Test-Path -Path "${path_spec}" -PathType Container)
-  {
-    if ("${specified_type}" -eq "drive letter")
-    {
+  if (Test-Path -Path "${path_spec}" -PathType Container) {
+    if ("${specified_type}" -eq "drive letter") {
       return "drive letter"
-    }
-    else
-    {
+    } else {
       return "directory"
     }
-  }
-  elseif (Test-Path -Path "${path_spec}" -PathType Leaf)
-  {
+  } elseif (Test-Path -Path "${path_spec}" -PathType Leaf) {
     return "file"
   }
 
@@ -66,8 +57,7 @@ function RealFsObjectType
 
 }
 
-function SpecifiedFsObjectType
-{
+function SpecifiedFsObjectType {
   <#
   Returns the type of the specified filesystem object.
   Note: Based on the string only. Reason: may refer to objects that may not have been created yet.
@@ -77,30 +67,26 @@ function SpecifiedFsObjectType
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('path_spec')) {
     Write-Error "SpecifiedFsObjectType(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
   #endregion
 
   # Test 1: syntax errors
-  if ("${path_spec}" -eq "")
-  {
+  if ("${path_spec}" -eq "") {
     return "empty string"
   }
 
   # Test 2: drive letter
   $test_driveletter = "${path_spec}" | Select-String -Pattern '^[A-Z]:\\{0,1}$'
-  if ("${path_spec}" -eq "${test_driveletter}")
-  {
+  if ("${path_spec}" -eq "${test_driveletter}") {
     return "drive letter"
   }
 
   # Test 3: network share or network computer.
   $is_unc_path=[bool]([System.Uri]"${path_spec}").IsUnc
-  if ($is_unc_path)
-  {
+  if ($is_unc_path) {
     <#
     Top-level element : server
     Second element    : share
@@ -112,22 +98,15 @@ function SpecifiedFsObjectType
     $test_share = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+[\\]?'
     $test_computer = "${path_spec}" | Select-String -Pattern '\\\\.+[\\]?'
 
-    if ("${test_dir}" -ne "")
-    {
+    if ("${test_dir}" -ne "") {
       # A directory
       #NOP: Check for directory or directory pattern later.
-    }
-    elseif ("${test_file}" -ne "")
-    {
+    } elseif ("${test_file}" -ne "") {
       # A file
       #NOP: Check for file or file pattern later.
-    }
-    elseif ("${test_share}" -ne "")
-    {
+    } elseif ("${test_share}" -ne "") {
       return "network share"  # The network share itself, not a subfolder or file.
-    }
-    elseif ("${test_computer}" -ne "")
-    {
+    } elseif ("${test_computer}" -ne "") {
       return "network computer"  # The network computer itself, not a share.
     }
   }
@@ -140,40 +119,28 @@ function SpecifiedFsObjectType
   $result = ""
 
   # conditions
-  if ("${path_spec}".Contains("*"))
-  {
+  if ("${path_spec}".Contains("*")) {
     $is_pattern = $true
   }
 
-  if ("${path_spec}".EndsWith("\"))
-  {
+  if ("${path_spec}".EndsWith("\")) {
     $is_directory = $true
-  }
-  else
-  {
+  } else {
     $is_file = $true
   }
 
-  if ("${path_spec}".EndsWith("\.") -or "${path_spec}".EndsWith("\.."))
-  {
+  if ("${path_spec}".EndsWith("\.") -or "${path_spec}".EndsWith("\..")) {
     $is_directory_entry = $true
   }
 
   # Combine the conditions.
-  if ($is_directory -and ! $is_pattern)
-  {
+  if ($is_directory -and ! $is_pattern) {
     $result = "directory"
-  }
-  elseif ($is_directory_entry)
-  {
+  } elseif ($is_directory_entry) {
     $result = "directory entry"
-  }
-  elseif ($is_file -and ! $is_pattern)
-  {
+  } elseif ($is_file -and ! $is_pattern) {
     $result = "file"
-  }
-  elseif ($is_pattern)
-  {
+  } elseif ($is_pattern) {
     # Directory pattern or file pattern
 
     # We cannot just use (Split-Path -Path "${path_spec}").Contains("*") because 
@@ -181,12 +148,9 @@ function SpecifiedFsObjectType
     $first_placeholder_pos = "${path_spec}".IndexOf('*')            # -1 if not found
     $last_path_separator_pos = "${path_spec}".LastIndexOf("\")      # -1 if not found
 
-    if ( ($first_placeholder_pos -lt $last_path_separator_pos) )
-    {
+    if ( ($first_placeholder_pos -lt $last_path_separator_pos) ) {
       $result = "directory pattern"
-    }
-    else
-    {
+    } else {
       $result = "file pattern"
     }
 
@@ -196,8 +160,7 @@ function SpecifiedFsObjectType
 
 }
 
-function SpecifiedBackupBaseDirType
-{
+function SpecifiedBackupBaseDirType {
   <#
   Returns the type of the specified backup base-dir.
   Note: Based on the string only.
@@ -210,8 +173,7 @@ function SpecifiedBackupBaseDirType
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('path_spec')) {
     Write-Error "SpecifiedBackupBaseDirType(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
@@ -219,22 +181,14 @@ function SpecifiedBackupBaseDirType
 
   $specified_type = SpecifiedFsObjectType "${path_spec}"
 
-  switch ("${specified_type}")
-  {
-    "directory"
-    {
-      if ("${path_spec}".StartsWith("\\"))
-      {
+  switch ("${specified_type}") {
+    "directory" {
+      if ("${path_spec}".StartsWith("\\")) {
         return "directory"
-      }
-      else
-      {
-        if ("${path_spec}".Contains(":"))
-        {
+      } else {
+        if ("${path_spec}".Contains(":")) {
           return "directory"
-        }
-        else
-        {
+        } else {
           return "relative path"
         }
       }
@@ -258,15 +212,13 @@ function FolderExists
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('folder_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('folder_spec')) {
     Write-Error "FolderExists(): Parameter folder_spec not provided!"
     Throw "Parameter folder_spec not provided!"
   }
   #endregion
 
-  if (Test-Path -Path "${folder_spec}" -PathType Container)
-  {
+  if (Test-Path -Path "${folder_spec}" -PathType Container) {
     return $true
   }
 
@@ -274,23 +226,20 @@ function FolderExists
 
 }
 
-function FileExists
-{
+function FileExists {
   # Returns $true if the specified file exists; otherwise $false.
   param (
     [String]$file_spec
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('file_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('file_spec')) {
     Write-Error "FileExists(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
   #endregion
 
-  if (Test-Path -Path "${file_spec}" -PathType Leaf)
-  {
+  if (Test-Path -Path "${file_spec}" -PathType Leaf) {
     return $true
   }
 
@@ -298,8 +247,7 @@ function FileExists
 
 }
 
-function CheckNecessaryDirectory
-{
+function CheckNecessaryDirectory {
   # Throws an exception if the specified directory doesn't exist.
   param (
     [String]$definition_name,
@@ -308,27 +256,23 @@ function CheckNecessaryDirectory
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name'))
-  {
+  if (! $PSBoundParameters.ContainsKey('definition_name')) {
     Write-Error "CheckNecessaryDirectory(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('directory_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('directory_spec')) {
     Write-Error "CheckNecessaryDirectory(): Parameter directory_spec not provided!"
     Throw "Parameter directory_spec not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "CheckNecessaryDirectory(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
-  if (! (FolderExists "${directory_spec}") )
-  {
+  if (! (FolderExists "${directory_spec}") ) {
     LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
     Throw
   }
@@ -337,8 +281,7 @@ function CheckNecessaryDirectory
 
 }
 
-function CheckNecessaryFile
-{
+function CheckNecessaryFile {
   # Throws an exception if the specified file doesn't exist.
   param (
     [String]$definition_name,
@@ -347,27 +290,23 @@ function CheckNecessaryFile
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name'))
-  {
+  if (! $PSBoundParameters.ContainsKey('definition_name')) {
     Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('file_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('file_spec')) {
     Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
-  if (! (FileExists "${file_spec}") )
-  {
+  if (! (FileExists "${file_spec}") ) {
     LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
     Throw
   }
@@ -376,8 +315,7 @@ function CheckNecessaryFile
 
 }
 
-function GetExecutablePath
-{
+function GetExecutablePath {
   <#
   Returns the path to the specified executable if it exists.
   Also searches in the Windows PATH environment variable.
@@ -390,46 +328,34 @@ function GetExecutablePath
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name'))
-  {
+  if (! $PSBoundParameters.ContainsKey('definition_name')) {
     Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('file_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('file_spec')) {
     Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
-  if (FileExists "${file_spec}")
-  {
+  if (FileExists "${file_spec}") {
     return "${file_spec}"
   }
 
   $file_in_path = (Get-Command "${file_spec}").Path
 
-  if ("${file_in_path}" -ne "")
-  {
+  if ("${file_in_path}" -ne "") {
     ShowDebugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"
     return "${file_in_path}"
-  }
-  else
-  {
+  } else {
     LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
-
-    Write-Host -NoNewLine "Press any key to abort..."
-    [void][System.Console]::ReadKey($true)
-
     Throw
-
   }
 
 }
@@ -440,8 +366,7 @@ function GetExecutablePath
 
 #region Object creation
 
-function CreateNecessaryDirectory
-{
+function CreateNecessaryDirectory {
   <#
   Creates the specified directory and all parent folders if necessary.
   #>
@@ -452,20 +377,17 @@ function CreateNecessaryDirectory
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name'))
-  {
+  if (! $PSBoundParameters.ContainsKey('definition_name')) {
     Write-Error "CreateNecessaryDirectory(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('dir_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('dir_spec')) {
     Write-Error "CreateNecessaryDirectory(): Parameter dir_spec not provided!"
     Throw "Parameter dir_spec not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "CreateNecessaryDirectory(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
@@ -480,17 +402,14 @@ function CreateNecessaryDirectory
 
   try {
     [System.IO.Directory]::CreateDirectory("${dir_spec}") | Out-Null
-  }
-  catch
-  {
+  } catch {
     LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${dir_spec}. Error: $_"
     Throw
   }
 
 }
 
-function CreateNecessaryFile
-{
+function CreateNecessaryFile {
   <#
   Creates the specified file from the specified template.
   Returns $true if the file has been copied; otherwise $false.
@@ -503,26 +422,22 @@ function CreateNecessaryFile
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name'))
-  {
+  if (! $PSBoundParameters.ContainsKey('definition_name')) {
     Write-Error "CreateNecessaryFile(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('file_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('file_spec')) {
     Write-Error "CreateNecessaryFile(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('template'))
-  {
+  if (! $PSBoundParameters.ContainsKey('template')) {
     Write-Error "CreateNecessaryFile(): Parameter template not provided!"
     Throw "Parameter template not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "CreateNecessaryFile(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
@@ -541,9 +456,7 @@ function CreateNecessaryFile
     Copy-Item -Path "${template}" -Destination "${file_spec}"
     LogAndShowMessage "${logfile}" INFO "File created from template."
     return $true
-  }
-  catch
-  {
+  } catch {
     LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${file_spec}. Error: $_"
     Throw
   }
@@ -585,8 +498,7 @@ function CreateNecessaryFile
 .LINK
     https://renenyffenegger.ch/notes/Windows/dirs/_known-folders
 #>
-function Get-KnownFolderPath
-{
+function Get-KnownFolderPath {
     Param (
             [Parameter(Mandatory = $true)]
             [ValidateSet('3DObjects', 'AddNewPrograms', 'AdminTools', 'AppUpdates', 'CDBurning', 'ChangeRemovePrograms', 'CommonAdminTools', 'CommonOEMLinks', 'CommonPrograms', 'CommonStartMenu', 'CommonStartup', 'CommonTemplates', 'ComputerFolder', 'ConflictFolder', 'ConnectionsFolder', 'Contacts', 'ControlPanelFolder', 'Cookies', 'Desktop', 'Documents', 'Downloads', 'Favorites', 'Fonts', 'Games', 'GameTasks', 'History', 'InternetCache', 'InternetFolder', 'Links', 'LocalAppData', 'LocalAppDataLow', 'LocalizedResourcesDir', 'Music', 'NetHood', 'NetworkFolder', 'OriginalImages', 'PhotoAlbums', 'Pictures', 'Playlists', 'PrintersFolder', 'PrintHood', 'Profile', 'ProgramData', 'ProgramFiles', 'ProgramFilesX64', 'ProgramFilesX86', 'ProgramFilesCommon', 'ProgramFilesCommonX64', 'ProgramFilesCommonX86', 'Programs', 'Public', 'PublicDesktop', 'PublicDocuments', 'PublicDownloads', 'PublicGameTasks', 'PublicMusic', 'PublicPictures', 'PublicVideos', 'QuickLaunch', 'Recent', 'RecycleBinFolder', 'ResourceDir', 'RoamingAppData', 'SampleMusic', 'SamplePictures', 'SamplePlaylists', 'SampleVideos', 'SavedGames', 'SavedSearches', 'SEARCH_CSC', 'SEARCH_MAPI', 'SearchHome', 'SendTo', 'SidebarDefaultParts', 'SidebarParts', 'StartMenu', 'Startup', 'SyncManagerFolder', 'SyncResultsFolder', 'SyncSetupFolder', 'System', 'SystemX86', 'Templates', 'TreeProperties', 'UserProfiles', 'UsersFiles', 'Videos', 'Windows')]
@@ -733,8 +645,7 @@ function Get-KnownFolderPath
 
 #region Path functions
 
-function expandedPath
-{
+function expandedPath {
   <#
   Expands the specified path in three ways:
   1. Script variables.          Example: ${BACKUP_BASE_DIR}\ becomes C:\Backup\
@@ -746,8 +657,7 @@ function expandedPath
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('path_spec')) {
     Write-Error "expandedPath(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
@@ -767,26 +677,24 @@ function expandedPath
   #>
   $first_delim_pos = "${expanded}".IndexOf("%")
 
-  if ($first_delim_pos -eq 0)   # Path starts with "%".
-  {
+  if ($first_delim_pos -eq 0) {
+    # Path starts with "%".
     $second_delim_pos = "${expanded}".Substring(1).IndexOf("%")
 
-    if (! ($second_delim_pos -eq -1) )  # Path contains another "%".
-    {
+    if (! ($second_delim_pos -eq -1) ) {
+      # Path contains another "%".
       $known_folder_candidate = "${expanded}".Substring(1, $second_delim_pos)
       $sub_folder = "${expanded}".Substring($second_delim_pos + 2)
 
       $known_folder = Get-KnownFolderPath "${known_folder_candidate}"
 
       # Add trailing and remove leading "\".
-      if (! "${known_folder}".EndsWith("\") )
-      {
+      if (! "${known_folder}".EndsWith("\") ) {
         $known_folder = "${known_folder}\"
       }
 
       if ("${sub_folder}".Length -ge 1) {
-        if ("${sub_folder}".StartsWith("\") )
-        {
+        if ("${sub_folder}".StartsWith("\") ) {
           $sub_folder = "${sub_folder}".Substring(1)
         }
       }
@@ -801,8 +709,7 @@ function expandedPath
 
 }
 
-function Get-ParentDir
-{
+function Get-ParentDir {
   <#
   Returns the parent directory of the specified file (pattern).
   #>
@@ -812,8 +719,7 @@ function Get-ParentDir
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('file_spec'))
-  {
+  if (! $PSBoundParameters.ContainsKey('file_spec')) {
     Write-Error "Get-ParentDir(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
@@ -823,19 +729,14 @@ function Get-ParentDir
 
   # Handle "dot" files.
   # -> Resolve-Path -Path returns an array of all matching directories!
-  if ( "${file_spec}".EndsWith("\.") )
-  {
+  if ( "${file_spec}".EndsWith("\.") ) {
     $dots_evaluated = "${file_spec}".TrimEnd('.')
-  }
-  elseif ( "${file_spec}".EndsWith("\..") )
-  {
+  } elseif ( "${file_spec}".EndsWith("\..") ) {
     $dots_evaluated = "${file_spec}".TrimEnd('.')
     $dots_evaluated = "${dots_evaluated}".TrimEnd('\')
     $pos = "${dots_evaluated}".LastIndexOf("\")
     $dots_evaluated = "${dots_evaluated}".Substring(0, $pos + 1)
-  }
-  else
-  {
+  } else {
     $dots_evaluated = "${file_spec}"
   }
 
@@ -849,8 +750,7 @@ function Get-ParentDir
   if (
     (Test-Path "${parent_dir}" -PathType Container) -and
     (! "${parent_dir}".EndsWith("\") )
-  )
-  {
+  ) {
     $parent_dir = "${parent_dir}\"
     ShowDebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
   }

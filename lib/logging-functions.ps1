@@ -2,8 +2,7 @@
 
 
 
-enum SeverityKeyword
-{
+enum SeverityKeyword {
   EMERG
   ALERT
   CRIT
@@ -16,8 +15,7 @@ enum SeverityKeyword
 
 #region Helper functions
 
-function _inSquareBrackets
-{
+function _inSquareBrackets {
   # Wraps severity keywords in square brackets of fix length 
   # for easy to read log entries. Examples:
   # - ERR   : [ERR    ]
@@ -31,8 +29,7 @@ function _inSquareBrackets
 
   $result = "[$keyword"
 
-  while ("${result}".Length -lt 8)
-  {
+  while ("${result}".Length -lt 8) {
     $result = "${result} "
   }
 
@@ -46,8 +43,7 @@ function _inSquareBrackets
 
 
 
-function LogMessage
-{
+function LogMessage {
   # Writes the $message to the $logfile.
   #
   # The Entry gets preceded with date/time and $severity. Example:
@@ -62,14 +58,12 @@ function LogMessage
 
   #region Check parameters
   # No check for $severity since it is declared as enum value.
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "LogMessage(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('message'))
-  {
+  if (! $PSBoundParameters.ContainsKey('message')) {
     Write-Error "LogMessage(): Parameter message not provided!"
     Throw "Parameter message not provided!"
   }
@@ -88,8 +82,7 @@ function LogMessage
 
 }
 
-function LogAndShowMessage
-{
+function LogAndShowMessage {
   # Writes the $message to the $logfile, and displays it in the console.
   Param(
     [String]$logfile,
@@ -101,58 +94,47 @@ function LogAndShowMessage
 
   #region Check parameters
   # No check for $severity since it is declared as enum value.
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "LogAndShowMessage(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
 
-  if (! $PSBoundParameters.ContainsKey('message'))
-  {
+  if (! $PSBoundParameters.ContainsKey('message')) {
     Write-Error "LogAndShowMessage(): Parameter message not provided!"
     Throw "Parameter message not provided!"
   }
   #endregion
 
-  switch ($severity)
-  {
-    EMERG
-    {
+  switch ($severity) {
+    EMERG {
       ShowEmergMsg "${message}"
       LogMessage "${logfile}" EMERG "${message}"
     }
-    ALERT
-    {
+    ALERT {
       ShowAlertMsg "${message}"
       LogMessage "${logfile}" ALERT "${message}"
     }
-    CRIT
-    {
+    CRIT {
       ShowCritMsg "${message}"
       LogMessage "${logfile}" CRIT "${message}"
     }
-    ERR
-    {
+    ERR {
       ShowErrMsg "${message}"
       LogMessage "${logfile}" ERR "${message}"
     }
-    WARNING
-    {
+    WARNING {
       ShowWarningMsg "${message}"
       LogMessage "${logfile}" WARNING "${message}"
     }
-    NOTICE
-    {
+    NOTICE {
       ShowNoticeMsg "${message}"
       LogMessage "${logfile}" NOTICE "${message}"
     }
-    INFO
-    {
+    INFO {
       ShowInfoMsg "${message}"
       LogMessage "${logfile}" INFO "${message}"
     }
-    DEBUG
-    {
+    DEBUG {
       ShowDebugMsg "${message}"
       LogMessage "${logfile}" DEBUG "${message}"
     }
@@ -160,16 +142,14 @@ function LogAndShowMessage
 
 }
 
-function LogInsertEmptyLine
-{
+function LogInsertEmptyLine {
   # Appends an empty line to the $logfile.
   Param(
     [String]$logfile
   )
 
   #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('logfile'))
-  {
+  if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "LogInsertEmptyLine(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
@@ -177,8 +157,7 @@ function LogInsertEmptyLine
 
   try {
     "" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
-  }
-  catch {
+  } catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
     Write-Host "LogInsertEmptyLine(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
   }
