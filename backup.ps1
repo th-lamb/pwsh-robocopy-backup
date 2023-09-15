@@ -164,8 +164,8 @@ switch ("${dir_type}") {
   }
 }
 
-#TODO Report creation of these dirs (as INFO).
-#TODO And store a variable to prepend this info when the logging starts? (Until now the log-file starts with "Dir-list created from template.")
+#TODO: Report creation of these dirs (as INFO).
+#TODO: And store a variable to prepend this info when the logging starts? (Until now the log-file starts with "Dir-list created from template.")
 #     -> Maybe add all log messages to a list before the log-file exists, and add all of them when it exists?
 CreateNecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}"
 CreateNecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}"
@@ -205,7 +205,7 @@ switch ($selected_job_type)
   "Cancel"      { exit 0 }
   Default       # Illegal choice
   {
-    #TODO Maybe a different exit code? (1 was for syntax errors, 2 for missing files, more?)
+    #TODO: Maybe a different exit code? (1 was for syntax errors, 2 for missing files, more?)
     exit 2
   }
 }
@@ -546,7 +546,7 @@ else
     $user_defined_job = $jobfiles[$i]
     ShowInfoMsg "Job: ${user_defined_job}..."
 
-    #TODO Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
+    #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
     $process = Start-Process -Wait -PassThru -NoNewWindow `
       -FilePath "${robocopy_exe}" `
       -ArgumentList "/job:""${robocopy_job_type_template}""", `
