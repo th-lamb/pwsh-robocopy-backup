@@ -57,12 +57,11 @@ $startTime = (Get-Date)
 
 try {
   Set-Location "${SCRIPT_DIR}"
-}
-catch {
+} catch {
   [Console]::ForegroundColor = 'red'
   [Console]::Error.WriteLine("Failed to change working directory to [${SCRIPT_DIR}]!")
   [Console]::ResetColor()
-  
+
   exit 2
 }
 
@@ -139,22 +138,18 @@ $dir_type = SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
 ShowDebugMsg "BackupBaseDir type: ${dir_type}"
 
 switch ("${dir_type}") {
-  "directory"
-  {
+  "directory" {
     CreateNecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
   }
-  {$_ -in "drive letter", "network share"}
-  {
+  {$_ -in "drive letter", "network share"} {
     CheckNecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
   }
-  "relative path"
-  {
+  "relative path" {
     # Interpret as path below script dir, current drive or ...?
     $absolute_base_dir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
     CreateNecessaryDirectory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}"
-  }
-  "network computer"
-  {
+  } 
+  "network computer" {
     ShowCritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
     exit 1
   }
@@ -177,8 +172,7 @@ $robocopy_exe = GetExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 # Create the dir-list from the template if necessary.
 $dirlist_created = CreateNecessaryFile 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
 
-if ($dirlist_created)
-{
+if ($dirlist_created) {
   ShowInfoMsg "Opening the dir-list in Editor and wait..."
   Notepad.exe "${BACKUP_DIRLIST}" | Out-Null
 }
@@ -196,15 +190,14 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files chec
 
 $selected_job_type = UserSelectedJobType "${DEFAULT_JOB_TYPE}" "${BACKUP_LOGFILE}"
 
-switch ($selected_job_type)
-{
+switch ($selected_job_type) {
   "Incremental" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }
   "Full"        { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_FULL }
   "Purge"       { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE }
   "Archive"     { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE }
   "Cancel"      { exit 0 }
-  Default       # Illegal choice
-  {
+  Default {
+    # Illegal choice
     #TODO: Maybe a different exit code? (1 was for syntax errors, 2 for missing files, more?)
     exit 2
   }
@@ -262,8 +255,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 [Int32]$job_result_warning_count = 0
 [Int32]$job_result_error_count = 0
 
-function _callCreateJob
-{
+function _callCreateJob {
   # Creates the current job using all values collected from the dir-list.
   ShowDebugMsg "_callCreateJob()"
 
@@ -286,8 +278,7 @@ function _callCreateJob
   ShowDebugMsg "----------------------------------------------------------------------"
 }
 
-function _resetJobRelatedInfo
-{
+function _resetJobRelatedInfo {
   # Resets all values that apply for a whole job definition, possibly
   # consisting of multiple lines in the dir-list.
   ShowDebugMsg "_resetJobRelatedInfo()"
@@ -302,8 +293,7 @@ function _resetJobRelatedInfo
   $script:copy_single_file = $false   # job- and line-related
 }
 
-function _resetLineRelatedInfo
-{
+function _resetLineRelatedInfo {
   # Resets all values that apply only for the current line in the dir-list.
   ShowDebugMsg "_resetLineRelatedInfo()"
   $script:start_new_job = $false
@@ -316,8 +306,7 @@ function _resetLineRelatedInfo
 # Process the dir-list.
 $dir_list_content = Get-Content "${BACKUP_DIRLIST}"
 
-ForEach($line in $dir_list_content)
-{
+ForEach($line in $dir_list_content) {
   ShowDebugMsg "Next line: ${line}"
 
   # Expand all entries first to avoid interpreting environment variables etc. as filenames.
@@ -333,70 +322,58 @@ ForEach($line in $dir_list_content)
   $line_type = dirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
   ShowDebugMsg "${line_type}: ${expanded}"
 
-  switch -Wildcard ("${line_type}")
-  {
-    "error: *"  # The fallback value of function dirlistLineType
-    {
+  switch -Wildcard ("${line_type}") {
+    "error: *" {
+      # The fallback value of function dirlistLineType
       $finish_previous_job = $true
       LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
     }
-    "invalid: *"
-    {
+    "invalid: *" {
       $finish_previous_job = $true
       LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "Invalid entry in dir-list: ${line}"
     }
-    "ignore"
-    {
+    "ignore" {
       $finish_previous_job = $true
     }
-    "source-file"
-    {
+    "source-file" {
       $copy_single_file = $true
       $start_new_job = $true
       $finish_previous_job = $true
       #https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#multiple-matches
       continue
     }
-    "source-*"  # Only source-dir or source-file-pattern
-    {
+    "source-*" {
+      # Only source-dir or source-file-pattern
       $start_new_job = $true
       $finish_previous_job = $true
     }
-    "incl-files-pattern"
-    {
+    "incl-files-pattern" {
       $continue_curr_job = $true
     }
-    "excl-files-pattern"
-    {
+    "excl-files-pattern" {
       $continue_curr_job = $true
     }
-    "excl-dirs-pattern"
-    {
+    "excl-dirs-pattern" {
       $continue_curr_job = $true
     }
   }
 
   # Plausibility checks
-  if ($finish_previous_job)
-  {
-    if ($current_job_num -eq 0)
-    {
+  if ($finish_previous_job) {
+    if ($current_job_num -eq 0) {
       $finish_previous_job = $false
     }
   }
 
-  if ($continue_curr_job)
-  {
-    if ($current_job_num -eq 0)
-    {
+  if ($continue_curr_job) {
+    if ($current_job_num -eq 0) {
       $continue_curr_job = $false
       LogAndShowMessage "${BACKUP_LOGFILE}" ERR "No folder/job defined for: ${line}"
     }
   }
 
   # Show what we are going to do.
-  if ($finish_previous_job -or $start_new_job -or $continue_curr_job -or $copy_single_file)
-  {
+  if ($finish_previous_job -or $start_new_job -or $continue_curr_job -or $copy_single_file) {
     $task_list = New-Object System.Collections.ArrayList
     if ($finish_previous_job) { $task_list.Add("Finish previous job") > $null }
     if ($start_new_job) { $task_list.Add("Start new job") > $null }
@@ -412,14 +389,12 @@ ForEach($line in $dir_list_content)
 
   # Actual job creation
 
-  if ($finish_previous_job)
-  {
+  if ($finish_previous_job) {
     ShowDebugMsg "----- Finishing the previous job: ------------------------------------"
     _callCreateJob
   }
 
-  if ($start_new_job)
-  {
+  if ($start_new_job) {
     ShowDebugMsg "----- Starting a new job: --------------------------------------------"
     $source_defs_count = ($source_defs_count + 1)
     $current_job_num = $source_defs_count
@@ -436,11 +411,9 @@ ForEach($line in $dir_list_content)
     #Write-Host "expanded: ${expanded}" -ForegroundColor Yellow
 
     # Determine basic information for the job.
-    switch -Wildcard ("${current_source_type}")
-    {
-      "source-dir"  { $source_dir = "${expanded}" }
-      "source-file*"  # <--- pattern!
-      {
+    switch -Wildcard ("${current_source_type}") {
+      "source-dir" { $source_dir = "${expanded}" }
+      "source-file*" {                                      # <--- pattern!
         $source_dir = Get-ParentDir "${expanded}"
 
         # Add the filename (pattern) to $included_files because we must NOT use *.* later!
@@ -452,13 +425,10 @@ ForEach($line in $dir_list_content)
     }
     ShowDebugMsg "source_dir        : ${source_dir}"
 
-    if ("${source_dir}" -eq "")
-    {
+    if ("${source_dir}" -eq "") {
       LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
       _resetJobRelatedInfo
-    }
-    else
-    {
+    } else {
       $target_dir = getTargetDir "${BACKUP_DIR}" "${source_dir}"
       ShowDebugMsg "target_dir        : ${target_dir}"
     }
@@ -466,22 +436,19 @@ ForEach($line in $dir_list_content)
     ShowDebugMsg "----------------------------------------------------------------------"
   }
 
-  if ($copy_single_file)
-  {
+  if ($copy_single_file) {
     ShowDebugMsg "----- Copying a single file: -----------------------------------------"
     _callCreateJob
   }
 
   # Add included/excluded files/directories to the job file (robocopy options /IF, /XF, /XD).
-  if ($continue_curr_job)
-  {
+  if ($continue_curr_job) {
     ShowDebugMsg "----- Continuing the job: --------------------------------------------"
     # Determine additional information for the job.
     $entry = "${line}".Substring(4)   # Remove the leading "  + " or "  - "
     ShowDebugMsg "entry               : ${entry}"
 
-    switch ("${line_type}")
-    {
+    switch ("${line_type}") {
       "incl-files-pattern"  {$included_files.Add("${entry}") > $null}
       "excl-files-pattern"  {$excluded_files.Add("${entry}") > $null}
       "excl-dirs-pattern"   {$excluded_dirs.Add("${entry}") > $null}
@@ -504,8 +471,7 @@ ShowDebugMsg "----- End of the dir-list ----------------------------------------
 # Finish the last job?
 $finish_last_job = ($current_job_num -ne 0)
 
-if ($finish_last_job)
-{
+if ($finish_last_job) {
   ShowDebugMsg "----- Finishing the last job: ----------------------------------------"
   _callCreateJob
 }
@@ -533,16 +499,12 @@ $jobfiles = New-Object System.Collections.ArrayList
 $jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File
 $jobfiles_count = $jobfiles.Count
 
-if ($jobfiles_count -eq 0)
-{
+if ($jobfiles_count -eq 0) {
   LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
-}
-else
-{
+} else {
   LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
 
-  for ($i = 0; $i -lt $jobfiles_count; $i++)
-  {
+  for ($i = 0; $i -lt $jobfiles_count; $i++) {
     $user_defined_job = $jobfiles[$i]
     ShowInfoMsg "Job: ${user_defined_job}..."
 
@@ -565,18 +527,14 @@ else
     logAndShowRobocopyErrors "${BACKUP_LOGFILE}" "${job_name}" $robocopy_exit_code
 
     # Update counters.
-    switch ($robocopy_exit_code)
-    {
-      {$_ -in 0..7}
-      {
+    switch ($robocopy_exit_code) {
+      {$_ -in 0..7} {
         $job_result_ok_count = ($job_result_ok_count + 1)
       }
-      {$_ -in 8..15}
-      {
+      {$_ -in 8..15} {
         $job_result_warning_count = ($job_result_warning_count + 1)
       }
-      16
-      {
+      16 {
         $job_result_error_count = ($job_result_error_count + 1)
       }
     }
