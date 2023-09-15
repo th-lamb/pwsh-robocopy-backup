@@ -330,12 +330,7 @@ function CheckNecessaryDirectory
   if (! (FolderExists "${directory_spec}") )
   {
     LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
-
-    Write-Host -NoNewLine "Press any key to abort..."
-    [void][System.Console]::ReadKey($true)
-
     Throw
-
   }
 
   return 0
@@ -374,12 +369,7 @@ function CheckNecessaryFile
   if (! (FileExists "${file_spec}") )
   {
     LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
-
-    Write-Host -NoNewLine "Press any key to abort..."
-    [void][System.Console]::ReadKey($true)
-
     Throw
-
   }
 
   return 0
