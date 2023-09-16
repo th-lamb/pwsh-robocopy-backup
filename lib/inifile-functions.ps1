@@ -1,6 +1,6 @@
 #region Helper functions
 
-function _debugPrintFormattedIniValues {
+function Write-FormattedIniValues {
   param (
     [System.Collections.ArrayList]$var_names,
     [System.Collections.ArrayList]$var_values
@@ -9,7 +9,7 @@ function _debugPrintFormattedIniValues {
   [System.Collections.ArrayList]$var_names_same_length = New-Object System.Collections.ArrayList
 
   # Determine the longest variable name.
-  $max_length = $( $var_names | sort length -desc | select -first 1 ).Length
+  $max_length = $( $var_names | Sort-Object length -desc | Select-Object -first 1 ).Length
 
   # Make shorter variable names longer.
   for ($i = 0; $i -lt $var_names.Count; $i++) {
@@ -32,7 +32,7 @@ function _debugPrintFormattedIniValues {
 }
 
 # https://stackoverflow.com/a/10939609/5944475
-function Is-Numeric ($Value) {
+function Test-IsNumeric ($Value) {
   return $Value -match "^[\d\.]+$"
 }
 
@@ -40,7 +40,7 @@ function Is-Numeric ($Value) {
 
 
 
-function ReadSettingsFile {
+function Read-SettingsFile {
   param (
     [String]$ini_file
   )
@@ -65,7 +65,7 @@ function ReadSettingsFile {
       $var_values.Add("${var_value}") > $null
 
       # Interpret numeric values as Int32; others as String.
-      if ( Is-Numeric $var_value ) {
+      if (Test-IsNumeric $var_value) {
         [Int32]$int_value = $var_value
         Set-Variable -Name "${var_name}" -Value $int_value -Scope script
 
@@ -79,6 +79,6 @@ function ReadSettingsFile {
 
   }
 
-  _debugPrintFormattedIniValues $var_names $var_values
+  Write-FormattedIniValues $var_names $var_values
 
 }

@@ -85,9 +85,3 @@ Describe 'Get-ExpandedPath' {
     }
   }
 }
-
-
-
-AfterAll {
-  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-}

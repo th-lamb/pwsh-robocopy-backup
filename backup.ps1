@@ -93,7 +93,7 @@ try {
 #TODO: Maybe use cmdline parameters if provided? (Maybe too much effort to just get some more info messages.)
 #LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Reading the settings file..."
 
-ReadSettingsFile ($PSCommandPath -replace ".ps1", ".ini")
+Read-SettingsFile ($PSCommandPath -replace ".ps1", ".ini")
 
 LogInsertEmptyLine "${BACKUP_LOGFILE}"
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."

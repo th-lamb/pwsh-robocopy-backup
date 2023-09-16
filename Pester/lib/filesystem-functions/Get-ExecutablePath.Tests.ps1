@@ -7,7 +7,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${PSScriptRoot}/../../../lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.Tests.log"
+  $logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.log"
 }
 
 
@@ -43,4 +43,10 @@ Describe 'Get-ExecutablePath' {
     #TODO: Exits the script with exit-code 2 if the specified file doesn't exist.
   }
 
+}
+
+
+
+AfterAll {
+  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }
