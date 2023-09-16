@@ -70,7 +70,7 @@ function ReadSettingsFile {
         Set-Variable -Name "${var_name}" -Value $int_value -Scope script
 
       } elseif ( ${var_value} -is [String] ) {
-        $expanded = expandedPath "${var_value}"
+        $expanded = Get-ExpandedPath "${var_value}"
         Set-Variable -Name "${var_name}" -Value "${expanded}" -Scope script
 
       }

@@ -310,7 +310,7 @@ ForEach($line in $dir_list_content) {
   ShowDebugMsg "Next line: ${line}"
 
   # Expand all entries first to avoid interpreting environment variables etc. as filenames.
-  $expanded = expandedPath "${line}"
+  $expanded = Get-ExpandedPath "${line}"
 
   <# Determine what to do depending on the type of the current line.
     A job definition ends with:

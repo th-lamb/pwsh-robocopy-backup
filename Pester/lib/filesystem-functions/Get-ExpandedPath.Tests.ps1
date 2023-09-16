@@ -4,7 +4,7 @@ BeforeAll {
 
 
 
-Describe 'expandedPath' {
+Describe 'Get-ExpandedPath' {
   Context 'Script variables' {
     It 'Expands script variable - at the beginning' {
       $script_variable = "C:\test1\"
@@ -12,7 +12,7 @@ Describe 'expandedPath' {
       $path_spec  = "${script_variable}test2\"
       $expected   = "C:\test1\test2\"
 
-      $result = expandedPath "${path_spec}"
+      $result = Get-ExpandedPath "${path_spec}"
       $result | Should -Be "${expected}"
     }
 
@@ -22,7 +22,7 @@ Describe 'expandedPath' {
       $path_spec  = "C:\${script_variable}\test2\"
       $expected   = "C:\test1\test2\"
 
-      $result = expandedPath "${path_spec}"
+      $result = Get-ExpandedPath "${path_spec}"
       $result | Should -Be "${expected}"
     }
 
@@ -32,7 +32,7 @@ Describe 'expandedPath' {
       $path_spec  = "C:\test1\${script_variable}"
       $expected   = "C:\test1\test2\"
 
-      $result = expandedPath "${path_spec}"
+      $result = Get-ExpandedPath "${path_spec}"
       $result | Should -Be "${expected}"
     }
 
@@ -43,7 +43,7 @@ Describe 'expandedPath' {
       $path_spec  = "${first}\test1\${second}"
       $expected   = "C:\test1\test2\"
 
-      $result = expandedPath "${path_spec}"
+      $result = Get-ExpandedPath "${path_spec}"
       $result | Should -Be "${expected}"
     }
   }
@@ -55,7 +55,7 @@ Describe 'expandedPath' {
       $path_spec  = "${env_variable}\Backup\"
       $expected   = "C:\Backup\"
 
-      $result = expandedPath "${path_spec}"
+      $result = Get-ExpandedPath "${path_spec}"
       $result | Should -Be "${expected}"
     }
   }
@@ -67,7 +67,7 @@ Describe 'expandedPath' {
       $known_folder = Get-KnownFolderPath "Documents"
       $expected = "${known_folder}\test\"
 
-      $result = expandedPath "${path_spec}"
+      $result = Get-ExpandedPath "${path_spec}"
       $result | Should -Be "${expected}"
     }
   }
@@ -80,7 +80,7 @@ Describe 'expandedPath' {
       $known_folder = Get-KnownFolderPath "Documents"
       $expected = "${known_folder}\test\"
 
-      $result = expandedPath "${path_spec}"
+      $result = Get-ExpandedPath "${path_spec}"
       $result | Should -Be "${expected}"
     }
   }

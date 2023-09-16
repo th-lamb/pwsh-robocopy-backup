@@ -645,7 +645,7 @@ function Get-KnownFolderPath {
 
 #region Path functions
 
-function expandedPath {
+function Get-ExpandedPath {
   <#
   Expands the specified path in three ways:
   1. Script variables.          Example: ${BACKUP_BASE_DIR}\ becomes C:\Backup\
@@ -658,7 +658,7 @@ function expandedPath {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "expandedPath(): Parameter path_spec not provided!"
+    Write-Error "Get-ExpandedPath(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
   #endregion
