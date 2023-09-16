@@ -130,7 +130,7 @@ function dirlistLineType {
   # source-dir, source-file, or source-file-pattern
   if ( (! $entry.StartsWith(" ")) ) {
     # Check specified and real type, then compare and warn if necessary!
-    $specified_type = SpecifiedFsObjectType "${entry}"
+    $specified_type = Get-SpecifiedFsObjectType "${entry}"
 
     # Ignore invalid entries.
     switch ("${specified_type}") {
@@ -138,7 +138,7 @@ function dirlistLineType {
       "directory entry"   {return "invalid: directory entry (for current or parent folder)"}
     }
 
-    $existing_type = RealFsObjectType "${entry}"
+    $existing_type = Get-RealFsObjectType "${entry}"
     $result = checkFsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
 
     switch ("${result}") {
@@ -176,7 +176,7 @@ function dirlistLineType {
 
     # Type of the entry
     # -> An inclusion should always be a file (pattern)!
-    $object_type = SpecifiedFsObjectType "${temp}"
+    $object_type = Get-SpecifiedFsObjectType "${temp}"
 
     switch ("${object_type}") {
       "directory"         {return "invalid: only file (patterns) can be included: ${entry}"}
@@ -190,7 +190,7 @@ function dirlistLineType {
 
     # Type of the entry
     # -> An inclusion should always be a file (pattern)!
-    $object_type = SpecifiedFsObjectType "${temp}"
+    $object_type = Get-SpecifiedFsObjectType "${temp}"
 
     switch ("${object_type}") {
       "directory"         {return "excl-dirs-pattern"}

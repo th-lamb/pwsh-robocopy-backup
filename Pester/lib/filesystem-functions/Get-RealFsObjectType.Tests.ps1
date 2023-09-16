@@ -4,7 +4,7 @@ BeforeAll {
 
 
 
-Describe 'RealFsObjectType' {
+Describe 'Get-RealFsObjectType' {
   BeforeDiscovery {
     #. "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
     $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "NODE304" -Quiet
@@ -16,7 +16,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/"
       $expected   = "directory"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -24,7 +24,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic/"
       $expected   = "directory"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -32,7 +32,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title1.mp3"
       $expected   = "file"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -40,7 +40,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title*.mp3"
       $expected   = "file"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -54,7 +54,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music2/"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -62,7 +62,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic2/"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -70,7 +70,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title0.mp3"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -78,7 +78,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title0*.mp3"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -88,7 +88,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic/title1*.mp3"
       $expected   = "file"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -96,7 +96,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic2/title1*.mp3"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -104,7 +104,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Mu*ic/title0*.mp3"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -114,7 +114,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music"
       $expected   = "directory"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -122,7 +122,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "${PSScriptRoot}/../../resources/test_files/Music/title1.mp3/"
       $expected   = "file"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -132,7 +132,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "C:"
       $expected   = "drive letter"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -140,7 +140,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "C:\"
       $expected   = "drive letter"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -148,7 +148,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "Z:"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -156,7 +156,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "Z:\"
       $expected   = $false
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -166,7 +166,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "\\NODE304\Backup\"
       $expected   = "network share"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -174,7 +174,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "\\NODE304\Backup"
       $expected   = "network share"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -183,7 +183,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "\\NODE304\Backup\win-backup\"
       $expected   = "directory"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -192,7 +192,7 @@ Describe 'RealFsObjectType' {
 #      $path_spec  = "\\NODE304\Backup\..."
 #      $expected   = "file"
 #
-#      $object_type = RealFsObjectType "${path_spec}"
+#      $object_type = Get-RealFsObjectType "${path_spec}"
 #      "${object_type}" | Should -Be "${expected}"
 #    }
   }
@@ -202,7 +202,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "\\NODE304\"
       $expected   = "network computer"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -210,7 +210,7 @@ Describe 'RealFsObjectType' {
       $path_spec  = "\\NODE304"
       $expected   = "network computer"
 
-      $object_type = RealFsObjectType "${path_spec}"
+      $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }

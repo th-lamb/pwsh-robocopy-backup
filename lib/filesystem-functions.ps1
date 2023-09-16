@@ -1,6 +1,6 @@
 #region Object types
 
-function RealFsObjectType {
+function Get-RealFsObjectType {
   <#
   Returns the type of the real filesystem object, specified by the path; or
   $false for non-existent directory/file.
@@ -11,12 +11,12 @@ function RealFsObjectType {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "RealFsObjectType(): Parameter path_spec not provided!"
+    Write-Error "Get-RealFsObjectType(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
   #endregion
 
-  $specified_type = SpecifiedFsObjectType "${path_spec}"
+  $specified_type = Get-SpecifiedFsObjectType "${path_spec}"
 
   <#
   We have to "manually" check for a UNC path first because Test-Path recognizes
@@ -57,7 +57,7 @@ function RealFsObjectType {
 
 }
 
-function SpecifiedFsObjectType {
+function Get-SpecifiedFsObjectType {
   <#
   Returns the type of the specified filesystem object.
   Note: Based on the string only. Reason: may refer to objects that may not have been created yet.
@@ -68,7 +68,7 @@ function SpecifiedFsObjectType {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "SpecifiedFsObjectType(): Parameter path_spec not provided!"
+    Write-Error "Get-SpecifiedFsObjectType(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
   #endregion
@@ -160,7 +160,7 @@ function SpecifiedFsObjectType {
 
 }
 
-function SpecifiedBackupBaseDirType {
+function Get-SpecifiedBackupBaseDirType {
   <#
   Returns the type of the specified backup base-dir.
   Note: Based on the string only.
@@ -174,12 +174,12 @@ function SpecifiedBackupBaseDirType {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "SpecifiedBackupBaseDirType(): Parameter path_spec not provided!"
+    Write-Error "Get-SpecifiedBackupBaseDirType(): Parameter path_spec not provided!"
     Throw "Parameter path_spec not provided!"
   }
   #endregion
 
-  $specified_type = SpecifiedFsObjectType "${path_spec}"
+  $specified_type = Get-SpecifiedFsObjectType "${path_spec}"
 
   switch ("${specified_type}") {
     "directory" {

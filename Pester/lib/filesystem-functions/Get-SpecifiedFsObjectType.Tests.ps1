@@ -4,13 +4,13 @@ BeforeAll {
 
 
 
-Describe 'SpecifiedFsObjectType' {
+Describe 'Get-SpecifiedFsObjectType' {
   Context 'Directories/files without patterns' {
     It 'recognizes a directory                              e.g. C:\Users\...\Music\' {
       $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Music\"
       $expected   = "directory"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -18,7 +18,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Music\title1.mp3"
       $expected   = "file"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -28,7 +28,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Mu*ic\"
       $expected   = "directory pattern"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -36,7 +36,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Music\title*.mp3"
       $expected   = "file pattern"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -46,7 +46,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Mu*ic\title*.mp3"
       $expected   = "directory pattern"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -56,7 +56,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = ""
       $expected   = "empty string"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -64,7 +64,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "UserProfile%\"
       $expected   = "directory"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -72,7 +72,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "UserProfile%\.gitconfig"
       $expected   = "file"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -82,7 +82,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "C:"
       $expected   = "drive letter"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -90,7 +90,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "C:\"
       $expected   = "drive letter"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -100,7 +100,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "\\NODE304\Backup\"
       $expected   = "network share"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -108,7 +108,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "\\NODE304\Backup"
       $expected   = "network share"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -116,7 +116,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "\\NODE304\Backup\win-backup\"
       $expected   = "directory"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -125,7 +125,7 @@ Describe 'SpecifiedFsObjectType' {
 #      $path_spec  = "\\NODE304\Backup\backup-thomas-ThinkPad-T420s.sh"
 #      $expected   = "file"
 #
-#      $object_type = SpecifiedFsObjectType "${path_spec}"
+#      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
 #      "${object_type}" | Should -Be "${expected}"
 #    }
   }
@@ -135,7 +135,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "\\NODE304\"
       $expected   = "network computer"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -143,7 +143,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "\\NODE304"
       $expected   = "network computer"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }
@@ -153,7 +153,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "C:\Users\<...>\Music\."
       $expected   = "directory entry"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
 
@@ -161,7 +161,7 @@ Describe 'SpecifiedFsObjectType' {
       $path_spec  = "C:\Users\<...>\Music\.."
       $expected   = "directory entry"
 
-      $object_type = SpecifiedFsObjectType "${path_spec}"
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
     }
   }

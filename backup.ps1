@@ -134,7 +134,7 @@ CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS' "${ROBOCOPY_JOB_TEM
 CheckNecessaryFile 'ROBOCOPY_JOB_TEMPLATE_LOGGING' "${ROBOCOPY_JOB_TEMPLATE_LOGGING}" "${BACKUP_LOGFILE}"
 
 # Different cases for $BACKUP_BASE_DIR (some cannot be created)!
-$dir_type = SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
+$dir_type = Get-SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
 ShowDebugMsg "BackupBaseDir type: ${dir_type}"
 
 switch ("${dir_type}") {
