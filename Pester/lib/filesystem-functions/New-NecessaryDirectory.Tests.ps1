@@ -7,18 +7,18 @@ BeforeAll {
 
   # For logging in tested functions
   . "${PSScriptRoot}/../../../lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/CreateNecessaryDirectory.Tests.log"
+  $logfile = "${PSScriptRoot}/New-NecessaryDirectory.Tests.log"
 }
 
 
 
-Describe 'CreateNecessaryDirectory' {
+Describe 'New-NecessaryDirectory' {
   Context 'Expected situations' {
     It 'Successfully creates a new directory' {
       $dir_to_create  = "${PSScriptRoot}/../../resources/test_files/dir_to_create"
 
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
-      CreateNecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
+      New-NecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
 
@@ -28,7 +28,7 @@ Describe 'CreateNecessaryDirectory' {
     It 'Does nothing if the directory already exists' {
       $dir_to_create  = "${PSScriptRoot}/../../resources/test_files/existing_dir"
 
-      CreateNecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
+      New-NecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
 
       $exists | Should -Be $true
@@ -41,7 +41,7 @@ Describe 'CreateNecessaryDirectory' {
       $expected_message = "* a file or directory with the same name already exists.`""  # Using wildcard
 
       {
-        CreateNecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
+        New-NecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
       } | Should -Throw -ExpectedMessage "${expected_message}"
 
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container

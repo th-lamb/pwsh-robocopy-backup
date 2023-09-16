@@ -204,8 +204,7 @@ function Get-SpecifiedBackupBaseDirType {
 
 #region Existence checks
 
-function FolderExists
-{
+function Test-FolderExists {
   # Returns $true if the specified folder exists; otherwise $false.
   param (
     [String]$folder_spec
@@ -213,7 +212,7 @@ function FolderExists
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('folder_spec')) {
-    Write-Error "FolderExists(): Parameter folder_spec not provided!"
+    Write-Error "Test-FolderExists(): Parameter folder_spec not provided!"
     Throw "Parameter folder_spec not provided!"
   }
   #endregion
@@ -226,7 +225,7 @@ function FolderExists
 
 }
 
-function FileExists {
+function Test-FileExists {
   # Returns $true if the specified file exists; otherwise $false.
   param (
     [String]$file_spec
@@ -234,7 +233,7 @@ function FileExists {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "FileExists(): Parameter file_spec not provided!"
+    Write-Error "Test-FileExists(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
   #endregion
@@ -247,7 +246,7 @@ function FileExists {
 
 }
 
-function CheckNecessaryDirectory {
+function Test-NecessaryDirectory {
   # Throws an exception if the specified directory doesn't exist.
   param (
     [String]$definition_name,
@@ -257,22 +256,22 @@ function CheckNecessaryDirectory {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "CheckNecessaryDirectory(): Parameter definition_name not provided!"
+    Write-Error "Test-NecessaryDirectory(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('directory_spec')) {
-    Write-Error "CheckNecessaryDirectory(): Parameter directory_spec not provided!"
+    Write-Error "Test-NecessaryDirectory(): Parameter directory_spec not provided!"
     Throw "Parameter directory_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "CheckNecessaryDirectory(): Parameter logfile not provided!"
+    Write-Error "Test-NecessaryDirectory(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
-  if (! (FolderExists "${directory_spec}") ) {
+  if (! (Test-FolderExists "${directory_spec}") ) {
     LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
     Throw
   }
@@ -281,7 +280,7 @@ function CheckNecessaryDirectory {
 
 }
 
-function CheckNecessaryFile {
+function Test-NecessaryFile {
   # Throws an exception if the specified file doesn't exist.
   param (
     [String]$definition_name,
@@ -291,22 +290,22 @@ function CheckNecessaryFile {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
+    Write-Error "Test-NecessaryFile(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
+    Write-Error "Test-NecessaryFile(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
+    Write-Error "Test-NecessaryFile(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
-  if (! (FileExists "${file_spec}") ) {
+  if (! (Test-FileExists "${file_spec}") ) {
     LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
     Throw
   }
@@ -315,7 +314,7 @@ function CheckNecessaryFile {
 
 }
 
-function GetExecutablePath {
+function Get-ExecutablePath {
   <#
   Returns the path to the specified executable if it exists.
   Also searches in the Windows PATH environment variable.
@@ -329,22 +328,22 @@ function GetExecutablePath {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "CheckNecessaryFile(): Parameter definition_name not provided!"
+    Write-Error "Get-ExecutablePath(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "CheckNecessaryFile(): Parameter file_spec not provided!"
+    Write-Error "Get-ExecutablePath(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "CheckNecessaryFile(): Parameter logfile not provided!"
+    Write-Error "Get-ExecutablePath(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
-  if (FileExists "${file_spec}") {
+  if (Test-FileExists "${file_spec}") {
     return "${file_spec}"
   }
 
@@ -366,7 +365,7 @@ function GetExecutablePath {
 
 #region Object creation
 
-function CreateNecessaryDirectory {
+function New-NecessaryDirectory {
   <#
   Creates the specified directory and all parent folders if necessary.
   #>
@@ -378,17 +377,17 @@ function CreateNecessaryDirectory {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "CreateNecessaryDirectory(): Parameter definition_name not provided!"
+    Write-Error "New-NecessaryDirectory(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('dir_spec')) {
-    Write-Error "CreateNecessaryDirectory(): Parameter dir_spec not provided!"
+    Write-Error "New-NecessaryDirectory(): Parameter dir_spec not provided!"
     Throw "Parameter dir_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "CreateNecessaryDirectory(): Parameter logfile not provided!"
+    Write-Error "New-NecessaryDirectory(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
@@ -409,7 +408,7 @@ function CreateNecessaryDirectory {
 
 }
 
-function CreateNecessaryFile {
+function New-NecessaryFile {
   <#
   Creates the specified file from the specified template.
   Returns $true if the file has been copied; otherwise $false.
@@ -423,31 +422,31 @@ function CreateNecessaryFile {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "CreateNecessaryFile(): Parameter definition_name not provided!"
+    Write-Error "New-NecessaryFile(): Parameter definition_name not provided!"
     Throw "Parameter definition_name not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "CreateNecessaryFile(): Parameter file_spec not provided!"
+    Write-Error "New-NecessaryFile(): Parameter file_spec not provided!"
     Throw "Parameter file_spec not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('template')) {
-    Write-Error "CreateNecessaryFile(): Parameter template not provided!"
+    Write-Error "New-NecessaryFile(): Parameter template not provided!"
     Throw "Parameter template not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "CreateNecessaryFile(): Parameter logfile not provided!"
+    Write-Error "New-NecessaryFile(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
 
-  if (FileExists "${file_spec}") {
+  if (Test-FileExists "${file_spec}") {
     return $false
   }
 
-  if (FolderExists "${file_spec}") {
+  if (Test-FolderExists "${file_spec}") {
     LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${file_spec} because a folder with the same name already exists!"
     Throw
   }

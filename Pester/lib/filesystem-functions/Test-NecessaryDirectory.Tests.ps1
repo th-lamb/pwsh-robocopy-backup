@@ -7,24 +7,24 @@ BeforeAll {
 
   # For logging in tested functions
   . "${PSScriptRoot}/../../../lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/CheckNecessaryDirectory.Tests.log"
+  $logfile = "${PSScriptRoot}/Test-NecessaryDirectory.Tests.log"
 }
 
 
 
-Describe 'CheckNecessaryDirectory' {
+Describe 'Test-NecessaryDirectory' {
   It 'Throws exception if specified directory does not exist.' {
     $nonexistent_dir = "${PSScriptRoot}/../../resources/test_files/nonexistent_dir/"
 
     {
-      CheckNecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
+      Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
     } | Should -Throw
   }
 
   It 'Does not throw exception if specified directory exists.' {
     $nonexistent_dir = "${PSScriptRoot}/../../resources/test_files/existing_dir/"
 
-    $result = CheckNecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
+    $result = Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
     $result | Should -Be 0
   }
 }

@@ -7,18 +7,18 @@ BeforeAll {
 
   # For logging in tested functions
   . "${PSScriptRoot}/../../../lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/GetExecutablePath.Tests.Tests.log"
+  $logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.Tests.log"
 }
 
 
 
-Describe 'GetExecutablePath' {
+Describe 'Get-ExecutablePath' {
   Context 'File exists' {
     It 'Returns the specified file if it exists' {
       $path_spec  = "C:\TOOLS\CMD\robocopy\Win10_engl\Robocopy.exe"
       $expected   = "C:\TOOLS\CMD\robocopy\Win10_engl\Robocopy.exe"
 
-      $result = GetExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
+      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
       "${result}" | Should -Be "${expected}"
     }
 
@@ -26,7 +26,7 @@ Describe 'GetExecutablePath' {
       $path_spec  = "robocopy"
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
-      $result = GetExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
+      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
       "${result}" | Should -Be "${expected}"
     }
 
@@ -34,7 +34,7 @@ Describe 'GetExecutablePath' {
       $path_spec  = "robocopy.exe"
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
-      $result = GetExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
+      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
       "${result}" | Should -Be "${expected}"
     }
   }

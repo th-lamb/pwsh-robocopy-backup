@@ -4,12 +4,12 @@ BeforeAll {
 
 
 
-Describe 'FileExists' {
+Describe 'Test-FileExists' {
   It 'Returns $true for an existing file' {
     $path_spec  = "${PSScriptRoot}/../../resources/test_files/Test1/test.ini"
     $expected   = $true
 
-    $result = FileExists "${path_spec}"
+    $result = Test-FileExists "${path_spec}"
     $result | Should -Be $expected
   }
 
@@ -17,7 +17,7 @@ Describe 'FileExists' {
     $path_spec  = "${PSScriptRoot}\test_files\Test1\test.xml"
     $expected   = $false
 
-    $result = FileExists "${path_spec}"
+    $result = Test-FileExists "${path_spec}"
     $result | Should -Be $expected
   }
 
@@ -25,7 +25,7 @@ Describe 'FileExists' {
     $path_spec  = "${PSScriptRoot}\test_files\Test1\"
     $expected   = $false
 
-    $result = FileExists "${path_spec}"
+    $result = Test-FileExists "${path_spec}"
     $result | Should -Be $expected
   }
 
@@ -33,7 +33,7 @@ Describe 'FileExists' {
     $path_spec  = "${PSScriptRoot}\test_files2\"
     $expected   = $false
 
-    $result = FileExists "${path_spec}"
+    $result = Test-FileExists "${path_spec}"
     $result | Should -Be $expected
   }
 }

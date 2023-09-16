@@ -3,23 +3,23 @@ BeforeAll {
 
   # For messages in tested functions
   . "${PSScriptRoot}/../../../lib/message-functions.ps1"
-  $__VERBOSE = 5  # Reduced to 5 because CreateNecessaryFile writes an INFO message.
+  $__VERBOSE = 5  # Reduced to 5 because New-NecessaryFile writes an INFO message.
 
   # For logging in tested functions
   . "${PSScriptRoot}/../../../lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/CreateNecessaryFile.Tests.log"
+  $logfile = "${PSScriptRoot}/New-NecessaryFile.Tests.log"
 }
 
 
 
-Describe 'CreateNecessaryFile' {
+Describe 'New-NecessaryFile' {
   Context 'Expected situations' {
     It 'Successfully creates a copy of the specified file' {
       $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/file_to_be_created.txt"
       $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
-      CreateNecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
 
@@ -31,7 +31,7 @@ Describe 'CreateNecessaryFile' {
       $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
-      $return_value = CreateNecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      $return_value = New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
 
       $return_value | Should -Be $true
@@ -41,7 +41,7 @@ Describe 'CreateNecessaryFile' {
       $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/existing_file"
       $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
 
-      $return_value = CreateNecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      $return_value = New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
 
       $return_value | Should -Be $false
     }
@@ -53,7 +53,7 @@ Describe 'CreateNecessaryFile' {
       $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
 
       {
-        CreateNecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+        New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
       } | Should -Throw
 
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
