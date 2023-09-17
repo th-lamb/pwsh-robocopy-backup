@@ -14,7 +14,7 @@ BeforeAll {
 
 Describe 'Test-NecessaryDirectory' {
   It 'Throws exception if specified directory does not exist.' {
-    $nonexistent_dir = "${PSScriptRoot}/../../resources/test_files/nonexistent_dir/"
+    $nonexistent_dir = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/nonexistent_dir/"
 
     {
       Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
@@ -22,7 +22,7 @@ Describe 'Test-NecessaryDirectory' {
   }
 
   It 'Does not throw exception if specified directory exists.' {
-    $nonexistent_dir = "${PSScriptRoot}/../../resources/test_files/existing_dir/"
+    $nonexistent_dir = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/existing_dir/"
 
     $result = Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
     $result | Should -Be 0

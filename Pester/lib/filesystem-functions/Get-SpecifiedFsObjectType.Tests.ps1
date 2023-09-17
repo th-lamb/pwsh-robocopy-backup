@@ -7,7 +7,7 @@ BeforeAll {
 Describe 'Get-SpecifiedFsObjectType' {
   Context 'Directories/files without patterns' {
     It 'recognizes a directory                              e.g. C:\Users\...\Music\' {
-      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Music\"
+      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\filesystem-functions\Music\"
       $expected   = "directory"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -15,7 +15,7 @@ Describe 'Get-SpecifiedFsObjectType' {
     }
 
     It 'recognizes a file                                   e.g. C:\Users\...\Music\title1.mp3' {
-      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Music\title1.mp3"
+      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\filesystem-functions\Music\title1.mp3"
       $expected   = "file"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -25,7 +25,7 @@ Describe 'Get-SpecifiedFsObjectType' {
 
   Context 'Directories/files with patterns' {
     It 'recognizes a directory pattern                      e.g. C:\Users\...\Mu*ic\' {
-      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Mu*ic\"
+      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\filesystem-functions\Mu*ic\"
       $expected   = "directory pattern"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -33,7 +33,7 @@ Describe 'Get-SpecifiedFsObjectType' {
     }
 
     It 'recognizes a file pattern                           e.g. C:\Users\...\Music\title*.mp3' {
-      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Music\title*.mp3"
+      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\filesystem-functions\Music\title*.mp3"
       $expected   = "file pattern"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -43,7 +43,7 @@ Describe 'Get-SpecifiedFsObjectType' {
 
   Context 'Placeholders in both, directory and filename' {
     It 'recognizes a directory pattern                      e.g. C:\Users\...\Mu*ic\title*.mp3' {
-      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\Mu*ic\title*.mp3"
+      $path_spec  = "${PSScriptRoot}\..\..\resources\test_files\filesystem-functions\Mu*ic\title*.mp3"
       $expected   = "directory pattern"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"

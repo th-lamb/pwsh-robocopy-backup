@@ -6,7 +6,7 @@ BeforeAll {
 
 Describe 'Test-FileExists' {
   It 'Returns $true for an existing file' {
-    $path_spec  = "${PSScriptRoot}/../../resources/test_files/Test1/test.ini"
+    $path_spec  = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/Test1/test.ini"
     $expected   = $true
 
     $result = Test-FileExists "${path_spec}"

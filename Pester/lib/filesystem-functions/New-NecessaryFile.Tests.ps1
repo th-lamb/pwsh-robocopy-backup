@@ -15,8 +15,8 @@ BeforeAll {
 Describe 'New-NecessaryFile' {
   Context 'Expected situations' {
     It 'Successfully creates a copy of the specified file' {
-      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/file_to_be_created.txt"
-      $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
+      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/file_to_be_created.txt"
+      $template_file      = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/template_file.txt"
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
       New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
@@ -27,8 +27,8 @@ Describe 'New-NecessaryFile' {
     }
 
     It 'Returns $true after successful copying' {
-      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/file_to_be_created.txt"
-      $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
+      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/file_to_be_created.txt"
+      $template_file      = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/template_file.txt"
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
       $return_value = New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
@@ -38,8 +38,8 @@ Describe 'New-NecessaryFile' {
     }
 
     It 'Does nothing if the file already exists' {
-      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/existing_file"
-      $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
+      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/existing_file"
+      $template_file      = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/template_file.txt"
 
       $return_value = New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
 
@@ -49,8 +49,8 @@ Describe 'New-NecessaryFile' {
 
   Context 'Unexpected situations' {
     It 'Fails if there already is a *directory* with the same name' {
-      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/existing_dir"
-      $template_file      = "${PSScriptRoot}/../../resources/test_files/template_file.txt"
+      $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/existing_dir"
+      $template_file      = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/template_file.txt"
 
       {
         New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"

@@ -6,7 +6,7 @@ BeforeAll {
 
 Describe 'Test-FolderExists' {
   It 'Returns $true for an existing directory' {
-    $path_spec  = "${PSScriptRoot}/../../resources/test_files/"
+    $path_spec  = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/"
     $expected   = $true
 
     $result = Test-FolderExists "${path_spec}"
@@ -14,7 +14,7 @@ Describe 'Test-FolderExists' {
   }
 
   It 'Returns $false for a non-existent directory' {
-    $path_spec  = "${PSScriptRoot}\test_files2\"
+    $path_spec  = "${PSScriptRoot}/test_files2/"
     $expected   = $false
 
     $result = Test-FolderExists "${path_spec}"
@@ -22,7 +22,7 @@ Describe 'Test-FolderExists' {
   }
 
   It 'Returns $false for an existing file' {
-    $path_spec  = "${PSScriptRoot}\test_files\Test1\test.ini"
+    $path_spec  = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/Test1/test.ini"
     $expected   = $false
 
     $result = Test-FolderExists "${path_spec}"
@@ -30,7 +30,7 @@ Describe 'Test-FolderExists' {
   }
 
   It 'Returns $false for a non-existent file' {
-    $path_spec  = "${PSScriptRoot}\test_files\Test1\test.xml"
+    $path_spec  = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/Test1/test.xml"
     $expected   = $false
 
     $result = Test-FolderExists "${path_spec}"
