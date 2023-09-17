@@ -40,6 +40,8 @@ Describe 'New-NecessaryDirectory' {
       $dir_to_create    = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/existing_file"
       $expected_message = "* a file or directory with the same name already exists.`""  # Using wildcard
 
+      Mock LogAndShowMessage {}  # Omit Write-Host output within the tested function.
+
       {
         New-NecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
       } | Should -Throw -ExpectedMessage "${expected_message}"
