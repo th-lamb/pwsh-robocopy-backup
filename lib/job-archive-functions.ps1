@@ -14,7 +14,7 @@
 #     ================
 # 
 # Not meant to be called directly:
-# - _deleteFiles()
+# - Remove-AllFilesInArray()
 # - _lastDatetime()
 #
 ################################################################################
@@ -24,7 +24,7 @@
 #TODO: Create a test in a separate folder? -> as in "C:\Backup\lambecth\robocopy-jobs - Kopie"?
 #archiveOldJobs "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
-function _deleteFiles {
+function Remove-AllFilesInArray {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
   param (
     [System.Collections.ArrayList]$files_to_delete
@@ -144,9 +144,9 @@ function archiveOldJobs {
   # Delete the jobs.
   ShowDebugMsg "Deleting old jobs..."
 
-  $num_jobfiles_deleted = _deleteFiles $old_jobfiles
+  $num_jobfiles_deleted = Remove-AllFilesInArray $old_jobfiles
   ShowDebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
 
-  $num_logfiles_deleted = _deleteFiles $old_logfiles
+  $num_logfiles_deleted = Remove-AllFilesInArray $old_logfiles
   ShowDebugMsg "$num_logfiles_deleted logfile(s) deleted."
 }
