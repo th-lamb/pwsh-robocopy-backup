@@ -82,6 +82,32 @@ Describe 'Get-DirlistLineType' {
       $result | Should -Be "${expected}"
     }
   }
+
+  Context 'Not implemented' {
+    It 'Reports invalid source-dir-pattern.' {
+      $entry = "C:\User*\"
+      $expected = "invalid: source directory pattern"
+
+      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result | Should -Be "${expected}"
+    }
+
+    It 'Reports invalid directory-entry (for current folder).' {
+      $entry = "C:\Users\."
+      $expected = "invalid: directory entry (for current or parent folder)"
+
+      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result | Should -Be "${expected}"
+    }
+
+    It 'Reports invalid directory-entry (for parent folder).' {
+      $entry = "C:\Users\.."
+      $expected = "invalid: directory entry (for current or parent folder)"
+
+      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result | Should -Be "${expected}"
+    }
+  }
 }
 
 
