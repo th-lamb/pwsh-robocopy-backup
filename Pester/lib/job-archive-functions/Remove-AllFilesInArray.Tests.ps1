@@ -23,7 +23,7 @@ Describe 'Remove-AllFilesInArray' {
     $files_to_delete.Add("${workingFolder}testfile3")
 
     # Call Remove-AllFilesInArray with that array.
-    Mock Write-Host {}  # Omit Write-Host output within the tested function.
+    Mock Write-Host {}  # Omit output within the tested function.
     Remove-AllFilesInArray $files_to_delete
 
     # Test
@@ -49,7 +49,7 @@ Describe 'Remove-AllFilesInArray' {
     $files_to_delete.Add("${workingFolder}testfile3")
 
     # Call Remove-AllFilesInArray with that array.
-    Mock Write-Host {}  # Omit Write-Host output within the tested function.
+    Mock Write-Host {}  # Omit output within the tested function.
     $result = Remove-AllFilesInArray $files_to_delete
 
     # Test

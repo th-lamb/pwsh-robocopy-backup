@@ -15,14 +15,11 @@
 # 
 # Not meant to be called directly:
 # - Remove-AllFilesInArray()
-# - _lastDatetime()
+# - Get-LastDateTime()
 #
 ################################################################################
 
 #TODO: Add logging - not only console messages!
-
-#TODO: Create a test in a separate folder? -> as in "C:\Backup\lambecth\robocopy-jobs - Kopie"?
-#archiveOldJobs "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
 function Remove-AllFilesInArray {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
@@ -42,7 +39,7 @@ function Remove-AllFilesInArray {
 
 }
 
-function _lastDatetime {
+function Get-LastDateTime {
   # Returns the date/time of the latest (youngest) file in the specified list;
   # or "" if the list is empty.
   param (
@@ -60,7 +57,7 @@ function _lastDatetime {
 
 }
 
-function archiveOldJobs {
+function Export-OldJobs {
   # Archives old jobfiles (zip file) and then deletes them.
   param (
     [String]$backup_job_dir,
@@ -70,7 +67,7 @@ function archiveOldJobs {
     [Int32]$max_archives_count
   )
 
-  ShowDebugMsg "archiveOldJobs(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
+  ShowDebugMsg "Export-OldJobs(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
 
   # Get all old jobfiles.
   $old_jobfiles = New-Object System.Collections.ArrayList
@@ -119,10 +116,10 @@ function archiveOldJobs {
 
   # Determine the name of the new archive. (Use date and time of the jobfiles?)
   # Get date/time from the logfiles if there were no jobfiles.
-  $last_datetime = _lastDatetime $old_jobfiles
+  $last_datetime = Get-LastDateTime $old_jobfiles
 
   if ("${last_datetime}" -eq "") {
-    $last_datetime = _lastDatetime $old_logfiles
+    $last_datetime = Get-LastDateTime $old_logfiles
   }
 
   ShowDebugMsg "Last job's date/time: ${last_datetime}"

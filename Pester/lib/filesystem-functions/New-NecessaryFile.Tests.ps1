@@ -52,7 +52,8 @@ Describe 'New-NecessaryFile' {
       $file_to_be_created = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/existing_dir"
       $template_file      = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/template_file.txt"
 
-      Mock LogAndShowMessage {}  # Omit Write-Host output within the tested function.
+      # Omit output within the tested function.
+      Mock LogAndShowMessage {}
 
       {
         New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"

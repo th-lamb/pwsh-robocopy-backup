@@ -16,7 +16,8 @@ Describe 'Test-NecessaryDirectory' {
   It 'Throws exception if specified directory does not exist.' {
     $nonexistent_dir = "${PSScriptRoot}/../../resources/test_files/filesystem-functions/nonexistent_dir/"
 
-    Mock LogAndShowMessage {}  # Omit Write-Host output within the tested function.
+    # Omit output within the tested function.
+    Mock LogAndShowMessage {}
 
     {
       Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
