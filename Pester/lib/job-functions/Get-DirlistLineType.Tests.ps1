@@ -108,10 +108,34 @@ Describe 'Get-DirlistLineType' {
       $result | Should -Be "${expected}"
     }
   }
+
+  Context 'Errors' {
+    It 'Reports a missing directory' {
+      $entry = "C:\no_such_dir\"
+      $expected = "error: not found"
+
+      Mock ShowWarningMsg {}
+
+      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result | Should -Be "${expected}"
+    }
+
+    It 'Reports a missing file' {
+      $entry = "C:\no_such_file.txt"
+      $expected = "error: not found"
+
+      Mock ShowWarningMsg {}
+
+      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result | Should -Be "${expected}"
+    }
+
+    #TODO: More errors?
+  }
 }
 
 
 
 AfterAll {
-  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }
