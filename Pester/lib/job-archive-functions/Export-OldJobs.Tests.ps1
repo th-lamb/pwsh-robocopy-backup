@@ -1,6 +1,11 @@
 BeforeAll {
-  . "${PSScriptRoot}/../../../lib/job-archive-functions.ps1"
-  $workingFolder = "${PSScriptRoot}/../../resources/test_files/job-archive-functions/"
+  $ProjectRoot = "${PSScriptRoot}/../../../"
+  . "${ProjectRoot}lib/job-archive-functions.ps1"
+  $workingFolder = "${ProjectRoot}Pester/resources/test_files/job-archive-functions/"
+
+  # For messages in tested functions
+  . "${ProjectRoot}lib/message-functions.ps1"
+  $__VERBOSE = 6
 
   # ini-values
   Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
@@ -81,12 +86,6 @@ BeforeAll {
       Remove-Item -Path "${workingFolder}${nextArchive}" -ErrorAction SilentlyContinue
     }
   }
-
-  # For messages in tested functions
-  . "${PSScriptRoot}/../../../lib/message-functions.ps1"
-  $__VERBOSE = 6
-
-  #function ShowDebugMsg {}
 }
 
 

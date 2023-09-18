@@ -15,7 +15,7 @@
 
 #region Object types
 
-function checkFsObjectTypeMismatch {
+function Test-FsObjectTypeMismatch {
   <#
   Warns if the real object type (e.g. "directory") does NOT match 
   the specified type (e.g. "file pattern").
@@ -44,12 +44,12 @@ function checkFsObjectTypeMismatch {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('specified_type')) {
-    Write-Error "checkFsObjectTypeMismatch(): Parameter specified_type not provided!"
+    Write-Error "Test-FsObjectTypeMismatch(): Parameter specified_type not provided!"
     Throw "Parameter specified_type not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('existing_type')) {
-    Write-Error "checkFsObjectTypeMismatch(): Parameter existing_type not provided!"
+    Write-Error "Test-FsObjectTypeMismatch(): Parameter existing_type not provided!"
     Throw "Parameter existing_type not provided!"
   }
   #endregion
@@ -139,7 +139,7 @@ function dirlistLineType {
     }
 
     $existing_type = Get-RealFsObjectType "${entry}"
-    $result = checkFsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+    $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
 
     switch ("${result}") {
       "match" {
@@ -154,8 +154,8 @@ function dirlistLineType {
         $object_type = "${existing_type}"   # We use the real object type!
       }
       Default {
-        Write-Error "dirlistLineType(): Unknown result from checkFsObjectTypeMismatch(): ${result}"
-        Throw "Unknown result from checkFsObjectTypeMismatch(): ${result}"
+        Write-Error "dirlistLineType(): Unknown result from Test-FsObjectTypeMismatch(): ${result}"
+        Throw "Unknown result from Test-FsObjectTypeMismatch(): ${result}"
       }
     }
 

@@ -1,5 +1,6 @@
 BeforeAll {
-  . "${PSScriptRoot}/../../../lib/filesystem-functions.ps1"
+  $ProjectRoot = "${PSScriptRoot}/../../../"
+  . "${ProjectRoot}lib/filesystem-functions.ps1"
 }
 
 

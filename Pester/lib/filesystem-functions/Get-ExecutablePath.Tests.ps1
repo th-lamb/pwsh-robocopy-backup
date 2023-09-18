@@ -1,12 +1,13 @@
 BeforeAll {
-  . "${PSScriptRoot}/../../../lib/filesystem-functions.ps1"
+  $ProjectRoot = "${PSScriptRoot}/../../../"
+  . "${ProjectRoot}lib/filesystem-functions.ps1"
 
   # For messages in tested functions
-  . "${PSScriptRoot}/../../../lib/message-functions.ps1"
+  . "${ProjectRoot}lib/message-functions.ps1"
   $__VERBOSE = 6
 
   # For logging in tested functions
-  . "${PSScriptRoot}/../../../lib/logging-functions.ps1"
+  . "${ProjectRoot}lib/logging-functions.ps1"
   $logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.log"
 }
 

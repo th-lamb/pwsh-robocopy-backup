@@ -1,11 +1,12 @@
 BeforeAll {
-  . "${PSScriptRoot}/../../../lib/inifile-functions.ps1"
+  $ProjectRoot = "${PSScriptRoot}/../../../"
+  . "${ProjectRoot}lib/inifile-functions.ps1"
   $ini_file = "${PSScriptRoot}/Read-SettingsFile.Tests.ini"
 
-  . "${PSScriptRoot}/../../../lib/filesystem-functions.ps1"
+  . "${ProjectRoot}lib/filesystem-functions.ps1"
 
   # For messages in tested functions
-  . "${PSScriptRoot}/../../../lib/message-functions.ps1"
+  . "${ProjectRoot}lib/message-functions.ps1"
   $__VERBOSE = 6
 }
 
