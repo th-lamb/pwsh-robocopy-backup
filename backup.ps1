@@ -319,12 +319,12 @@ ForEach($line in $dir_list_content) {
     - on errors; or
     - EOF
   #>
-  $line_type = dirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
+  $line_type = Get-DirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
   ShowDebugMsg "${line_type}: ${expanded}"
 
   switch -Wildcard ("${line_type}") {
     "error: *" {
-      # The fallback value of function dirlistLineType
+      # The fallback value of function Get-DirlistLineType
       $finish_previous_job = $true
       LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
     }

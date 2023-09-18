@@ -71,7 +71,7 @@ Describe 'Get-ParentDir' {
   }
 
   Context 'directory patterns' {
-    #TODO: Use dirlistLineType() or not?
+    #TODO: Use Get-DirlistLineType() or not?
     # -> Error: invalid: source directory pattern
     # -> The Backup checks the line type first.
 

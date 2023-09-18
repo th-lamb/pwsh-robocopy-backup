@@ -87,7 +87,7 @@ function Test-FsObjectTypeMismatch {
 
 }
 
-function dirlistLineType {
+function Get-DirlistLineType {
   #TODO: Use an Enum? https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#enum
   <#
   Returns the type of the specified line in the dir-list.
@@ -112,12 +112,12 @@ function dirlistLineType {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('entry')) {
-    Write-Error "dirlistLineType(): Parameter entry not provided!"
+    Write-Error "Get-DirlistLineType(): Parameter entry not provided!"
     Throw "Parameter entry not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "dirlistLineType(): Parameter logfile not provided!"
+    Write-Error "Get-DirlistLineType(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
@@ -154,12 +154,12 @@ function dirlistLineType {
         $object_type = "${existing_type}"   # We use the real object type!
       }
       Default {
-        Write-Error "dirlistLineType(): Unknown result from Test-FsObjectTypeMismatch(): ${result}"
+        Write-Error "Get-DirlistLineType(): Unknown result from Test-FsObjectTypeMismatch(): ${result}"
         Throw "Unknown result from Test-FsObjectTypeMismatch(): ${result}"
       }
     }
 
-    ShowDebugMsg "dirlistLineType(): object_type: ${object_type}"
+    ShowDebugMsg "Get-DirlistLineType(): object_type: ${object_type}"
 
     switch ("${object_type}") {
       "directory"         {return "source-dir"}

@@ -24,15 +24,15 @@ Describe 'Get-ExecutablePath' {
     }
 
     It 'Returns the file from the Windows PATH if it exists' {
-      $path_spec  = "robocopy"
+      $path_spec  = "robocopy.exe"
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
       $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
       "${result}" | Should -Be "${expected}"
     }
 
-    It 'Returns the file from the Windows PATH if it exists' {
-      $path_spec  = "robocopy.exe"
+    It 'Returns the file from the Windows PATH if called without the suffix (.exe)' {
+      $path_spec  = "robocopy"
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
       $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
