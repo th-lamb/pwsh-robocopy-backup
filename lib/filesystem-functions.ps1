@@ -347,7 +347,7 @@ function Get-ExecutablePath {
     return "${file_spec}"
   }
 
-  $file_in_path = (Get-Command "${file_spec}").Path
+  $file_in_path = (Get-Command "${file_spec}" -ErrorAction SilentlyContinue ).Path
 
   if ("${file_in_path}" -ne "") {
     ShowDebugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"

@@ -8,7 +8,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.log"
+#  $logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.log"
 }
 
 
@@ -41,13 +41,20 @@ Describe 'Get-ExecutablePath' {
   }
 
   Context 'File does not exist' {
-    #TODO: Exits the script with exit-code 2 if the specified file doesn't exist.
-  }
+    It 'Throws exception if the specified file does not exist.' {
+      $path_spec  = "robocopy2.exe"
 
+      Mock LogAndShowMessage {}
+
+      {
+        Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}" | Out-Null
+      } | Should -Throw
+    }
+  }
 }
 
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }
