@@ -211,7 +211,7 @@ function Get-DirlistLineType {
 
 #region Path functions
 
-function getTargetDir {
+function Get-TargetDir {
   # Returns the desired target (backup) directory for the specified directory.
   param (
     [String]$base_dir,
@@ -220,20 +220,33 @@ function getTargetDir {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('base_dir')) {
-    Write-Error "getTargetDir(): Parameter base_dir not provided!"
+    Write-Error "Get-TargetDir(): Parameter base_dir not provided!"
     Throw "Parameter base_dir not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('folder_spec')) {
-    Write-Error "getTargetDir(): Parameter folder_spec not provided!"
+    Write-Error "Get-TargetDir(): Parameter folder_spec not provided!"
     Throw "Parameter folder_spec not provided!"
   }
   #endregion
 
+  # Checks
   if ("${folder_spec}" -eq "") {
-    LogAndShowMessage "${BACKUP_LOGFILE}" ERR "getTargetDir(): No folder specified!"
+    LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Get-TargetDir(): No folder specified!"
+    #TODO: If we show an *error* here, why do we return the base dir as target dir?
+    #TODO: Can this even happen?
+    Throw "Get-TargetDir(): No folder specified!"
   }
 
+  # Corrections
+  if ( ! "${base_dir}".EndsWith("\") ) {
+    $base_dir = "${base_dir}\"
+  }
+  if ( ! "${folder_spec}".EndsWith("\") ) {
+    $folder_spec = "${folder_spec}\"
+  }
+
+  # Result
   $sub_dir= ($folder_spec -replace ":", "")
   $target_dir = ${base_dir} + "$sub_dir"
 

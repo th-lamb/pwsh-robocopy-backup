@@ -429,7 +429,7 @@ ForEach($line in $dir_list_content) {
       LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
       _resetJobRelatedInfo
     } else {
-      $target_dir = getTargetDir "${BACKUP_DIR}" "${source_dir}"
+      $target_dir = Get-TargetDir "${BACKUP_DIR}" "${source_dir}"
       ShowDebugMsg "target_dir        : ${target_dir}"
     }
 
