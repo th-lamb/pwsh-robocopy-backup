@@ -259,7 +259,7 @@ function _callCreateJob {
   # Creates the current job using all values collected from the dir-list.
   ShowDebugMsg "_callCreateJob()"
 
-  createJob `
+  Add-JobFile `
     "${COMPUTERNAME}" `
     $current_job_num `
     "${current_source_definition}" `

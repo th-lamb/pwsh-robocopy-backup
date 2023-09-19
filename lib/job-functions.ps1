@@ -568,7 +568,7 @@ function _finalizeJob {
 
 }
 
-function createJob {
+function Add-JobFile {
   # Creates the specified job file, including a simple header.
   #TODO: Omit $computername here? (Determined at the beginning and available here.)
   param (
@@ -585,60 +585,61 @@ function createJob {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('computername')) {
-    Write-Error "createJob(): Parameter computername not provided!"
+    Write-Error "Add-JobFile(): Parameter computername not provided!"
     Throw "Parameter computername not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('current_job_num')) {
-    Write-Error "createJob(): Parameter current_job_num not provided!"
+    Write-Error "Add-JobFile(): Parameter current_job_num not provided!"
     Throw "Parameter current_job_num not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('dirlist_entry')) {
-    Write-Error "createJob(): Parameter dirlist_entry not provided!"
+    Write-Error "Add-JobFile(): Parameter dirlist_entry not provided!"
     Throw "Parameter dirlist_entry not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('source_dir')) {
-    Write-Error "createJob(): Parameter source_dir not provided!"
+    Write-Error "Add-JobFile(): Parameter source_dir not provided!"
     Throw "Parameter source_dir not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('target_dir')) {
-    Write-Error "createJob(): Parameter target_dir not provided!"
+    Write-Error "Add-JobFile(): Parameter target_dir not provided!"
     Throw "Parameter target_dir not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('included_files')) {
-    Write-Error "createJob(): Parameter included_files not provided!"
+    Write-Error "Add-JobFile(): Parameter included_files not provided!"
     Throw "Parameter included_files not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_dirs')) {
-    Write-Error "createJob(): Parameter excluded_dirs not provided!"
+    Write-Error "Add-JobFile(): Parameter excluded_dirs not provided!"
     Throw "Parameter excluded_dirs not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('excluded_files')) {
-    Write-Error "createJob(): Parameter excluded_files not provided!"
+    Write-Error "Add-JobFile(): Parameter excluded_files not provided!"
     Throw "Parameter excluded_files not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('copy_single_file')) {
-    Write-Error "createJob(): Parameter copy_single_file not provided!"
+    Write-Error "Add-JobFile(): Parameter copy_single_file not provided!"
     Throw "Parameter copy_single_file not provided!"
   }
   #endregion
 
-  ShowDebugMsg "createJob(): computername         : ${computername}"
-  ShowDebugMsg "createJob(): current_job_num      : $current_job_num"
-  ShowDebugMsg "createJob(): dirlist_entry        : ${dirlist_entry}"
-  ShowDebugMsg "createJob(): source_dir           : ${source_dir}"
-  ShowDebugMsg "createJob(): target_dir           : ${target_dir}"
-  ShowDebugMsg ("createJob(): included_files.Count : " + $included_files.Count)
-  ShowDebugMsg ("createJob(): excluded_dirs.Count  : " + $excluded_dirs.Count)
-  ShowDebugMsg ("createJob(): excluded_files.Count : " + $excluded_files.Count)
-  ShowDebugMsg "createJob(): copy_single_file     : $copy_single_file"
+  ShowDebugMsg "Add-JobFile(): computername         : ${computername}"
+  ShowDebugMsg "Add-JobFile(): current_job_num      : $current_job_num"
+  ShowDebugMsg "Add-JobFile(): dirlist_entry        : ${dirlist_entry}"
+  ShowDebugMsg "Add-JobFile(): source_dir           : ${source_dir}"
+  ShowDebugMsg "Add-JobFile(): target_dir           : ${target_dir}"
+  #TODO: Other syntax? -> ShowDebugMsg "Add-JobFile(): included_files.Count : " + $($included_files.Count)"
+  ShowDebugMsg ("Add-JobFile(): included_files.Count : " + $included_files.Count)
+  ShowDebugMsg ("Add-JobFile(): excluded_dirs.Count  : " + $excluded_dirs.Count)
+  ShowDebugMsg ("Add-JobFile(): excluded_files.Count : " + $excluded_files.Count)
+  ShowDebugMsg "Add-JobFile(): copy_single_file     : $copy_single_file"
 
   # Paths for the current job
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
@@ -647,8 +648,8 @@ function createJob {
   $jobfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.RCJ"
   $logfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.log"
 
-  ShowDebugMsg "createJob(): jobfile_path         : ${jobfile_path}"
-  ShowDebugMsg "createJob(): logfile_path         : ${logfile_path}"
+  ShowDebugMsg "Add-JobFile(): jobfile_path         : ${jobfile_path}"
+  ShowDebugMsg "Add-JobFile(): logfile_path         : ${logfile_path}"
 
   # Create job file
   _writeHeader "${jobfile_path}" "${computername}" $current_job_num "${dirlist_entry}"
