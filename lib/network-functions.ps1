@@ -28,7 +28,7 @@ function Get-ComputernameFromUncPath {
 
 #region Availability checks
 
-function ServerIsAvailable {
+function Test-ServerIsAvailable {
   # Returns $true if the specified server is available; otherwise $false.
   param (
     [String]$server_path_spec
@@ -36,7 +36,7 @@ function ServerIsAvailable {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('server_path_spec')) {
-    Write-Error "ServerIsAvailable(): Parameter server_path_spec not provided!"
+    Write-Error "Test-ServerIsAvailable(): Parameter server_path_spec not provided!"
     Throw "Parameter server_path_spec not provided!"
   }
   #endregion
