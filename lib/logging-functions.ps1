@@ -43,7 +43,7 @@ function Format-InSquareBrackets {
 
 
 
-function Write-LogMessage {
+function Add-LogMessage {
   # Writes the $message to the $logfile.
   #
   # The Entry gets preceded with date/time and $severity. Example:
@@ -59,12 +59,12 @@ function Write-LogMessage {
   #region Check parameters
   # No check for $severity since it is declared as enum value.
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Write-LogMessage(): Parameter logfile not provided!"
+    Write-Error "Add-LogMessage(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('message')) {
-    Write-Error "Write-LogMessage(): Parameter message not provided!"
+    Write-Error "Add-LogMessage(): Parameter message not provided!"
     Throw "Parameter message not provided!"
   }
   #endregion
@@ -77,7 +77,7 @@ function Write-LogMessage {
   }
   catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
-    Write-Host "Write-LogMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
+    Write-Host "Add-LogMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
   }
 
 }
@@ -108,35 +108,35 @@ function LogAndShowMessage {
   switch ($severity) {
     EMERG {
       ShowEmergMsg "${message}"
-      Write-LogMessage "${logfile}" EMERG "${message}"
+      Add-LogMessage "${logfile}" EMERG "${message}"
     }
     ALERT {
       ShowAlertMsg "${message}"
-      Write-LogMessage "${logfile}" ALERT "${message}"
+      Add-LogMessage "${logfile}" ALERT "${message}"
     }
     CRIT {
       ShowCritMsg "${message}"
-      Write-LogMessage "${logfile}" CRIT "${message}"
+      Add-LogMessage "${logfile}" CRIT "${message}"
     }
     ERR {
       ShowErrMsg "${message}"
-      Write-LogMessage "${logfile}" ERR "${message}"
+      Add-LogMessage "${logfile}" ERR "${message}"
     }
     WARNING {
       ShowWarningMsg "${message}"
-      Write-LogMessage "${logfile}" WARNING "${message}"
+      Add-LogMessage "${logfile}" WARNING "${message}"
     }
     NOTICE {
       ShowNoticeMsg "${message}"
-      Write-LogMessage "${logfile}" NOTICE "${message}"
+      Add-LogMessage "${logfile}" NOTICE "${message}"
     }
     INFO {
       ShowInfoMsg "${message}"
-      Write-LogMessage "${logfile}" INFO "${message}"
+      Add-LogMessage "${logfile}" INFO "${message}"
     }
     DEBUG {
       ShowDebugMsg "${message}"
-      Write-LogMessage "${logfile}" DEBUG "${message}"
+      Add-LogMessage "${logfile}" DEBUG "${message}"
     }
   }
 

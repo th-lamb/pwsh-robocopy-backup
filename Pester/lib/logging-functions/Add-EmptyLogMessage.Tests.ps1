@@ -6,7 +6,7 @@ BeforeAll {
 
 
 
-Describe 'Write-LogMessage' {
+Describe 'Add-EmptyLogMessage' {
   # Check file content: https://pester.dev/docs/v4/usage/assertions#filecontentmatchmultiline
 
   It 'Correctly inserts 1 empty line.' {
