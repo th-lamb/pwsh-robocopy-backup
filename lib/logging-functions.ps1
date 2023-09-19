@@ -15,7 +15,7 @@ enum SeverityKeyword {
 
 #region Helper functions
 
-function _inSquareBrackets {
+function Format-InSquareBrackets {
   # Wraps severity keywords in square brackets of fix length 
   # for easy to read log entries. Examples:
   # - ERR   : [ERR    ]
@@ -70,7 +70,7 @@ function LogMessage {
   #endregion
 
   $date_time = (Get-Date -Format s)
-  $severity_header = _inSquareBrackets "${severity}"  # e.g. [INFO   ]
+  $severity_header = Format-InSquareBrackets "${severity}"  # e.g. [INFO   ]
 
   try {
     "${date_time} ${severity_header} ${message}" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
