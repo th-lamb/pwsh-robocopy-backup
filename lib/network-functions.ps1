@@ -1,9 +1,15 @@
 #region Helper functions
 
-function computernameFromUncPath {
+function Get-ComputernameFromUncPath {
   param (
     [String]$unc_path
   )
+
+  # Check if this really is a UNC path.
+  if ( ! ( [bool]([System.Uri]"${unc_path}").IsUnc ) ) {
+    Write-Error "Get-ComputernameFromUncPath(): Not a UNC path: ${unc_path}"
+    Throw "Not a UNC path: ${unc_path}"
+  }
 
   $temp = "${unc_path}".Replace("\\", "")
   $pos = "${temp}".IndexOf("\")
@@ -38,7 +44,7 @@ function ServerIsAvailable {
   # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
   # Test-Connection -BufferSize 32 -Count 1 -ComputerName 192.168.0.41 -Quiet
 
-  $server_name = computernameFromUncPath "${server_path_spec}"
+  $server_name = Get-ComputernameFromUncPath "${server_path_spec}"
   #Write-Host "server_name : ${server_name}" -ForegroundColor Blue
 
   #$available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
