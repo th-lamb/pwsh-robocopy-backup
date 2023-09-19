@@ -1,6 +1,7 @@
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
+  $workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
@@ -15,7 +16,7 @@ BeforeAll {
 
 Describe 'Test-NecessaryFile' {
   It 'Throws exception if specified file does not exist.' {
-    $nonexistent_dir = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/nonexistent_file"
+    $nonexistent_dir = "${workingFolder}nonexistent_file"
 
     # Omit output within the tested function.
     Mock LogAndShowMessage {}
@@ -26,7 +27,7 @@ Describe 'Test-NecessaryFile' {
   }
 
   It 'Does not throw exception if specified file exists.' {
-    $nonexistent_dir = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/existing_file"
+    $nonexistent_dir = "${workingFolder}existing_file"
 
     $result = Test-NecessaryFile 'Test' "${nonexistent_dir}" "${logfile}"
     $result | Should -Be 0

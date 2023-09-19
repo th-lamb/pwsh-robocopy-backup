@@ -1,20 +1,20 @@
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
+  $workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
 }
 
 
 
 Describe 'Get-RealFsObjectType' {
   BeforeDiscovery {
-    #. "${PSScriptRoot}/../../lib/filesystem-functions.ps1"
     $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "NODE304" -Quiet
     $skip_network_share_subfolder = !$available
   }
 
   Context 'Existing directories/files' {
     It 'recognizes existing directory                       e.g. C:\Users\...\Music\' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music/"
+      $path_spec  = "${workingFolder}Music/"
       $expected   = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -22,7 +22,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes existing directory with placeholder (*)  e.g. C:\Users\...\Mu*ic\' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Mu*ic/"
+      $path_spec  = "${workingFolder}Mu*ic/"
       $expected   = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -30,7 +30,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes existing file                            e.g. C:\Users\...\Music\title1.mp3' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music/title1.mp3"
+      $path_spec  = "${workingFolder}Music/title1.mp3"
       $expected   = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -38,7 +38,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes existing file with placeholders          e.g. C:\Users\...\Music\title*.mp3' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music/title*.mp3"
+      $path_spec  = "${workingFolder}Music/title*.mp3"
       $expected   = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -52,7 +52,7 @@ Describe 'Get-RealFsObjectType' {
 
   Context 'non-existent directories/files' {
     It 'recognizes non-existent directory                   e.g. C:\Users\...\Music2\' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music2/"
+      $path_spec  = "${workingFolder}Music2/"
       $expected   = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -60,7 +60,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes non-existent directory with placeholder  e.g. C:\Users\...\Mu*ic2\' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Mu*ic2/"
+      $path_spec  = "${workingFolder}Mu*ic2/"
       $expected   = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -68,7 +68,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Music\title0.mp3' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music/title0.mp3"
+      $path_spec  = "${workingFolder}Music/title0.mp3"
       $expected   = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -76,7 +76,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes non-existent file with placeholder       e.g. C:\Users\...\Music\title0*.mp3' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music/title0*.mp3"
+      $path_spec  = "${workingFolder}Music/title0*.mp3"
       $expected   = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -86,7 +86,7 @@ Describe 'Get-RealFsObjectType' {
 
   Context 'Placeholders in both, directory and filename' {
     It 'recognizes existing directory and file              e.g. C:\Users\...\Mu*ic\title1*.mp3' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Mu*ic/title1*.mp3"
+      $path_spec  = "${workingFolder}Mu*ic/title1*.mp3"
       $expected   = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -94,7 +94,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes non-existent directory                   e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Mu*ic2/title1*.mp3"
+      $path_spec  = "${workingFolder}Mu*ic2/title1*.mp3"
       $expected   = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -102,7 +102,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Mu*ic\title0*.mp3' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Mu*ic/title0*.mp3"
+      $path_spec  = "${workingFolder}Mu*ic/title0*.mp3"
       $expected   = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -112,7 +112,7 @@ Describe 'Get-RealFsObjectType' {
 
   Context 'Type mismatch' {
     It 'recognizes folder defined as file (no trailing \)   e.g. C:\Users\...\Music' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music"
+      $path_spec  = "${workingFolder}Music"
       $expected   = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
@@ -120,7 +120,7 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes file defined as folder (trailing \)      e.g. C:\Users\...\Music\title1.mp3\' {
-      $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Music/title1.mp3/"
+      $path_spec  = "${workingFolder}Music/title1.mp3/"
       $expected   = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"

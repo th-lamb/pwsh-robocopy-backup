@@ -1,6 +1,7 @@
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
+  $workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
 }
 
 
@@ -8,7 +9,7 @@ BeforeAll {
 Describe 'Get-SpecifiedFsObjectType' {
   Context 'Directories/files without patterns' {
     It 'recognizes a directory                              e.g. C:\Users\...\Music\' {
-      $path_spec  = "${ProjectRoot}\Pester\resources\test_files\filesystem-functions\Music\"
+      $path_spec  = "${workingFolder}Music\"
       $expected   = "directory"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -16,7 +17,7 @@ Describe 'Get-SpecifiedFsObjectType' {
     }
 
     It 'recognizes a file                                   e.g. C:\Users\...\Music\title1.mp3' {
-      $path_spec  = "${ProjectRoot}\Pester\resources\test_files\filesystem-functions\Music\title1.mp3"
+      $path_spec  = "${workingFolder}Music\title1.mp3"
       $expected   = "file"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -26,7 +27,7 @@ Describe 'Get-SpecifiedFsObjectType' {
 
   Context 'Directories/files with patterns' {
     It 'recognizes a directory pattern                      e.g. C:\Users\...\Mu*ic\' {
-      $path_spec  = "${ProjectRoot}\Pester\resources\test_files\filesystem-functions\Mu*ic\"
+      $path_spec  = "${workingFolder}Mu*ic\"
       $expected   = "directory pattern"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -34,7 +35,7 @@ Describe 'Get-SpecifiedFsObjectType' {
     }
 
     It 'recognizes a file pattern                           e.g. C:\Users\...\Music\title*.mp3' {
-      $path_spec  = "${ProjectRoot}\Pester\resources\test_files\filesystem-functions\Music\title*.mp3"
+      $path_spec  = "${workingFolder}Music\title*.mp3"
       $expected   = "file pattern"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
@@ -44,7 +45,7 @@ Describe 'Get-SpecifiedFsObjectType' {
 
   Context 'Placeholders in both, directory and filename' {
     It 'recognizes a directory pattern                      e.g. C:\Users\...\Mu*ic\title*.mp3' {
-      $path_spec  = "${ProjectRoot}\Pester\resources\test_files\filesystem-functions\Mu*ic\title*.mp3"
+      $path_spec  = "${workingFolder}Mu*ic\title*.mp3"
       $expected   = "directory pattern"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"

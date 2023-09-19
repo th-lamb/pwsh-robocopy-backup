@@ -1,7 +1,7 @@
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/job-archive-functions.ps1"
-  $workingFolder = "${ProjectRoot}Pester/resources/test_files/job-archive-functions/"
+  $workingFolder = "${ProjectRoot}Pester/resources/job-archive-functions/"
 }
 
 

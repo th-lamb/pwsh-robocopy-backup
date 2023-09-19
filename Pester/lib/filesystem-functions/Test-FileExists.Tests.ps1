@@ -1,13 +1,14 @@
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
+  $workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
 }
 
 
 
 Describe 'Test-FileExists' {
   It 'Returns $true for an existing file' {
-    $path_spec  = "${ProjectRoot}/Pester/resources/test_files/filesystem-functions/Test1/test.ini"
+    $path_spec  = "${workingFolder}Test1/test.ini"
     $expected   = $true
 
     $result = Test-FileExists "${path_spec}"
@@ -15,7 +16,7 @@ Describe 'Test-FileExists' {
   }
 
   It 'Returns $false for a non-existent file' {
-    $path_spec  = "${PSScriptRoot}\test_files\Test1\test.xml"
+    $path_spec  = "${workingFolder}Test1/test.xml"
     $expected   = $false
 
     $result = Test-FileExists "${path_spec}"
@@ -23,7 +24,7 @@ Describe 'Test-FileExists' {
   }
 
   It 'Returns $false for an existing directory' {
-    $path_spec  = "${PSScriptRoot}\test_files\Test1\"
+    $path_spec  = "${workingFolder}Test1/"
     $expected   = $false
 
     $result = Test-FileExists "${path_spec}"
@@ -31,7 +32,7 @@ Describe 'Test-FileExists' {
   }
 
   It 'Returns $false for a non-existent directory' {
-    $path_spec  = "${PSScriptRoot}\test_files2\"
+    $path_spec  = "${workingFolder}Test0/"
     $expected   = $false
 
     $result = Test-FileExists "${path_spec}"
