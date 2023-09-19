@@ -19,7 +19,7 @@ Describe 'Get-UserSelectedJobType' {
       $default_job_type = "Incremental"
       $expected = "Incremental"
 
-      Mock LogMessage {}
+      Mock Write-LogMessage {}
 
       #TODO: Read the "I" from the console!
       #Mock Read-Host {return "I"}

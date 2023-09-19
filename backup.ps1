@@ -95,7 +95,7 @@ try {
 
 Read-SettingsFile ($PSCommandPath -replace ".ps1", ".ini")
 
-LogInsertEmptyLine "${BACKUP_LOGFILE}"
+Add-EmptyLogMessage "${BACKUP_LOGFILE}"
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
 
 #endregion Read settings file ##################################################

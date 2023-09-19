@@ -43,7 +43,7 @@ function Format-InSquareBrackets {
 
 
 
-function LogMessage {
+function Write-LogMessage {
   # Writes the $message to the $logfile.
   #
   # The Entry gets preceded with date/time and $severity. Example:
@@ -59,12 +59,12 @@ function LogMessage {
   #region Check parameters
   # No check for $severity since it is declared as enum value.
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "LogMessage(): Parameter logfile not provided!"
+    Write-Error "Write-LogMessage(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
 
   if (! $PSBoundParameters.ContainsKey('message')) {
-    Write-Error "LogMessage(): Parameter message not provided!"
+    Write-Error "Write-LogMessage(): Parameter message not provided!"
     Throw "Parameter message not provided!"
   }
   #endregion
@@ -77,7 +77,7 @@ function LogMessage {
   }
   catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
-    Write-Host "LogMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
+    Write-Host "Write-LogMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
   }
 
 }
@@ -108,41 +108,41 @@ function LogAndShowMessage {
   switch ($severity) {
     EMERG {
       ShowEmergMsg "${message}"
-      LogMessage "${logfile}" EMERG "${message}"
+      Write-LogMessage "${logfile}" EMERG "${message}"
     }
     ALERT {
       ShowAlertMsg "${message}"
-      LogMessage "${logfile}" ALERT "${message}"
+      Write-LogMessage "${logfile}" ALERT "${message}"
     }
     CRIT {
       ShowCritMsg "${message}"
-      LogMessage "${logfile}" CRIT "${message}"
+      Write-LogMessage "${logfile}" CRIT "${message}"
     }
     ERR {
       ShowErrMsg "${message}"
-      LogMessage "${logfile}" ERR "${message}"
+      Write-LogMessage "${logfile}" ERR "${message}"
     }
     WARNING {
       ShowWarningMsg "${message}"
-      LogMessage "${logfile}" WARNING "${message}"
+      Write-LogMessage "${logfile}" WARNING "${message}"
     }
     NOTICE {
       ShowNoticeMsg "${message}"
-      LogMessage "${logfile}" NOTICE "${message}"
+      Write-LogMessage "${logfile}" NOTICE "${message}"
     }
     INFO {
       ShowInfoMsg "${message}"
-      LogMessage "${logfile}" INFO "${message}"
+      Write-LogMessage "${logfile}" INFO "${message}"
     }
     DEBUG {
       ShowDebugMsg "${message}"
-      LogMessage "${logfile}" DEBUG "${message}"
+      Write-LogMessage "${logfile}" DEBUG "${message}"
     }
   }
 
 }
 
-function LogInsertEmptyLine {
+function Add-EmptyLogMessage {
   # Appends an empty line to the $logfile.
   Param(
     [String]$logfile
@@ -150,7 +150,7 @@ function LogInsertEmptyLine {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "LogInsertEmptyLine(): Parameter logfile not provided!"
+    Write-Error "Add-EmptyLogMessage(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
@@ -159,7 +159,7 @@ function LogInsertEmptyLine {
     "" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
   } catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
-    Write-Host "LogInsertEmptyLine(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
+    Write-Host "Add-EmptyLogMessage(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
   }
 
 }
