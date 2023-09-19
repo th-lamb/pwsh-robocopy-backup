@@ -9,7 +9,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/New-NecessaryFile.Tests.log"
+  #$logfile = "${PSScriptRoot}/New-NecessaryFile.Tests.log"
 }
 
 
@@ -19,6 +19,8 @@ Describe 'New-NecessaryFile' {
     It 'Successfully creates a copy of the specified file' {
       $file_to_be_created = "${workingFolder}file_to_be_created.txt"
       $template_file      = "${workingFolder}template_file.txt"
+
+      Mock LogAndShowMessage {}
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
       New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
@@ -31,6 +33,8 @@ Describe 'New-NecessaryFile' {
     It 'Returns $true after successful copying' {
       $file_to_be_created = "${workingFolder}file_to_be_created.txt"
       $template_file      = "${workingFolder}template_file.txt"
+
+      Mock LogAndShowMessage {}
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
       $return_value = New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
@@ -54,7 +58,6 @@ Describe 'New-NecessaryFile' {
       $file_to_be_created = "${workingFolder}existing_dir"
       $template_file      = "${workingFolder}template_file.txt"
 
-      # Omit output within the tested function.
       Mock LogAndShowMessage {}
 
       {
@@ -70,5 +73,5 @@ Describe 'New-NecessaryFile' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

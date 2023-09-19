@@ -571,6 +571,7 @@ function _finalizeJob {
 function Add-JobFile {
   # Creates the specified job file, including a simple header.
   #TODO: Omit $computername here? (Determined at the beginning and available here.)
+  #TODO: Or add $BACKUP_JOB_DIR as well?
   param (
     [String]$computername,
     [Int32]$current_job_num,

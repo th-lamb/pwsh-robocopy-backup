@@ -4,7 +4,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/Test-FsObjectTypeMismatch.Tests.log"
+  #$logfile = "${PSScriptRoot}/Test-FsObjectTypeMismatch.Tests.log"
 }
 
 
@@ -112,5 +112,5 @@ Describe 'Test-FsObjectTypeMismatch' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

@@ -9,7 +9,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/Test-NecessaryDirectory.Tests.log"
+  #$logfile = "${PSScriptRoot}/Test-NecessaryDirectory.Tests.log"
 }
 
 
@@ -18,7 +18,6 @@ Describe 'Test-NecessaryDirectory' {
   It 'Throws exception if specified directory does not exist.' {
     $nonexistent_dir = "${workingFolder}nonexistent_dir/"
 
-    # Omit output within the tested function.
     Mock LogAndShowMessage {}
 
     {
@@ -37,5 +36,5 @@ Describe 'Test-NecessaryDirectory' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

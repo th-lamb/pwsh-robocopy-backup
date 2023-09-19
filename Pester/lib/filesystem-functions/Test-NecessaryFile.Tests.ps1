@@ -9,7 +9,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/Test-NecessaryFile.Tests.log"
+  #$logfile = "${PSScriptRoot}/Test-NecessaryFile.Tests.log"
 }
 
 
@@ -18,7 +18,6 @@ Describe 'Test-NecessaryFile' {
   It 'Throws exception if specified file does not exist.' {
     $nonexistent_dir = "${workingFolder}nonexistent_file"
 
-    # Omit output within the tested function.
     Mock LogAndShowMessage {}
 
     {
@@ -37,5 +36,5 @@ Describe 'Test-NecessaryFile' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

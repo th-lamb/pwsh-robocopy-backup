@@ -4,7 +4,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/Get-DirlistLineType.Tests.log"
+  #$logfile = "${PSScriptRoot}/Get-DirlistLineType.Tests.log"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
@@ -114,7 +114,7 @@ Describe 'Get-DirlistLineType' {
       $entry = "C:\no_such_dir\"
       $expected = "error: not found"
 
-      Mock ShowWarningMsg {}
+      Mock LogAndShowMessage {}
 
       $result = Get-DirlistLineType "${entry}" "${logfile}"
       $result | Should -Be "${expected}"
@@ -124,7 +124,7 @@ Describe 'Get-DirlistLineType' {
       $entry = "C:\no_such_file.txt"
       $expected = "error: not found"
 
-      Mock ShowWarningMsg {}
+      Mock LogAndShowMessage {}
 
       $result = Get-DirlistLineType "${entry}" "${logfile}"
       $result | Should -Be "${expected}"
@@ -137,5 +137,5 @@ Describe 'Get-DirlistLineType' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

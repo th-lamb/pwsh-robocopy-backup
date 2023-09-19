@@ -9,7 +9,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${PSScriptRoot}/New-NecessaryDirectory.Tests.log"
+  #$logfile = "${PSScriptRoot}/New-NecessaryDirectory.Tests.log"
 }
 
 
@@ -42,7 +42,6 @@ Describe 'New-NecessaryDirectory' {
       $dir_to_create    = "${workingFolder}existing_file"
       $expected_message = "* a file or directory with the same name already exists.`""  # Using wildcard
 
-      # Omit output within the tested function.
       Mock LogAndShowMessage {}
 
       {
@@ -58,5 +57,5 @@ Describe 'New-NecessaryDirectory' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }
