@@ -188,7 +188,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files chec
 
 #region Ask for job type
 
-$selected_job_type = UserSelectedJobType "${DEFAULT_JOB_TYPE}" "${BACKUP_LOGFILE}"
+$selected_job_type = Get-UserSelectedJobType "${DEFAULT_JOB_TYPE}" "${BACKUP_LOGFILE}"
 
 switch ($selected_job_type) {
   "Incremental" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }

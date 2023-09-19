@@ -67,7 +67,7 @@ function _showOptions {
 
 }
 
-function UserSelectedJobType {
+function Get-UserSelectedJobType {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
