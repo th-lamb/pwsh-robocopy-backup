@@ -524,7 +524,7 @@ if ($jobfiles_count -eq 0) {
     [Int32]$job_name_length = ("${user_defined_job}".LastIndexOf(".") - $job_name_pos)
     [String]$job_name = "${user_defined_job}".Substring($job_name_pos, $job_name_length)
 
-    logAndShowRobocopyErrors "${BACKUP_LOGFILE}" "${job_name}" $robocopy_exit_code
+    LogAndShowRobocopyErrors "${BACKUP_LOGFILE}" "${job_name}" $robocopy_exit_code
 
     # Update counters.
     switch ($robocopy_exit_code) {

@@ -16,7 +16,7 @@
   FatalError = 16
 }
 
-function logAndShowRobocopyErrors {
+function LogAndShowRobocopyErrors {
   Param(
     [String]$logfile,
     [String]$job_name,
