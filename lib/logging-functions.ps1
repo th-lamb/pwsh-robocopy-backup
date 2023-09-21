@@ -70,7 +70,7 @@ function Add-LogMessage {
   #endregion
 
   $date_time = (Get-Date -Format s)
-  $severity_header = Format-InSquareBrackets "${severity}"  # e.g. [INFO   ]
+  $severity_header = Format-InSquareBrackets $severity  # e.g. [INFO   ]
 
   try {
     "${date_time} ${severity_header} ${message}" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
@@ -119,7 +119,7 @@ function LogAndShowMessage {
 
   # Write the message to the console.
   switch ($severity) {
-    EMERG   { Write-EmergMessage "${message}" }
+    EMERG   { Write-EmergMsg "${message}" }
     ALERT   { Write-AlertMsg "${message}" }
     CRIT    { Write-CritMsg "${message}" }
     ERR     { Write-ErrMsg "${message}" }

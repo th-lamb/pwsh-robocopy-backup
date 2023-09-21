@@ -30,7 +30,7 @@ Describe 'Add-LogMessage' {
       $expected = "[EMERG  ] Emergency message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
@@ -43,7 +43,7 @@ Describe 'Add-LogMessage' {
       $expected = "[ALERT  ] Alert message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
@@ -56,7 +56,7 @@ Describe 'Add-LogMessage' {
       $expected = "[CRIT   ] Critical message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
@@ -69,7 +69,7 @@ Describe 'Add-LogMessage' {
       $expected = "[ERR    ] Error message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
@@ -84,7 +84,7 @@ Describe 'Add-LogMessage' {
       $expected = "[WARNING] Warning message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
@@ -97,7 +97,7 @@ Describe 'Add-LogMessage' {
       $expected = "[NOTICE ] Notice message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
@@ -110,7 +110,7 @@ Describe 'Add-LogMessage' {
       $expected = "[INFO   ] Info message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
@@ -123,7 +123,7 @@ Describe 'Add-LogMessage' {
       $expected = "[DEBUG  ] Debug message"
 
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Add-LogMessage "${logfile}" "${severity}" "${message}"
+      Add-LogMessage "${logfile}" $severity "${message}"
 
       $expected = Format-RegexString "${expected}"
       "${logfile}" | Should -FileContentMatch "${expected}"
