@@ -28,8 +28,9 @@ Describe 'Test-NecessaryFile' {
   It 'Does not throw exception if specified file exists.' {
     $nonexistent_dir = "${workingFolder}existing_file"
 
-    $result = Test-NecessaryFile 'Test' "${nonexistent_dir}" "${logfile}"
-    $result | Should -Be 0
+    {
+      Test-NecessaryFile 'Test' "${nonexistent_dir}" "${logfile}"
+    } | Should -Not -Throw
   }
 }
 

@@ -275,9 +275,6 @@ function Test-NecessaryDirectory {
     LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
     Throw
   }
-
-  return 0
-
 }
 
 function Test-NecessaryFile {
@@ -309,9 +306,6 @@ function Test-NecessaryFile {
     LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
     Throw
   }
-
-  return 0
-
 }
 
 function Get-ExecutablePath {

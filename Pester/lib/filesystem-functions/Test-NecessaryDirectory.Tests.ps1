@@ -28,8 +28,9 @@ Describe 'Test-NecessaryDirectory' {
   It 'Does not throw exception if specified directory exists.' {
     $nonexistent_dir = "${workingFolder}existing_dir/"
 
-    $result = Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
-    $result | Should -Be 0
+    {
+      Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
+    } | Should -Not -Throw
   }
 }
 
