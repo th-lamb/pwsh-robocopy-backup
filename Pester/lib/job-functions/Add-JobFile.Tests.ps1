@@ -1,7 +1,7 @@
 BeforeAll {
-  $ProjectRoot = "${PSScriptRoot}/../../../"
+  $ProjectRoot = "${PSScriptRoot}\..\..\..\"  # Backslashes for the jobfile!
   . "${ProjectRoot}lib/job-functions.ps1"
-  $workingFolder = "${ProjectRoot}Pester/resources/job-functions/"
+  $workingFolder = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
@@ -22,7 +22,7 @@ Describe 'Add-JobFile' {
     $BACKUP_JOB_DIR = "${workingFolder}"
 
     # Parameters
-    #[String]$computername,
+    [String]$computername
     [Int32]$current_job_num
     [String]$dirlist_entry
     [String]$source_dir
@@ -33,12 +33,12 @@ Describe 'Add-JobFile' {
     [System.Boolean]$copy_single_file
 
     # Actual values
-    Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
+    $computername     = "Machine_1"
     $current_job_num  = 1
-    $dirlist_entry    = "C:\cygwin64\Cygwin.ico"
-    $source_dir       = "C:\cygwin64\"
-    $target_dir       = "C:\Backup\C\cygwin64\"
-    $included_files.Add("Cygwin.ico")
+    $dirlist_entry    = "C:\foo\bar.txt"
+    $source_dir       = "C:\foo\"
+    $target_dir       = "C:\Backup\C\foo\"
+    $included_files.Add("bar.txt")
     #$excluded_dirs
     #$excluded_files
     $copy_single_file = $true
