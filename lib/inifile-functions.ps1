@@ -21,13 +21,13 @@ function Write-FormattedIniValues {
   }
 
   # Show debug messages.
-  ShowDebugMsg "--------------------------------------------------------------------------------"
-  ShowDebugMsg "Values from the settings file:"
-  ShowDebugMsg ""
+  Write-DebugMsg "--------------------------------------------------------------------------------"
+  Write-DebugMsg "Values from the settings file:"
+  Write-DebugMsg ""
   for ($i = 0; $i -lt $var_names.Count; $i++) {
-    ShowDebugMsg "$($var_names_same_length[$i]): $($var_values[$i])"
+    Write-DebugMsg "$($var_names_same_length[$i]): $($var_values[$i])"
   }
-  ShowDebugMsg "--------------------------------------------------------------------------------"
+  Write-DebugMsg "--------------------------------------------------------------------------------"
 
 }
 

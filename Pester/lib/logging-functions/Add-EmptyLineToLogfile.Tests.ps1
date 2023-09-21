@@ -1,17 +1,17 @@
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${ProjectRoot}Pester/resources/logging-functions/Add-EmptyLogMessage.Tests.log"
+  $logfile = "${ProjectRoot}Pester/resources/logging-functions/Add-EmptyLineToLogfile.Tests.log"
 }
 
 
 
-Describe 'Add-EmptyLogMessage' {
+Describe 'Add-EmptyLineToLogfile' {
   # Check file content: https://pester.dev/docs/v4/usage/assertions#filecontentmatchmultiline
 
   It 'Correctly inserts 1 empty line.' {
     Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-    Add-EmptyLogMessage "${logfile}"
+    Add-EmptyLineToLogfile "${logfile}"
 
     "${logfile}" | Should -FileContentMatchMultiline '\n$'
   }

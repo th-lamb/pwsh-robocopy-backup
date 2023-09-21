@@ -7,7 +7,7 @@
 
 
 # https://pshirwin.wordpress.com/2016/03/18/robocopy-exitcodes-the-powershell-way/
-[Flags()] Enum RoboCopyExitCodes{
+[Flags()] Enum RoboCopyExitCodes {
   NoChange = 0
   OKCopy = 1
   ExtraFiles = 2

@@ -159,7 +159,7 @@ function Get-DirlistLineType {
       }
     }
 
-    ShowDebugMsg "Get-DirlistLineType(): object_type: ${object_type}"
+    Write-DebugMsg "Get-DirlistLineType(): object_type: ${object_type}"
 
     switch ("${object_type}") {
       "directory"         {return "source-dir"}
@@ -631,16 +631,16 @@ function Add-JobFile {
   }
   #endregion
 
-  ShowDebugMsg "Add-JobFile(): computername         : ${computername}"
-  ShowDebugMsg "Add-JobFile(): current_job_num      : $current_job_num"
-  ShowDebugMsg "Add-JobFile(): dirlist_entry        : ${dirlist_entry}"
-  ShowDebugMsg "Add-JobFile(): source_dir           : ${source_dir}"
-  ShowDebugMsg "Add-JobFile(): target_dir           : ${target_dir}"
-  #TODO: Other syntax? -> ShowDebugMsg "Add-JobFile(): included_files.Count : " + $($included_files.Count)"
-  ShowDebugMsg ("Add-JobFile(): included_files.Count : " + $included_files.Count)
-  ShowDebugMsg ("Add-JobFile(): excluded_dirs.Count  : " + $excluded_dirs.Count)
-  ShowDebugMsg ("Add-JobFile(): excluded_files.Count : " + $excluded_files.Count)
-  ShowDebugMsg "Add-JobFile(): copy_single_file     : $copy_single_file"
+  Write-DebugMsg "Add-JobFile(): computername         : ${computername}"
+  Write-DebugMsg "Add-JobFile(): current_job_num      : $current_job_num"
+  Write-DebugMsg "Add-JobFile(): dirlist_entry        : ${dirlist_entry}"
+  Write-DebugMsg "Add-JobFile(): source_dir           : ${source_dir}"
+  Write-DebugMsg "Add-JobFile(): target_dir           : ${target_dir}"
+  #TODO: Other syntax? -> Write-DebugMsg "Add-JobFile(): included_files.Count : " + $($included_files.Count)"
+  Write-DebugMsg ("Add-JobFile(): included_files.Count : " + $included_files.Count)
+  Write-DebugMsg ("Add-JobFile(): excluded_dirs.Count  : " + $excluded_dirs.Count)
+  Write-DebugMsg ("Add-JobFile(): excluded_files.Count : " + $excluded_files.Count)
+  Write-DebugMsg "Add-JobFile(): copy_single_file     : $copy_single_file"
 
   # Paths for the current job
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
@@ -649,8 +649,8 @@ function Add-JobFile {
   $jobfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.RCJ"
   $logfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.log"
 
-  ShowDebugMsg "Add-JobFile(): jobfile_path         : ${jobfile_path}"
-  ShowDebugMsg "Add-JobFile(): logfile_path         : ${logfile_path}"
+  Write-DebugMsg "Add-JobFile(): jobfile_path         : ${jobfile_path}"
+  Write-DebugMsg "Add-JobFile(): logfile_path         : ${logfile_path}"
 
   # Create job file
   _writeHeader "${jobfile_path}" "${computername}" $current_job_num "${dirlist_entry}"

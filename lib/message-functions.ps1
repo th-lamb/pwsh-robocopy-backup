@@ -9,7 +9,8 @@
 # Verbose, ...), only Write-Host to write to the console with different colors.
 # 
 # There are two variants of all message functions. Example:
-# - ShowInfoMsg(): Prints the message only.
+# - Write-InfoMsg(): Prints the message only.
+#TODO: infoLog is removed?
 # - infoLog(): Prints a timestamp before the message.
 # 
 # 
@@ -22,7 +23,7 @@
 #    -> Set ${__VERBOSE} via options --quiet, --verbose or similar.
 # 
 # 3. Replace Write-Host commands with function calls depending on the message severity.
-#    -> e.g. ShowNoticeMsg() for important (but expected) messages, and ShowErrMsg() 
+#    -> e.g. Write-NoticeMsg() for important (but expected) messages, and Write-ErrMsg() 
 #       for unexpected errors
 # 
 # 
@@ -30,37 +31,37 @@
 #     =============================
 # 
 # The message functions are related to a specific severity level. Messages will 
-# be shown if ${__VERBOSE} is equal to or higher than this level.
+# be shown if $__VERBOSE is equal to or higher than this level.
 # 
-#   | Function      | Severity (value)| Condition           |
-#   +---------------+-----------------+---------------------+
-#   | ShowEmergMsg()    | emerg     (0)   | none (always shown) |
-#   | ShowAlertMsg()    | alert     (1)   | ""                  |
-#   | ShowCritMsg()     | crit      (2)   | ""                  |
-#   | ShowErrMsg()      | err       (3)   | ""                  |
-#   | ShowWarningMsg()  | warning   (4)   | ${__VERBOSE} >= 4   |
-#   | ShowNoticeMsg()   | notice    (5)   | ${__VERBOSE} >= 5   |
-#   | ShowInfoMsg()     | info      (6)   | ${__VERBOSE} >= 6   |
-#   | ShowDebugMsg()    | debug     (7)   | ${__VERBOSE} = 7    |
+#   | Function            | Severity (value)| Condition           |
+#   +---------------------+-----------------+---------------------+
+#   | Write-EmergMsg()    | emerg     (0)   | none (always shown) |
+#   | Write-AlertMsg()    | alert     (1)   | ""                  |
+#   | Write-CritMsg()     | crit      (2)   | ""                  |
+#   | Write-ErrMsg()      | err       (3)   | ""                  |
+#   | Write-WarningMsg()  | warning   (4)   | ${__VERBOSE} >= 4   |
+#   | Write-NoticeMsg()   | notice    (5)   | ${__VERBOSE} >= 5   |
+#   | Write-InfoMsg()     | info      (6)   | ${__VERBOSE} >= 6   |
+#   | Write-DebugMsg()    | debug     (7)   | ${__VERBOSE} = 7    |
 # 
 # 
 #     Helper functions
 #     ================
 # 
 # Not meant to be called directly:
-# - _coloredMsg()
+# - Write-ColoredMessage()
 # - _coloredLog()
-# - _isVerbosityDefined()
+# - Test-VerbosityIsDefined()
 # 
 # 
 #     Wrappers for simple verbose modes
 #     =================================
 # 
-# - ShowQuietMessage()  : Interpreted as a warning
-# - ShowNormalMessage() : Interpreted as "info" but will already be shown at 
-#                         verbose level 5 (severity level "notice").
-# - ShowVerboseMessage(): Interpreted as "info" but will only be shown at verbose 
-#                         level 7 (severity level "debug").
+# - Write-QuietMessage()  : Interpreted as a warning
+# - Write-NormalMessage() : Interpreted as "info" but will already be shown at 
+#                           verbose level 5 (severity level "notice").
+# - Write-VerboseMessage(): Interpreted as "info" but will only be shown at verbose 
+#                           level 7 (severity level "debug").
 # 
 ################################################################################
 
@@ -76,9 +77,9 @@
 
 #region Helper functions - Colored message (without and with timestamp)
 
-function _coloredMsg {
+function Write-ColoredMessage {
   <#
-  Shows the specified message with colors depending on the severity level of the message.
+  Writes the specified message to the console with colors depending on the severity level of the message.
 
   Notes:
   * Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
@@ -139,8 +140,8 @@ TODO:
     }
     Default {
       # Illegal severity level!
-      $err_message = "_coloredMsg(): Illegal severity level specified: ${severity}"
-      _coloredMsg "err" "${err_message}"
+      $err_message = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
+      Write-ColoredMessage "err" "${err_message}"
       Throw "${err_message}"
     }
   }
@@ -176,32 +177,13 @@ TODO:
 
 }
 
-#function _coloredLog {
-#  <#
-#  Calls _coloredMsg() with a timestamp before the message.
-#
-#  Parameters:
-#  $1   Severity level  -> passed to _coloredMsg()
-#  $2   The message     -> timestamp + message passed to _coloredMsg()
-#  #>
-#  #TODO: Use the enum in logging-functions for $severity.
-#  param (
-#    [String]$severity,
-#    [String]$message
-#  )
-#
-#  $date_time = (Get-Date -Format s)
-#  _coloredMsg "${severity}" "${date_time} ${message}"
-#
-#}
-
 #endregion Helper functions - Colored message (without and with timestamp) #####
 
 
 
 #region Helper functions - checks
 
-function _isVerbosityDefined {
+function Test-VerbosityIsDefined {
   <#
   Returns false if ${__VERBOSE} is not defined or 
   if ${__VERBOSE} is not between 0..7.
@@ -223,130 +205,130 @@ function _isVerbosityDefined {
 
 #region Wrappers for severity levels (without timestamp)
 
-function ShowEmergMsg {
+function Write-EmergMsg {
   <#
-  _coloredMsg() for severity level 0 (emerg).
+  Write-ColoredMessage() for severity level 0 (emerg).
   Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
   )
 
-  _coloredMsg "emerg" "[EMERG  ] ${message}"
+  Write-ColoredMessage "emerg" "[EMERG  ] ${message}"
 
 }
 
-function ShowAlertMsg {
+function Write-AlertMsg {
   <#
-  _coloredMsg() for severity level 1 (alert).
+  Write-ColoredMessage() for severity level 1 (alert).
   Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
   )
 
-  _coloredMsg "alert" "[ALERT  ] ${message}"
+  Write-ColoredMessage "alert" "[ALERT  ] ${message}"
 
 }
 
-function ShowCritMsg {
+function Write-CritMsg {
   <#
-  _coloredMsg() for severity level 2 (crit).
+  Write-ColoredMessage() for severity level 2 (crit).
   Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
   )
 
-  _coloredMsg "crit" "[CRIT   ] ${message}"
+  Write-ColoredMessage "crit" "[CRIT   ] ${message}"
 
 }
 
-function ShowErrMsg {
+function Write-ErrMsg {
   <#
-  _coloredMsg() for severity level 3 (err).
+  Write-ColoredMessage() for severity level 3 (err).
   Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
   )
 
-  _coloredMsg "err" "[ERR    ] ${message}"
+  Write-ColoredMessage "err" "[ERR    ] ${message}"
 
 }
 
-function ShowWarningMsg {
-  # _coloredMsg() for severity level 4 (warning).
+function Write-WarningMsg {
+  # Write-ColoredMessage() for severity level 4 (warning).
   param (
     [String]$message
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?
-  if (! (_isVerbosityDefined) ) {
-    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 4 (warning).
   if ("$__VERBOSE" -ge 4) {
-    _coloredMsg "warning" "[WARNING] ${message}"
+    Write-ColoredMessage "warning" "[WARNING] ${message}"
   }
 
 }
 
-function ShowNoticeMsg {
-  # _coloredMsg() for severity level 5 (notice).
+function Write-NoticeMsg {
+  # Write-ColoredMessage() for severity level 5 (notice).
   param (
     [String]$message
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?
-  if (! (_isVerbosityDefined) ) {
-    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 5 (notice).
   if ("$__VERBOSE" -ge 5) {
-    _coloredMsg "notice" "[NOTICE ] ${message}"
+    Write-ColoredMessage "notice" "[NOTICE ] ${message}"
   }
 
 }
 
-function ShowInfoMsg {
-  # _coloredMsg() for severity level 6 (info).
+function Write-InfoMsg {
+  # Write-ColoredMessage() for severity level 6 (info).
   param (
     [String]$message
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?
-  if (! (_isVerbosityDefined) ) {
-    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 6 (info).
   if ("$__VERBOSE" -ge 6) {
-    _coloredMsg "info" "[INFO   ] ${message}"
+    Write-ColoredMessage "info" "[INFO   ] ${message}"
   }
 
 }
 
-function ShowDebugMsg {
-  # _coloredMsg() for severity level 7 (debug).
+function Write-DebugMsg {
+  # Write-ColoredMessage() for severity level 7 (debug).
   param (
     [String]$message
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?
-  if (! (_isVerbosityDefined) ) {
-    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 7 (debug).
   if ("$__VERBOSE" -ge 7) {
-    _coloredMsg "debug" "[DEBUG  ] ${message}"
+    Write-ColoredMessage "debug" "[DEBUG  ] ${message}"
   }
 
 }
@@ -357,7 +339,7 @@ function ShowDebugMsg {
 
 #region ... with additional exit codes
 
-function EmergExit {
+function Stop-WithEmergMessage {
   <#
   _coloredLog() for severity level 0 (emerg) and exit with specified exit code.
   Notice: No verbose level check, always shown
@@ -371,12 +353,12 @@ function EmergExit {
     [String]$message
   )
 
-  _coloredMsg "emerg" "[EMERG  ] ${message}"
+  Write-EmergMsg "${message}"
   exit $exit_code
 
 }
 
-function AlertExit {
+function Stop-WithAlertMessage {
   <#
   _coloredLog() for severity level 1 (alert) and exit with specified exit code.
   Notice: No verbose level check, always shown
@@ -390,12 +372,12 @@ function AlertExit {
     [String]$message
   )
 
-  _coloredMsg "alert" "[ALERT  ] ${message}"
+  Write-AlertMsg "${message}"
   exit $exit_code
 
 }
 
-function CritExit {
+function Stop-WithCritMessage {
   <#
   _coloredLog() for severity level 2 (crit) and exit with specified exit code.
   Notice: No verbose level check, always shown
@@ -409,12 +391,12 @@ function CritExit {
     [String]$message
   )
 
-  _coloredMsg "crit" "[CRIT   ] ${message}"
+  Write-CritMsg "${message}"
   exit $exit_code
 
 }
 
-function ErrExit {
+function Stop-WithErrMessage {
   <#
   _coloredLog() for severity level 3 (err) and exit with specified exit code.
   Notice: No verbose level check, always shown
@@ -428,7 +410,7 @@ function ErrExit {
     [String]$message
   )
 
-  _coloredMsg "err" "[ERR    ] ${message}"
+  Write-ErrMsg "${message}"
   exit $exit_code
 
 }
@@ -439,7 +421,7 @@ function ErrExit {
 
 #region Wrappers for simple verbose modes
 
-function ShowQuietMessage {
+function Write-QuietMessage {
   <#
   Shows the specified message even in quiet mode.
   -> Message is interpreted as a warning.
@@ -449,11 +431,11 @@ function ShowQuietMessage {
   )
 
   # Colored warning message if ${__VERBOSE} >= 4.
-  ShowWarningMsg "${message}"
+  Write-WarningMsg "${message}"
 
 }
 
-function ShowNormalMessage {
+function Write-NormalMessage {
   <#
   Shows the specified message in normal mode.
 
@@ -466,19 +448,19 @@ function ShowNormalMessage {
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?
-  if (! (_isVerbosityDefined) ) {
-    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} >= 5 (notice).
   if ("$__VERBOSE" -ge 5) {
-    _coloredMsg "info" "[INFO   ] ${message}"
+    Write-ColoredMessage "info" "[INFO   ] ${message}"
   }
 
 }
 
-function ShowVerboseMessage {
+function Write-VerboseMessage {
   <#
   Shows the specified message only in verbose mode.
   -> Message is interpreted as an info message.
@@ -488,14 +470,14 @@ function ShowVerboseMessage {
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?
-  if (! (_isVerbosityDefined) ) {
-    ShowErrMsg "__VERBOSE is not defined and between 0..7!"
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
   # Show message if ${__VERBOSE} = 7 (debug).
   if ("$__VERBOSE" -eq 7) {
-    _coloredMsg "info" "[INFO   ] ${message}"
+    Write-ColoredMessage "info" "[INFO   ] ${message}"
   }
 
 }

@@ -44,24 +44,24 @@ function Format-InSquareBrackets {
 
 
 function Add-LogMessage {
-  # Writes the $message to the $logfile.
-  #
-  # The Entry gets preceded with date/time and $severity. Example:
-  # 2023-04-25T13:46:16 [INFO   ] This is an info message.
+  <# Appends the $message to the $logfile.
+  The Entry gets preceded with date/time and $severity. Example:
+  2023-04-25T13:46:16 [INFO   ] This is an info message.
+  #>
   Param(
     [String]$logfile,
-    #[ValidateSet("EMERG", "ALERT", "CRIT", "ERR", "WARNING", "NOTICE", "INFO", "DEBUG")]
-    #[String]$severity,
     [SeverityKeyword]$severity,
     [String]$message
   )
 
   #region Check parameters
-  # No check for $severity since it is declared as enum value.
   if (! $PSBoundParameters.ContainsKey('logfile')) {
     Write-Error "Add-LogMessage(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
+
+  # No check for $severity since it is declared as enum value. (Error when PowerShell
+  # tries to map the next parameter (message) to one of the enum values.
 
   if (! $PSBoundParameters.ContainsKey('message')) {
     Write-Error "Add-LogMessage(): Parameter message not provided!"
@@ -82,67 +82,7 @@ function Add-LogMessage {
 
 }
 
-function LogAndShowMessage {
-  # Writes the $message to the $logfile, and displays it in the console.
-  Param(
-    [String]$logfile,
-    #[ValidateSet("EMERG", "ALERT", "CRIT", "ERR", "WARNING", "NOTICE", "INFO", "DEBUG")]
-    #[String]$severity,
-    [SeverityKeyword]$severity,
-    [String]$message
-  )
-
-  #region Check parameters
-  # No check for $severity since it is declared as enum value.
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "LogAndShowMessage(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('message')) {
-    Write-Error "LogAndShowMessage(): Parameter message not provided!"
-    Throw "Parameter message not provided!"
-  }
-  #endregion
-
-  switch ($severity) {
-    EMERG {
-      ShowEmergMsg "${message}"
-      Add-LogMessage "${logfile}" EMERG "${message}"
-    }
-    ALERT {
-      ShowAlertMsg "${message}"
-      Add-LogMessage "${logfile}" ALERT "${message}"
-    }
-    CRIT {
-      ShowCritMsg "${message}"
-      Add-LogMessage "${logfile}" CRIT "${message}"
-    }
-    ERR {
-      ShowErrMsg "${message}"
-      Add-LogMessage "${logfile}" ERR "${message}"
-    }
-    WARNING {
-      ShowWarningMsg "${message}"
-      Add-LogMessage "${logfile}" WARNING "${message}"
-    }
-    NOTICE {
-      ShowNoticeMsg "${message}"
-      Add-LogMessage "${logfile}" NOTICE "${message}"
-    }
-    INFO {
-      ShowInfoMsg "${message}"
-      Add-LogMessage "${logfile}" INFO "${message}"
-    }
-    DEBUG {
-      ShowDebugMsg "${message}"
-      Add-LogMessage "${logfile}" DEBUG "${message}"
-    }
-  }
-
-}
-
-function Add-EmptyLogMessage {
+function Add-EmptyLineToLogfile {
   # Appends an empty line to the $logfile.
   Param(
     [String]$logfile
@@ -150,7 +90,7 @@ function Add-EmptyLogMessage {
 
   #region Check parameters
   if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Add-EmptyLogMessage(): Parameter logfile not provided!"
+    Write-Error "Add-EmptyLineToLogfile(): Parameter logfile not provided!"
     Throw "Parameter logfile not provided!"
   }
   #endregion
@@ -159,7 +99,34 @@ function Add-EmptyLogMessage {
     "" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
   } catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
-    Write-Host "Add-EmptyLogMessage(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
+    Write-Host "Add-EmptyLineToLogfile(): Cannot write to logfile ${logfile}." -ForegroundColor White -BackgroundColor Red
+  }
+
+}
+
+function LogAndShowMessage {
+  <# Appends the $message to the $logfile, and writes it to the console.
+  The type of message written to the console depends on the $severity.
+  #>
+  Param(
+    [String]$logfile,
+    [SeverityKeyword]$severity,
+    [String]$message
+  )
+
+  # Log the message.
+  Add-LogMessage "${logfile}" $severity "${message}"
+
+  # Write the message to the console.
+  switch ($severity) {
+    EMERG   { Write-EmergMessage "${message}" }
+    ALERT   { Write-AlertMsg "${message}" }
+    CRIT    { Write-CritMsg "${message}" }
+    ERR     { Write-ErrMsg "${message}" }
+    WARNING { Write-WarningMsg "${message}" }
+    NOTICE  { Write-NoticeMsg "${message}" }
+    INFO    { Write-InfoMsg "${message}" }
+    DEBUG   { Write-DebugMsg "${message}" }
   }
 
 }

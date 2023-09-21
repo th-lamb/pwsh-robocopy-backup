@@ -350,7 +350,7 @@ function Get-ExecutablePath {
   $file_in_path = (Get-Command "${file_spec}" -ErrorAction SilentlyContinue ).Path
 
   if ("${file_in_path}" -ne "") {
-    ShowDebugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"
+    Write-DebugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"
     return "${file_in_path}"
   } else {
     LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
@@ -724,7 +724,7 @@ function Get-ParentDir {
   }
   #endregion
 
-  ShowDebugMsg "Get-ParentDir(): file_spec     : ${file_spec}"
+  Write-DebugMsg "Get-ParentDir(): file_spec     : ${file_spec}"
 
   # Handle "dot" files.
   # -> Resolve-Path -Path returns an array of all matching directories!
@@ -739,11 +739,11 @@ function Get-ParentDir {
     $dots_evaluated = "${file_spec}"
   }
 
-  ShowDebugMsg "Get-ParentDir(): dots evaluated: ${dots_evaluated}"
+  Write-DebugMsg "Get-ParentDir(): dots evaluated: ${dots_evaluated}"
 
   #TODO: Currently the most reliable way?
   $parent_dir = Split-Path -Path "${dots_evaluated}"
-  ShowDebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
+  Write-DebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
 
   # Append trailing backslash?
   if (
@@ -751,7 +751,7 @@ function Get-ParentDir {
     (! "${parent_dir}".EndsWith("\") )
   ) {
     $parent_dir = "${parent_dir}\"
-    ShowDebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
+    Write-DebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
   }
 
   return "${parent_dir}"

@@ -67,7 +67,7 @@ function Export-OldJobs {
     [Int32]$max_archives_count
   )
 
-  ShowDebugMsg "Export-OldJobs(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
+  Write-DebugMsg "Export-OldJobs(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
 
   # Get all old jobfiles.
   $old_jobfiles = New-Object System.Collections.ArrayList
@@ -79,14 +79,14 @@ function Export-OldJobs {
   # Continue if they exist.
   $old_jobfiles_count = $old_jobfiles.Count
   $old_logfiles_count = $old_logfiles.Count
-  ShowDebugMsg "old_jobfiles_count: $old_jobfiles_count"
-  ShowDebugMsg "old_logfiles_count: $old_logfiles_count"
+  Write-DebugMsg "old_jobfiles_count: $old_jobfiles_count"
+  Write-DebugMsg "old_logfiles_count: $old_logfiles_count"
 
   if (
     ($old_jobfiles_count -eq 0) -and
     ($old_logfiles_count -eq 0)
   ) {
-    ShowDebugMsg "No old jobs to archive."
+    Write-DebugMsg "No old jobs to archive."
     return
   }
 
@@ -96,18 +96,18 @@ function Export-OldJobs {
 
   # Delete the oldest archive if it exists.
   $old_archives_count = $old_archives.Count
-  ShowDebugMsg "old_archives_count: $old_archives_count"
+  Write-DebugMsg "old_archives_count: $old_archives_count"
 
   if ($old_archives_count -lt $max_archives_count) {
-    ShowDebugMsg "$old_archives_count job archive(s) (MAX=$max_archives_count), just archiving the existing jobs."
+    Write-DebugMsg "$old_archives_count job archive(s) (MAX=$max_archives_count), just archiving the existing jobs."
   } else {
-    ShowInfoMsg "$old_archives_count job archives (MAX=$max_archives_count), deleting the oldest one(s)."
+    Write-InfoMsg "$old_archives_count job archives (MAX=$max_archives_count), deleting the oldest one(s)."
 
     $old_archives = $old_archives | Sort-Object -Descending
     for ($i = $max_archives_count - 1; $i -lt $old_archives.Count; $i++) {
       $archive_to_delete = $old_archives[$i]
       $archive_name = Split-Path -Leaf "${archive_to_delete}"
-      ShowInfoMsg "Deleting job archive ${archive_name}"
+      Write-InfoMsg "Deleting job archive ${archive_name}"
 
       Write-Host "${archive_to_delete}" -ForegroundColor DarkRed
       Remove-Item "$archive_to_delete"
@@ -122,14 +122,14 @@ function Export-OldJobs {
     $last_datetime = Get-LastDateTime $old_logfiles
   }
 
-  ShowDebugMsg "Last job's date/time: ${last_datetime}"
+  Write-DebugMsg "Last job's date/time: ${last_datetime}"
 
   # Archive the jobs (jobfile and logfile).
   $archive_name = "${archive_name_scheme}".Replace("*", "${last_datetime}")
   $archive_path = "${backup_job_dir}${archive_name}"
-  ShowDebugMsg "archive_name: ${archive_name}"
-  ShowDebugMsg "archive_path: ${archive_path}"
-  ShowInfoMsg "Archiving old jobs in ${archive_name}"
+  Write-DebugMsg "archive_name: ${archive_name}"
+  Write-DebugMsg "archive_path: ${archive_path}"
+  Write-InfoMsg "Archiving old jobs in ${archive_name}"
 
   Compress-Archive -Path "${backup_job_dir}${job_name_scheme}" -DestinationPath "${archive_path}" -Force        # -Force to overwrite if needed.
   # Update the archive only if logfiles exist! Otherwise the archive gets deleted.
@@ -139,11 +139,11 @@ function Export-OldJobs {
   Write-Host "${archive_path}" -ForegroundColor DarkGreen
 
   # Delete the jobs.
-  ShowDebugMsg "Deleting old jobs..."
+  Write-DebugMsg "Deleting old jobs..."
 
   $num_jobfiles_deleted = Remove-AllFilesInArray $old_jobfiles
-  ShowDebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
+  Write-DebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
 
   $num_logfiles_deleted = Remove-AllFilesInArray $old_logfiles
-  ShowDebugMsg "$num_logfiles_deleted logfile(s) deleted."
+  Write-DebugMsg "$num_logfiles_deleted logfile(s) deleted."
 }

@@ -167,7 +167,7 @@ Describe 'Export-OldJobs' {
   }
 
 #  It 'Shows the correct filename of the archive' {
-#    #TODO: Use Mock ShowInfoMsg {...} to get the reported zip file's name?
+#    #TODO: Use Mock Write-InfoMsg {...} to get the reported zip file's name?
 #    #TODO: The archive name is written using Write-Host.
 #  }
 }
