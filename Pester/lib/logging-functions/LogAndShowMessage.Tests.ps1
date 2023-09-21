@@ -12,22 +12,10 @@ enum SeverityKeyword {
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${ProjectRoot}Pester/resources/logging-functions/LogAndShowMessage.Tests.log"
+  #$logfile = "${ProjectRoot}Pester/resources/logging-functions/LogAndShowMessage.Tests.log"
 
   . "${ProjectRoot}lib/message-functions.ps1"
-#  $__VERBOSE = 6
-
-#  function Format-RegexString {
-#    Param(
-#      [String]$message
-#    )
-#
-#    $temp = "${message}".Replace("[", "\[")
-#    $temp = "${temp}".Replace("]", "\]")
-#    $result = ".*${temp}$"
-#
-#    return "${result}"
-#  }
+  #$__VERBOSE = 6
 }
 
 
@@ -121,5 +109,5 @@ Describe 'LogAndShowMessage' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }
