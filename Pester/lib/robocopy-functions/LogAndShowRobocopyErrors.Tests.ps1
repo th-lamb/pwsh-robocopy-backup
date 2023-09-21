@@ -25,78 +25,88 @@ BeforeAll {
 
 
 
-#Enum RoboCopyExitCodes {
-#  NoChange = 0
-#  OKCopy = 1
-#  ExtraFiles = 2
-#  MismatchedFilesFolders = 4
-#  FailedCopyAttempts = 8
-#  FatalError = 16
-#}
-
 Describe 'LogAndShowRobocopyErrors' {
   # Check file content: https://pester.dev/docs/v4/usage/assertions#filecontentmatch
   # Check file content: https://pester.dev/docs/v4/usage/assertions#filecontentmatchmultiline
 
-  It 'Does not log exit codes 0..3 (NoChange, OKCopy, ExtraFiles)' {
-    Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Context 'Only information' {
+    It 'Does NOT log exit codes 0..3 (NoChange, OKCopy, ExtraFiles)' {
+      Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 
-    $exit_code  = 0
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      $exit_code = 0
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
 
-    $exit_code  = 1
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      $exit_code = 1
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
 
-    $exit_code  = 2
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      $exit_code = 2
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
 
-    $exit_code  = 3
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      $exit_code = 3
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
 
-    $result = Test-Path -Path "${logfile}" -PathType Leaf
-    $result | Should -Be $false   # No logfile created
+      $result = Test-Path -Path "${logfile}" -PathType Leaf
+      $result | Should -Be $false   # No logfile created
+    }
+
+    It 'Does NOT call Write-InfoMsg for exit codes 0..3' {
+      Mock Write-InfoMsg {} -Verifiable
+
+      $exit_code = 0
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+
+      $exit_code = 1
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+
+      $exit_code = 2
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+
+      $exit_code = 3
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+
+      Should -Invoke -CommandName "Write-InfoMsg" -Times 0      # 0 is interpreted as: 0 times exactly
+    }
   }
 
-  It 'Does not show an INFO message for exit codes 0..3' {
-    Mock Write-InfoMsg {} -Verifiable
+  Context 'Notice' {
+    It 'Logs exit code 4 (MismatchedFilesFolders)' {
+      $exit_code = 4
+      $expected_log_entry = "[NOTICE ] Job1: MismatchedFilesFolders (Examine the output log. Some housekeeping may be needed.)"
 
-    $exit_code  = 0
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      # Preparation
+      Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+      Mock Write-NoticeMsg {}
 
-    $exit_code  = 1
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      # Test
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
 
-    $exit_code  = 2
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      # Check result
+      $expected_regex = Format-RegexString "${expected_log_entry}"
+      "${logfile}" | Should -FileContentMatch "${expected_regex}"
 
-    $exit_code  = 3
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      # Cleanup
+      Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+    }
 
-    Should -Invoke -CommandName "Write-InfoMsg" -Times 0
-  }
+    It 'Calls Write-NoticeMsg for exit code 4' {
+      $exit_code = 4
+      $expected_message = "Job1: MismatchedFilesFolders (Examine the output log. Some housekeeping may be needed.)"
 
-  It 'Logs exit code 4 (MismatchedFilesFolders)' {
-    Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+      # Preparation
+      Mock Write-NoticeMsg {} -Verifiable
 
-    $exit_code  = 4
-    $expected_log_entry = "[NOTICE ] Job1: MismatchedFilesFolders (Examine the output log. Some housekeeping may be needed.)"
+      # Test
+      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
 
-    Mock Write-NoticeMsg {}
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      # Check result
+      Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
+        $message -eq "${expected_message}"
+      }
 
-    $expected_log_entry = Format-RegexString "${expected_log_entry}"
-    "${logfile}" | Should -FileContentMatch "${expected_log_entry}"
-  }
+      # Cleanup
+      Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+    }
 
-  It 'Shows a NOTICE message for exit code 4' {
-    $exit_code  = 4
-    $expected_message = "Job1: MismatchedFilesFolders (Examine the output log. Some housekeeping may be needed.)"
-
-    Mock Write-NoticeMsg { $script:message_was = "${message}" } -Verifiable
-    LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
-
-    Should -Invoke -CommandName "Write-NoticeMsg" -Times 1
-    "${message_was}" | Should -Be "${expected_message}"
   }
 
 }
@@ -104,5 +114,5 @@ Describe 'LogAndShowRobocopyErrors' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }
