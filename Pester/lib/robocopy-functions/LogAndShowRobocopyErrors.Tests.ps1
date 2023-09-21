@@ -90,12 +90,13 @@ Describe 'LogAndShowRobocopyErrors' {
 
   It 'Shows a NOTICE message for exit code 4' {
     $exit_code  = 4
+    $expected_message = "Job1: MismatchedFilesFolders (Examine the output log. Some housekeeping may be needed.)"
 
-    Mock Write-NoticeMsg {} -Verifiable
+    Mock Write-NoticeMsg { $script:message_was = "${message}" } -Verifiable
     LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
 
-    #TODO: Check the message it was called with!
     Should -Invoke -CommandName "Write-NoticeMsg" -Times 1
+    "${message_was}" | Should -Be "${expected_message}"
   }
 
 }
