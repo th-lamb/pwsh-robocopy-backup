@@ -1,7 +1,13 @@
 BeforeAll {
   $ProjectRoot = "${PSScriptRoot}\..\..\..\"  # Backslashes for the jobfile!
   . "${ProjectRoot}lib/job-functions.ps1"
-  $workingFolder = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!
+
+  $workingFolder    = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!
+  $created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
+  $expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
+
+  #TODO: Currently a global variable – not a parameter!
+  $BACKUP_JOB_DIR = "${created_jobfiles_folder}"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
@@ -10,59 +16,82 @@ BeforeAll {
 
 
 
-#- Use
-#  - FileContentMatch?                       (https://pester.dev/docs/v4/usage/assertions#filecontentmatch)
-#  - Or FileContentMatchMultiline?           (https://pester.dev/docs/v4/usage/assertions#filecontentmatchmultiline)
-#  - Or better PowerShell's Compare-Object?  (https://devblogs.microsoft.com/scripting/use-powershell-to-compare-two-files/)
-#    -> "a better way to do this is to use Get-FileHash and compare the HASH property."
-
 Describe 'Add-JobFile' {
-  It 'Writes a correct job file for a single file.' {
-    #TODO: Currently not a parameter!
-    $BACKUP_JOB_DIR = "${workingFolder}"
-
+  It 'Writes a correct job file for line type: source-dir.' {
     # Parameters
-    [String]$computername
-    [Int32]$current_job_num
-    [String]$dirlist_entry
-    [String]$source_dir
-    [String]$target_dir
+    [String]$computername               = "MyComputer"
+    [Int32]$current_job_num             = 1
+    [String]$dirlist_entry              = "C:\foo\"
+    [String]$source_dir                 = "C:\foo\"
+    [String]$target_dir                 = "C:\Backup\C\foo\"
     [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
-    [System.Boolean]$copy_single_file
+    [System.Boolean]$copy_single_file   = $false
 
-    # Actual values
-    $computername     = "Machine_1"
-    $current_job_num  = 1
-    $dirlist_entry    = "C:\foo\bar.txt"
-    $source_dir       = "C:\foo\"
-    $target_dir       = "C:\Backup\C\foo\"
+    # Add data to the arrays?
+    #$included_files
+    #$excluded_dirs
+    #$excluded_files
+
+    # Function call with all values.
+    Add-JobFile "${COMPUTERNAME}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+
+    # Compare the result with the template!
+    $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
+    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
+
+    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
+    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+
+    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+  }
+
+  It 'Writes a correct job file for line type: source-file.' {
+    # Parameters
+    [String]$computername               = "MyComputer"
+    [Int32]$current_job_num             = 2
+    [String]$dirlist_entry              = "C:\foo\bar.txt"
+    [String]$source_dir                 = "C:\foo\"
+    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
+    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
+    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    [System.Boolean]$copy_single_file   = $true
+
+    # Add data to the arrays?
     $included_files.Add("bar.txt")
     #$excluded_dirs
     #$excluded_files
-    $copy_single_file = $true
 
     # Function call with all values.
-    Add-JobFile `
-      "${COMPUTERNAME}" `
-      $current_job_num `
-      "${dirlist_entry}" `
-      "${source_dir}" `
-      "${target_dir}" `
-      $included_files `
-      $excluded_dirs `
-      $excluded_files `
-      $copy_single_file
+    Add-JobFile "${COMPUTERNAME}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
-    #TODO: Create a template!
-    #TODO: Compare the result!
+    # Compare the result with the template!
+    $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
+    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
+
+    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
+    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+
+    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
   }
+
+  #TODO: source-file-pattern
+
+  #TODO: ? incl-files-pattern -> $included_files.Add()
+
+  #TODO: ? excl-files-pattern -> $excluded_files.Add()
+
+  #TODO: ? excl-dirs-pattern  -> $excluded_dirs.Add()
+
 }
 
 
 
 AfterAll {
-  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
   #TODO: Cleanup
+  #Remove-Item "${created_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
 }
