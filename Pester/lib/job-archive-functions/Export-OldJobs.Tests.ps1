@@ -77,15 +77,6 @@ BeforeAll {
       Remove-Item -Path "${workingFolder}${nextFile}" -ErrorAction SilentlyContinue
     }
   }
-
-  function Remove-TestArchives {
-    $testArchives = Get-TestArchiveNames
-
-    for ($i = 0; $i -lt $testArchives.Count; $i++) {
-      $nextArchive = $testArchives[$i]
-      Remove-Item -Path "${workingFolder}${nextArchive}" -ErrorAction SilentlyContinue
-    }
-  }
 }
 
 
@@ -170,5 +161,5 @@ Describe 'Export-OldJobs' {
 AfterAll {
   # Cleanup
   Remove-TestFiles
-  Remove-TestArchives
+  Remove-Item -Path "${workingFolder}*.zip" -ErrorAction SilentlyContinue
 }
