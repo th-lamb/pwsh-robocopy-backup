@@ -1,7 +1,7 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/job-archive-functions.ps1"
-  $script:workingFolder = "${ProjectRoot}Pester/resources/job-archive-functions/test LastDateTime/"
+  $Script:workingFolder = "${ProjectRoot}Pester/resources/job-archive-functions/test LastDateTime/"
 }
 
 

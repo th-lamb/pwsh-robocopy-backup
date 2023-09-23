@@ -570,9 +570,8 @@ function _finalizeJob {
 
 function Add-JobFile {
   # Creates the specified job file, including a simple header.
-  #TODO: Omit $computername here? (Determined at the beginning and available here.)
-  #TODO: Or add $BACKUP_JOB_DIR as well?
   param (
+    [String]$backup_job_dir,
     [String]$computername,
     [Int32]$current_job_num,
     [String]$dirlist_entry,
@@ -585,6 +584,11 @@ function Add-JobFile {
   )
 
   #region Check parameters
+  if (! $PSBoundParameters.ContainsKey('backup_job_dir')) {
+    Write-Error "Add-JobFile(): Parameter backup_job_dir not provided!"
+    Throw "Parameter backup_job_dir not provided!"
+  }
+
   if (! $PSBoundParameters.ContainsKey('computername')) {
     Write-Error "Add-JobFile(): Parameter computername not provided!"
     Throw "Parameter computername not provided!"
@@ -631,6 +635,7 @@ function Add-JobFile {
   }
   #endregion
 
+  Write-DebugMsg "Add-JobFile(): backup_job_dir       : ${backup_job_dir}"
   Write-DebugMsg "Add-JobFile(): computername         : ${computername}"
   Write-DebugMsg "Add-JobFile(): current_job_num      : $current_job_num"
   Write-DebugMsg "Add-JobFile(): dirlist_entry        : ${dirlist_entry}"
@@ -645,8 +650,8 @@ function Add-JobFile {
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
   # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
   # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
-  $jobfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.RCJ"
-  $logfile_path = "${BACKUP_JOB_DIR}${computername}-Job$current_job_num.log"
+  $jobfile_path = "${backup_job_dir}${computername}-Job$current_job_num.RCJ"
+  $logfile_path = "${backup_job_dir}${computername}-Job$current_job_num.log"
 
   Write-DebugMsg "Add-JobFile(): jobfile_path         : ${jobfile_path}"
   Write-DebugMsg "Add-JobFile(): logfile_path         : ${logfile_path}"

@@ -1,18 +1,18 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/job-archive-functions.ps1"
-  $script:workingFolder = "${ProjectRoot}Pester/resources/job-archive-functions/"
+  $Script:workingFolder = "${ProjectRoot}Pester/resources/job-archive-functions/"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $script:__VERBOSE = 6
+  $Script:__VERBOSE = 6
 
   # ini-values
   Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
   $JOB_FILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.RCJ"
   $JOB_LOGFILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.log"
   $ARCHIVE_NAME_SCHEME = "${COMPUTERNAME}-Jobs-*.zip"
-  $script:MAX_ARCHIVES_COUNT = 3
+  $Script:MAX_ARCHIVES_COUNT = 3
 
   # Mocking functions (https://github.com/pester/Pester/issues/1589#issuecomment-637409980)
   function Get-TestFileNames {

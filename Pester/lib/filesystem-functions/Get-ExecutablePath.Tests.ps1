@@ -4,11 +4,11 @@ BeforeAll {
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $script:__VERBOSE = 6
+  $Script:__VERBOSE = 6
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-#  $script:logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.log"
+#  $Script:logfile = "${PSScriptRoot}/Get-ExecutablePath.Tests.log"
 }
 
 

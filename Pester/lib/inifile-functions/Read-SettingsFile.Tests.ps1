@@ -1,13 +1,13 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/inifile-functions.ps1"
-  $script:ini_file = "${PSScriptRoot}/Read-SettingsFile.Tests.ini"
+  $Script:ini_file = "${PSScriptRoot}/Read-SettingsFile.Tests.ini"
 
   . "${ProjectRoot}lib/filesystem-functions.ps1"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $script:__VERBOSE = 6
+  $Script:__VERBOSE = 6
 }
 
 

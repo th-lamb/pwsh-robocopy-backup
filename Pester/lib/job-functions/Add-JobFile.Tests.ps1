@@ -3,16 +3,13 @@ BeforeAll {
   . "${ProjectRoot}lib/job-functions.ps1"
 
   $workingFolder    = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!
-  $script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
-  $script:expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
-  $created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
-
-  #TODO: Currently a global variable – not a parameter!
-  $global:BACKUP_JOB_DIR = "${created_jobfiles_folder}"
+  $Script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
+  $Script:expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
+  $Script:created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $script:__VERBOSE = 6
+  $Script:__VERBOSE = 6
 }
 
 
@@ -37,6 +34,7 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: source-dir.' {
     # Parameters
+    [String]$backup_job_dir             = "${created_jobfiles_folder}"
     [String]$computername               = "MyComputer"
     [Int32]$current_job_num             = 1
     [String]$dirlist_entry              = "C:\foo\"
@@ -53,7 +51,7 @@ Describe 'Add-JobFile' {
     #$excluded_files
 
     # Function call with all values.
-    Add-JobFile "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+    Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
@@ -68,6 +66,7 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: source-file.' {
     # Parameters
+    [String]$backup_job_dir             = "${created_jobfiles_folder}"
     [String]$computername               = "MyComputer"
     [Int32]$current_job_num             = 2
     [String]$dirlist_entry              = "C:\foo\bar.txt"
@@ -84,7 +83,7 @@ Describe 'Add-JobFile' {
     #$excluded_files
 
     # Function call with all values.
-    Add-JobFile "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+    Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
@@ -99,6 +98,7 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: source-file-pattern.' {
     # Parameters
+    [String]$backup_job_dir             = "${created_jobfiles_folder}"
     [String]$computername               = "MyComputer"
     [Int32]$current_job_num             = 3
     [String]$dirlist_entry              = "C:\foo\*.txt"
@@ -115,7 +115,7 @@ Describe 'Add-JobFile' {
     #$excluded_files
 
     # Function call with all values.
-    Add-JobFile "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+    Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
@@ -130,6 +130,7 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: incl-files-pattern.' {
     # Parameters
+    [String]$backup_job_dir             = "${created_jobfiles_folder}"
     [String]$computername               = "MyComputer"
     [Int32]$current_job_num             = 4
     [String]$dirlist_entry              = "C:\foo\"
@@ -146,7 +147,7 @@ Describe 'Add-JobFile' {
     #$excluded_files
 
     # Function call with all values.
-    Add-JobFile "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+    Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
@@ -161,6 +162,7 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: excl-files-pattern.' {
     # Parameters
+    [String]$backup_job_dir             = "${created_jobfiles_folder}"
     [String]$computername               = "MyComputer"
     [Int32]$current_job_num             = 5
     [String]$dirlist_entry              = "C:\foo\"
@@ -177,7 +179,7 @@ Describe 'Add-JobFile' {
     $excluded_files.AddRange( @("*.tmp", "*.todo") )
 
     # Function call with all values.
-    Add-JobFile "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+    Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
@@ -192,6 +194,7 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: excl-dirs-pattern.' {
     # Parameters
+    [String]$backup_job_dir             = "${created_jobfiles_folder}"
     [String]$computername               = "MyComputer"
     [Int32]$current_job_num             = 6
     [String]$dirlist_entry              = "C:\foo\"
@@ -208,7 +211,7 @@ Describe 'Add-JobFile' {
     #$excluded_files
 
     # Function call with all values.
-    Add-JobFile "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+    Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"

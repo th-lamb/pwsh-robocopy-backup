@@ -1,15 +1,15 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
-  $script:workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
+  $Script:workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $script:__VERBOSE = 5  # Reduced to 5 because New-NecessaryFile writes an INFO message.
+  $Script:__VERBOSE = 5  # Reduced to 5 because New-NecessaryFile writes an INFO message.
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$script:logfile = "${PSScriptRoot}/New-NecessaryFile.Tests.log"
+  #$Script:logfile = "${PSScriptRoot}/New-NecessaryFile.Tests.log"
 }
 
 

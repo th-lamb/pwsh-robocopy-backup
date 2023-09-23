@@ -4,7 +4,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$script:logfile = "${PSScriptRoot}/Get-DirlistLineType.Tests.log"
+  #$Script:logfile = "${PSScriptRoot}/Get-DirlistLineType.Tests.log"
 }
 
 

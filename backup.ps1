@@ -260,6 +260,7 @@ function _callCreateJob {
   Write-DebugMsg "_callCreateJob()"
 
   Add-JobFile `
+    "${BACKUP_JOB_DIR}" `
     "${COMPUTERNAME}" `
     $current_job_num `
     "${current_source_definition}" `
@@ -270,7 +271,7 @@ function _callCreateJob {
     $excluded_files `
     $copy_single_file
 
-  $script:jobs_created_count = ($jobs_created_count + 1)
+  $Script:jobs_created_count = ($jobs_created_count + 1)
   Write-DebugMsg "jobs_created_count: $jobs_created_count"
 
   _resetJobRelatedInfo
@@ -282,25 +283,25 @@ function _resetJobRelatedInfo {
   # Resets all values that apply for a whole job definition, possibly
   # consisting of multiple lines in the dir-list.
   Write-DebugMsg "_resetJobRelatedInfo()"
-  $script:current_job_num = 0
-  $script:current_source_definition = ""
-  $script:current_source_type = ""
-  $script:source_dir = ""
-  $script:target_dir = ""
-  $script:included_files.Clear()
-  $script:excluded_dirs.Clear()
-  $script:excluded_files.Clear()
-  $script:copy_single_file = $false   # job- and line-related
+  $Script:current_job_num = 0
+  $Script:current_source_definition = ""
+  $Script:current_source_type = ""
+  $Script:source_dir = ""
+  $Script:target_dir = ""
+  $Script:included_files.Clear()
+  $Script:excluded_dirs.Clear()
+  $Script:excluded_files.Clear()
+  $Script:copy_single_file = $false   # job- and line-related
 }
 
 function _resetLineRelatedInfo {
   # Resets all values that apply only for the current line in the dir-list.
   Write-DebugMsg "_resetLineRelatedInfo()"
-  $script:start_new_job = $false
-  $script:finish_previous_job = $false
-  $script:continue_curr_job = $false
-  $script:copy_single_file = $false   # job- and line-related
-  $script:line_type = ""
+  $Script:start_new_job = $false
+  $Script:finish_previous_job = $false
+  $Script:continue_curr_job = $false
+  $Script:copy_single_file = $false   # job- and line-related
+  $Script:line_type = ""
 }
 
 # Process the dir-list.
