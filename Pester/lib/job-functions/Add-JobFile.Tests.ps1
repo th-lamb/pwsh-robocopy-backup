@@ -202,12 +202,10 @@ Describe 'Add-JobFile' {
 
     "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
   }
-
 }
 
 
 
 AfterAll {
-  #TODO: Cleanup
-  #Remove-Item "${created_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
+  Remove-Item "${created_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
 }
