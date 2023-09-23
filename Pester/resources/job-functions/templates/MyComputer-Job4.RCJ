@@ -1,4 +1,4 @@
-:: Robocopy Job MyComputer-Job1
+:: Robocopy Job MyComputer-Job4
 :: For dir-list entry: C:\foo\
 
 :: Source Directory
@@ -10,8 +10,9 @@
 :: ----- User settings ---------------------------------------------------------
 
 :: Logging options
-/UNILOG:C:\dev\pwsh-robocopy-backup\Pester\lib\job-functions\..\..\..\Pester\resources\job-functions\created_jobfiles\MyComputer-Job1.log
+/UNILOG:<ProjectRoot>\Pester\resources\job-functions\created_jobfiles\MyComputer-Job4.log
 
 :: Copy options
 /IF :: Include the following Files.
-  *.*
+  *.txt
+  *.xml
