@@ -1,6 +1,5 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\"  # Backslashes for the jobfile!
-  Write-Host "ProjectRoot: $ProjectRoot" -ForegroundColor Yellow
   . "${ProjectRoot}lib/job-functions.ps1"
 
   $workingFolder    = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!
@@ -20,11 +19,20 @@ BeforeAll {
 
 Describe 'Add-JobFile' {
   BeforeAll {
-    #TODO: Copy all templates to folder "expected_jobfiles".
-    #TODO: Replace a placeholder with the current $workingFolder. ("simplify" the $workingFolder!)
-    # - Use the Get-Content command to read a file (txt on the C drive for example). The command should be Get-Content -Path ‘C:file.txt’. Only when the file content is read, you can operate it.
-    # - Use the replace operator to replace text. The command should be (Get-Content C:file.txt) -replace “old”, “new”.
-    # - Use the Set-Content command to write the text to the file. The command should be Set-Content -Path ‘C:file.txt’.
+    # Copy all templates to folder $expected_jobfiles_folder, and replace 
+    # the placeholder for <ProjectRoot> with current $ProjectRoot.
+    $templates = New-Object System.Collections.ArrayList
+    $templates = Get-ChildItem -Path "${jobfile_templates_folder}*" -Include "*.RCJ" -File
+
+    for ($i = 0; $i -lt $templates.Count; $i++) {
+      $template = $templates[$i]
+      $template_content = (Get-Content -Path "${template}") -join "`r`n"  # See: https://stackoverflow.com/a/15041925/5944475
+
+      $new_expected_jobfile = "${template}".Replace("${jobfile_templates_folder}", "${expected_jobfiles_folder}")
+      $updated_content = $template_content.Replace("<ProjectRoot>", "${ProjectRoot}")
+
+      Set-Content -Path "${new_expected_jobfile}" -Value "${updated_content}"
+    }
   }
 
   It 'Writes a correct job file for line type: source-dir.' {
@@ -218,6 +226,5 @@ Describe 'Add-JobFile' {
 
 AfterAll {
   Remove-Item "${created_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
-  #TODO: cleanup expected_jobfiles_folder
-  #Remove-Item "${expected_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
+  Remove-Item "${expected_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
 }

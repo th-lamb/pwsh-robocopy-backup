@@ -10,7 +10,7 @@
 :: ----- User settings ---------------------------------------------------------
 
 :: Logging options
-/UNILOG:<ProjectRoot>\Pester\resources\job-functions\created_jobfiles\MyComputer-Job6.log
+/UNILOG:<ProjectRoot>Pester\resources\job-functions\created_jobfiles\MyComputer-Job6.log
 
 :: Copy options
 /IF :: Include the following Files.
