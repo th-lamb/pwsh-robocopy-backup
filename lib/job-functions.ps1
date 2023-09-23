@@ -636,10 +636,9 @@ function Add-JobFile {
   Write-DebugMsg "Add-JobFile(): dirlist_entry        : ${dirlist_entry}"
   Write-DebugMsg "Add-JobFile(): source_dir           : ${source_dir}"
   Write-DebugMsg "Add-JobFile(): target_dir           : ${target_dir}"
-  #TODO: Other syntax? -> Write-DebugMsg "Add-JobFile(): included_files.Count : " + $($included_files.Count)"
-  Write-DebugMsg ("Add-JobFile(): included_files.Count : " + $included_files.Count)
-  Write-DebugMsg ("Add-JobFile(): excluded_dirs.Count  : " + $excluded_dirs.Count)
-  Write-DebugMsg ("Add-JobFile(): excluded_files.Count : " + $excluded_files.Count)
+  Write-DebugMsg "Add-JobFile(): included_files.Count : $($included_files.Count)"
+  Write-DebugMsg "Add-JobFile(): excluded_dirs.Count  : $($excluded_dirs.Count)"
+  Write-DebugMsg "Add-JobFile(): excluded_files.Count : $($excluded_files.Count)"
   Write-DebugMsg "Add-JobFile(): copy_single_file     : $copy_single_file"
 
   # Paths for the current job
