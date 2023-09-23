@@ -172,7 +172,36 @@ Describe 'Add-JobFile' {
     "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
   }
 
-  #TODO: ? excl-dirs-pattern  -> $excluded_dirs.Add()
+  It 'Writes a correct job file for line type: excl-dirs-pattern.' {
+    # Parameters
+    [String]$computername               = "MyComputer"
+    [Int32]$current_job_num             = 6
+    [String]$dirlist_entry              = "C:\foo\"
+    [String]$source_dir                 = "C:\foo\"
+    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
+    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
+    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    [System.Boolean]$copy_single_file   = $false
+
+    # Add data to the arrays?
+    #$included_files
+    $excluded_dirs.AddRange( @("C:\foo\.git\", "C:\foo\test\") )
+    #$excluded_files
+
+    # Function call with all values.
+    Add-JobFile "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+
+    # Compare the result with the template!
+    $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
+    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
+
+    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
+    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+
+    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+  }
 
 }
 
