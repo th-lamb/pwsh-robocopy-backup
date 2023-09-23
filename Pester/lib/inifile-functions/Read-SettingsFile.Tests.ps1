@@ -1,5 +1,5 @@
 BeforeAll {
-  $ProjectRoot = "${PSScriptRoot}/../../../"
+  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/inifile-functions.ps1"
   $ini_file = "${PSScriptRoot}/Read-SettingsFile.Tests.ini"
 

@@ -1,5 +1,5 @@
 BeforeAll {
-  $ProjectRoot = "${PSScriptRoot}/../../../"
+  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/logging-functions.ps1"
 }
 

@@ -1,10 +1,12 @@
 BeforeAll {
-  $ProjectRoot = "${PSScriptRoot}\..\..\..\"  # Backslashes for the jobfile!
+  $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\"  # Backslashes for the jobfile!
+  Write-Host "ProjectRoot: $ProjectRoot" -ForegroundColor Yellow
   . "${ProjectRoot}lib/job-functions.ps1"
 
   $workingFolder    = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!
-  $created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
+  $jobfile_templates_folder = "${workingFolder}jobfile_templates\"
   $expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
+  $created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
 
   #TODO: Currently a global variable – not a parameter!
   $BACKUP_JOB_DIR = "${created_jobfiles_folder}"
@@ -17,6 +19,14 @@ BeforeAll {
 
 
 Describe 'Add-JobFile' {
+  BeforeAll {
+    #TODO: Copy all templates to folder "expected_jobfiles".
+    #TODO: Replace a placeholder with the current $workingFolder. ("simplify" the $workingFolder!)
+    # - Use the Get-Content command to read a file (txt on the C drive for example). The command should be Get-Content -Path ‘C:file.txt’. Only when the file content is read, you can operate it.
+    # - Use the replace operator to replace text. The command should be (Get-Content C:file.txt) -replace “old”, “new”.
+    # - Use the Set-Content command to write the text to the file. The command should be Set-Content -Path ‘C:file.txt’.
+  }
+
   It 'Writes a correct job file for line type: source-dir.' {
     # Parameters
     [String]$computername               = "MyComputer"
@@ -208,4 +218,6 @@ Describe 'Add-JobFile' {
 
 AfterAll {
   Remove-Item "${created_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
+  #TODO: cleanup expected_jobfiles_folder
+  #Remove-Item "${expected_jobfiles_folder}*.RCJ" -ErrorAction SilentlyContinue
 }
