@@ -1,0 +1,21 @@
+:: Robocopy Job MyComputer-Job5
+:: For dir-list entry: C:\foo\
+
+:: Source Directory
+/SD:C:\foo\
+
+:: Destination Directory
+/DD:C:\Backup\C\foo\
+
+:: ----- User settings ---------------------------------------------------------
+
+:: Logging options
+/UNILOG:C:\dev\pwsh-robocopy-backup\Pester\lib\job-functions\..\..\..\Pester\resources\job-functions\created_jobfiles\MyComputer-Job5.log
+
+:: Copy options
+/IF :: Include the following Files.
+  *.*
+
+/XF :: eXclude Files matching given names/paths/wildcards.
+  *.tmp
+  *.todo
