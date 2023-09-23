@@ -26,13 +26,13 @@ BeforeAll {
 
     $testFiles = New-Object System.Collections.Generic.List[System.Object]
 
-    $testFiles.Add("${jobFile1}")
-    $testFiles.Add("${jobFile2}")
-    $testFiles.Add("${jobFile3}")
+    $testFiles.Add("${jobFile1}") > $null
+    $testFiles.Add("${jobFile2}") > $null
+    $testFiles.Add("${jobFile3}") > $null
 
-    $testFiles.Add("${logFile1}")
-    $testFiles.Add("${logFile2}")
-    $testFiles.Add("${logFile3}")
+    $testFiles.Add("${logFile1}") > $null
+    $testFiles.Add("${logFile2}") > $null
+    $testFiles.Add("${logFile3}") > $null
 
     $testFiles.ToArray()
   }
@@ -44,9 +44,9 @@ BeforeAll {
 
     $testArchives = New-Object System.Collections.Generic.List[System.Object]
 
-    $testArchives.Add("${archive1}")
-    $testArchives.Add("${archive2}")
-    $testArchives.Add("${archive3}")
+    $testArchives.Add("${archive1}") > $null
+    $testArchives.Add("${archive2}") > $null
+    $testArchives.Add("${archive3}") > $null
 
     $testArchives.ToArray()
   }

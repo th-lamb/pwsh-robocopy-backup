@@ -19,9 +19,9 @@ Describe 'Remove-AllFilesInArray' {
 
     # Add them to an array.
     $files_to_delete = New-Object System.Collections.ArrayList
-    $files_to_delete.Add("${workingFolder}testfile1")
-    $files_to_delete.Add("${workingFolder}testfile2")
-    $files_to_delete.Add("${workingFolder}testfile3")
+    $files_to_delete.Add("${workingFolder}testfile1") > $null
+    $files_to_delete.Add("${workingFolder}testfile2") > $null
+    $files_to_delete.Add("${workingFolder}testfile3") > $null
 
     # Call Remove-AllFilesInArray with that array.
     Mock Write-Host {}  # Omit output within the tested function.
@@ -45,9 +45,9 @@ Describe 'Remove-AllFilesInArray' {
 
     # Add them to an array.
     $files_to_delete = New-Object System.Collections.ArrayList
-    $files_to_delete.Add("${workingFolder}testfile1")
-    $files_to_delete.Add("${workingFolder}testfile2")
-    $files_to_delete.Add("${workingFolder}testfile3")
+    $files_to_delete.Add("${workingFolder}testfile1") > $null
+    $files_to_delete.Add("${workingFolder}testfile2") > $null
+    $files_to_delete.Add("${workingFolder}testfile3") > $null
 
     # Call Remove-AllFilesInArray with that array.
     Mock Write-Host {}  # Omit output within the tested function.

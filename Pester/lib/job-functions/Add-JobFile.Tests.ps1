@@ -71,7 +71,7 @@ Describe 'Add-JobFile' {
     [System.Boolean]$copy_single_file   = $true
 
     # Add data to the arrays?
-    $included_files.Add("bar.txt")
+    $included_files.Add("bar.txt") > $null
     #$excluded_dirs
     #$excluded_files
 
@@ -102,7 +102,7 @@ Describe 'Add-JobFile' {
     [System.Boolean]$copy_single_file   = $true
 
     # Add data to the arrays?
-    $included_files.Add("*.txt")
+    $included_files.Add("*.txt") > $null
     #$excluded_dirs
     #$excluded_files
 
