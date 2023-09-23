@@ -91,6 +91,11 @@ BeforeAll {
 
 
 Describe 'Export-OldJobs' {
+  BeforeEach {
+    Remove-TestFiles
+    Remove-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}"
+  }
+
   It 'Archives old jobfiles to a zip file.' {
     # Create test files.
     Add-TestFiles
@@ -109,10 +114,6 @@ Describe 'Export-OldJobs' {
     $expected = "${workingFolder}${archive_name}"
 
     Test-Path -Path "${expected}" -PathType Leaf | Should -Be $true
-
-    # Cleanup
-    Remove-TestFiles
-    Remove-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}"
   }
 
   It 'Deletes the old jobfiles after archiving.' {
@@ -137,10 +138,6 @@ Describe 'Export-OldJobs' {
       $nextFile = $testFiles[$i]
       Test-Path -Path "${workingFolder}${nextFile}" -PathType Leaf | Should -Be $false
     }
-
-    # Cleanup
-    Remove-TestFiles
-    Remove-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}"
   }
 
   It 'Keeps the specified amount of old archives.' {
@@ -160,10 +157,6 @@ Describe 'Export-OldJobs' {
     $new_number_of_archives = $( Get-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}" ).Length
 
     $new_number_of_archives | Should -Be $old_number_of_archives
-
-    # Cleanup
-    Remove-TestFiles
-    Remove-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}"
   }
 
 #  It 'Shows the correct filename of the archive' {
@@ -175,6 +168,7 @@ Describe 'Export-OldJobs' {
 
 
 AfterAll {
+  # Cleanup
   Remove-TestFiles
   Remove-TestArchives
 }
