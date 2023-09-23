@@ -3,24 +3,24 @@ BeforeAll {
   . "${ProjectRoot}lib/job-functions.ps1"
 
   $workingFolder    = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!
-  $jobfile_templates_folder = "${workingFolder}jobfile_templates\"
-  $expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
+  $script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
+  $script:expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
   $created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
 
   #TODO: Currently a global variable – not a parameter!
-  $BACKUP_JOB_DIR = "${created_jobfiles_folder}"
+  $global:BACKUP_JOB_DIR = "${created_jobfiles_folder}"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $__VERBOSE = 6
+  $script:__VERBOSE = 6
 }
 
 
 
 Describe 'Add-JobFile' {
   BeforeAll {
-    # Copy all templates to folder $expected_jobfiles_folder, and replace 
-    # the placeholder for <ProjectRoot> with current $ProjectRoot.
+    # Copy all templates to folder $expected_jobfiles_folder, and
+    # replace "<ProjectRoot>" with the current $ProjectRoot.
     $templates = New-Object System.Collections.ArrayList
     $templates = Get-ChildItem -Path "${jobfile_templates_folder}*" -Include "*.RCJ" -File
 
@@ -28,10 +28,10 @@ Describe 'Add-JobFile' {
       $template = $templates[$i]
       $template_content = (Get-Content -Path "${template}") -join "`r`n"  # See: https://stackoverflow.com/a/15041925/5944475
 
-      $new_expected_jobfile = "${template}".Replace("${jobfile_templates_folder}", "${expected_jobfiles_folder}")
+      $new_jobfile = "${template}".Replace("${jobfile_templates_folder}", "${expected_jobfiles_folder}")
       $updated_content = $template_content.Replace("<ProjectRoot>", "${ProjectRoot}")
 
-      Set-Content -Path "${new_expected_jobfile}" -Value "${updated_content}"
+      Set-Content -Path "${new_jobfile}" -Value "${updated_content}"
     }
   }
 

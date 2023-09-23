@@ -3,10 +3,10 @@ BeforeAll {
   . "${ProjectRoot}lib/robocopy-functions.ps1"
 
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $logfile = "${ProjectRoot}Pester/resources/robocopy-functions/LogAndShowRobocopyErrors.Tests.log"
+  $script:logfile = "${ProjectRoot}Pester/resources/robocopy-functions/LogAndShowRobocopyErrors.Tests.log"
 
   . "${ProjectRoot}lib/message-functions.ps1"
-  $__VERBOSE = 6
+  $script:__VERBOSE = 6
 
   function Format-RegexString {
     Param(

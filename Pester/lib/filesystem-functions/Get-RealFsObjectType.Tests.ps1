@@ -1,7 +1,7 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
-  $workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
+  $script:workingFolder = "${ProjectRoot}Pester/resources/filesystem-functions/"
 }
 
 
@@ -9,7 +9,7 @@ BeforeAll {
 Describe 'Get-RealFsObjectType' {
   BeforeDiscovery {
     $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "NODE304" -Quiet
-    $skip_network_share_subfolder = !$available
+    $script:skip_network_share_subfolder = !$available
   }
 
   Context 'Existing directories/files' {

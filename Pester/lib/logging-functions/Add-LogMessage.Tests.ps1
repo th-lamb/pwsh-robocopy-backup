@@ -1,8 +1,8 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $infoLog = "${ProjectRoot}Pester/resources/logging-functions/info.log"
-  $errorLog = "${ProjectRoot}Pester/resources/logging-functions/error.log"
+  $script:infoLog = "${ProjectRoot}Pester/resources/logging-functions/info.log"
+  $script:errorLog = "${ProjectRoot}Pester/resources/logging-functions/error.log"
 
   function Format-RegexString {
     Param(

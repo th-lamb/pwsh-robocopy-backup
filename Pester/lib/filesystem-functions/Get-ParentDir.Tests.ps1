@@ -1,11 +1,11 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\"  # Backslashes because PS functions return backslashes.
   . "${ProjectRoot}lib/filesystem-functions.ps1"
-  $workingFolder = "${ProjectRoot}Pester\resources\filesystem-functions\"
+  $script:workingFolder = "${ProjectRoot}Pester\resources\filesystem-functions\"
 
   # For messages and logging in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $__VERBOSE = 6
+  $script:__VERBOSE = 6
 }
 
 

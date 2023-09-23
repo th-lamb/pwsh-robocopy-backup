@@ -3,11 +3,11 @@ BeforeAll {
   . "${ProjectRoot}lib/job-type-functions.ps1"
 
   # Simulate ini-values
-  $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S = 3
+  $script:JOB_TYPE_SELECTION_MAX_WAITING_TIME_S = 3
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$logfile = "${PSScriptRoot}/Get-UserSelectedJobType.Tests.log"
+  #$script:logfile = "${PSScriptRoot}/Get-UserSelectedJobType.Tests.log"
 }
 
 
