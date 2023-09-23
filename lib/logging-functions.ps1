@@ -45,7 +45,7 @@ function Format-InSquareBrackets {
 
 function Add-LogMessage {
   <# Appends the $message to the $logfile.
-  The Entry gets preceded with date/time and $severity. Example:
+    The Entry gets preceded with date/time and $severity. Example:
   2023-04-25T13:46:16 [INFO   ] This is an info message.
   #>
   Param(
@@ -106,7 +106,7 @@ function Add-EmptyLineToLogfile {
 
 function LogAndShowMessage {
   <# Appends the $message to the $logfile, and writes it to the console.
-  The type of message written to the console depends on the $severity.
+    The type of message written to the console depends on the $severity.
   #>
   Param(
     [String]$logfile,

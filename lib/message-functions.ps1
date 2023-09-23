@@ -78,20 +78,19 @@
 #region Helper functions - Colored message (without and with timestamp)
 
 function Write-ColoredMessage {
-  <#
-  Writes the specified message to the console with colors depending on the severity level of the message.
+  <# Writes the specified message to the console with colors depending on the severity level of the message.
 
-  Notes:
-  * Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
-  * Colors inspired by ANSI Z535.6
-  * Throws an exception on illegal severity levels.
+    Notes:
+    * Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
+    * Colors inspired by ANSI Z535.6
+    * Throws an exception on illegal severity levels.
 TODO:
-  * Redirects errors (emerg...warning) to stderr and other messages to stdout.
-    -> Powershell has 6 streams!
+    * Redirects errors (emerg...warning) to stderr and other messages to stdout.
+      -> Powershell has 6 streams!
 
-  Parameters:
-  $1   Severity level: emerg|alert|crit|err|warning|notice|info|debug
-  $2   The message
+    Parameters:
+    $1   Severity level: emerg|alert|crit|err|warning|notice|info|debug
+    $2   The message
   #>
   #TODO: Use the enum in logging-functions for $severity.
   param (
@@ -184,9 +183,8 @@ TODO:
 #region Helper functions - checks
 
 function Test-VerbosityIsDefined {
-  <#
-  Returns false if ${__VERBOSE} is not defined or 
-  if ${__VERBOSE} is not between 0..7.
+  <# Returns false if ${__VERBOSE} is not defined or 
+    if ${__VERBOSE} is not between 0..7.
   #>
 
   $MIN=0
@@ -206,9 +204,8 @@ function Test-VerbosityIsDefined {
 #region Wrappers for severity levels (without timestamp)
 
 function Write-EmergMsg {
-  <#
-  Write-ColoredMessage() for severity level 0 (emerg).
-  Notice: No verbose level check, always shown
+  <# Write-ColoredMessage() for severity level 0 (emerg).
+    Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
@@ -219,9 +216,8 @@ function Write-EmergMsg {
 }
 
 function Write-AlertMsg {
-  <#
-  Write-ColoredMessage() for severity level 1 (alert).
-  Notice: No verbose level check, always shown
+  <# Write-ColoredMessage() for severity level 1 (alert).
+    Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
@@ -232,9 +228,8 @@ function Write-AlertMsg {
 }
 
 function Write-CritMsg {
-  <#
-  Write-ColoredMessage() for severity level 2 (crit).
-  Notice: No verbose level check, always shown
+  <# Write-ColoredMessage() for severity level 2 (crit).
+    Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
@@ -245,9 +240,8 @@ function Write-CritMsg {
 }
 
 function Write-ErrMsg {
-  <#
-  Write-ColoredMessage() for severity level 3 (err).
-  Notice: No verbose level check, always shown
+  <# Write-ColoredMessage() for severity level 3 (err).
+    Notice: No verbose level check, always shown
   #>
   param (
     [String]$message
@@ -340,13 +334,13 @@ function Write-DebugMsg {
 #region ... with additional exit codes
 
 function Stop-WithEmergMessage {
-  <#
-  _coloredLog() for severity level 0 (emerg) and exit with specified exit code.
-  Notice: No verbose level check, always shown
+  #TODO: Change text: no "_coloredLog" anymore!
+  <# _coloredLog() for severity level 0 (emerg) and exit with specified exit code.
+    Notice: No verbose level check, always shown
 
-  Parameters:
-  $1  exit with code
-  $2  string to log
+    Parameters:
+    $1  exit with code
+    $2  string to log
   #>
   param (
     [Int32]$exit_code,
@@ -359,13 +353,13 @@ function Stop-WithEmergMessage {
 }
 
 function Stop-WithAlertMessage {
-  <#
-  _coloredLog() for severity level 1 (alert) and exit with specified exit code.
-  Notice: No verbose level check, always shown
+  #TODO: Change text: no "_coloredLog" anymore!
+  <# _coloredLog() for severity level 1 (alert) and exit with specified exit code.
+    Notice: No verbose level check, always shown
 
-  Parameters:
-  $1  exit with code
-  $2  string to log
+    Parameters:
+    $1  exit with code
+    $2  string to log
   #>
   param (
     [Int32]$exit_code,
@@ -378,13 +372,13 @@ function Stop-WithAlertMessage {
 }
 
 function Stop-WithCritMessage {
-  <#
-  _coloredLog() for severity level 2 (crit) and exit with specified exit code.
-  Notice: No verbose level check, always shown
+  #TODO: Change text: no "_coloredLog" anymore!
+  <# _coloredLog() for severity level 2 (crit) and exit with specified exit code.
+    Notice: No verbose level check, always shown
 
-  Parameters:
-  $1  exit with code
-  $2  string to log
+    Parameters:
+    $1  exit with code
+    $2  string to log
   #>
   param (
     [Int32]$exit_code,
@@ -397,13 +391,13 @@ function Stop-WithCritMessage {
 }
 
 function Stop-WithErrMessage {
-  <#
-  _coloredLog() for severity level 3 (err) and exit with specified exit code.
-  Notice: No verbose level check, always shown
+  #TODO: Change text: no "_coloredLog" anymore!
+  <# _coloredLog() for severity level 3 (err) and exit with specified exit code.
+    Notice: No verbose level check, always shown
 
-  Parameters:
-  $1  exit with code
-  $2  string to log
+    Parameters:
+    $1  exit with code
+    $2  string to log
   #>
   param (
     [Int32]$exit_code,
@@ -422,9 +416,8 @@ function Stop-WithErrMessage {
 #region Wrappers for simple verbose modes
 
 function Write-QuietMessage {
-  <#
-  Shows the specified message even in quiet mode.
-  -> Message is interpreted as a warning.
+  <# Shows the specified message even in quiet mode.
+    -> Message is interpreted as a warning.
   #>
   param (
     [String]$message
@@ -436,12 +429,11 @@ function Write-QuietMessage {
 }
 
 function Write-NormalMessage {
-  <#
-  Shows the specified message in normal mode.
+  <# Shows the specified message in normal mode.
 
-  Notes:
-  The Message will be interpreted as "info" but will already be shown at 
-  verbose level 5 (severity level "notice").
+    Notes:
+    The Message will be interpreted as "info" but will already be shown at 
+    verbose level 5 (severity level "notice").
   #>
   param (
     [String]$message
@@ -461,9 +453,8 @@ function Write-NormalMessage {
 }
 
 function Write-VerboseMessage {
-  <#
-  Shows the specified message only in verbose mode.
-  -> Message is interpreted as an info message.
+  <# Shows the specified message only in verbose mode.
+    -> Message is interpreted as an info message.
   #>
   param (
     [String]$message

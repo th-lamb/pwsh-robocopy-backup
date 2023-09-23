@@ -7,10 +7,10 @@ BeforeAll {
 
 
 <# Test files:
-${workingFolder}/test LastDateTime/...
-  ...first.txt
-  ...last.txt     <--- youngest file
-  ...second.txt
+  ${workingFolder}/test LastDateTime/...
+    ...first.txt
+    ...last.txt     <--- youngest file
+    ...second.txt
 #>
 
 Describe 'Get-LastDateTime' {

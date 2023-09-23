@@ -16,26 +16,25 @@
 #region Object types
 
 function Test-FsObjectTypeMismatch {
-  <#
-  Warns if the real object type (e.g. "directory") does NOT match 
-  the specified type (e.g. "file pattern").
+  <# Warns if the real object type (e.g. "directory") does NOT match 
+    the specified type (e.g. "file pattern").
 
-  Possible specified types:
-  - directory
-  - directory pattern
-  - file
-  - file pattern
+    Possible specified types:
+    - directory
+    - directory pattern
+    - file
+    - file pattern
 
-  Possible real types:
-  - directory
-  - file
-  - $false (non-existent)
+    Possible real types:
+    - directory
+    - file
+    - $false (non-existent)
 
-  Expected combinations:
-  - directory         : directory or $false
-  - file              : file or $false
-  - directory pattern : directory or $false
-  - file pattern      : file or $false
+    Expected combinations:
+    - directory         : directory or $false
+    - file              : file or $false
+    - directory pattern : directory or $false
+    - file pattern      : file or $false
   #>
   param (
     [String]$specified_type,
@@ -89,21 +88,20 @@ function Test-FsObjectTypeMismatch {
 
 function Get-DirlistLineType {
   #TODO: Use an Enum? https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#enum
-  <#
-  Returns the type of the specified line in the dir-list.
+  <# Returns the type of the specified line in the dir-list.
 
-  Possible types:
-  - ignore                (empty line or comment)
-  - source-dir
-  - incl-files-pattern    (only filenames can be included)
-  - excl-files-pattern
-  - excl-dirs-pattern
-  - source-file           (must include the parent directory)
-  - source-file-pattern
+    Possible types:
+    - ignore                (empty line or comment)
+    - source-dir
+    - incl-files-pattern    (only filenames can be included)
+    - excl-files-pattern
+    - excl-dirs-pattern
+    - source-file           (must include the parent directory)
+    - source-file-pattern
 
-  Not implemented:
-  - source-dir-pattern  -> invalid
-  - directory-entry     -> invalid
+    Not implemented:
+    - source-dir-pattern  -> invalid
+    - directory-entry     -> invalid
   #>
   param (
     [String]$entry,
@@ -396,9 +394,8 @@ function _addUserSettings {
 }
 
 function _addIncludedFiles {
-  <#
-  Adds all files in the specified list to the specified job file 
-  as files to be included (robocopy option /IF).
+  <# Adds all files in the specified list to the specified job file 
+    as files to be included (robocopy option /IF).
   #>
   param (
     [String]$jobfile_path,
@@ -428,9 +425,8 @@ function _addIncludedFiles {
 }
 
 function _addExcludedDirs {
-  <#
-  Adds all directories in the specified list to the specified job file 
-  as directories to be excluded (robocopy option /XD).
+  <# Adds all directories in the specified list to the specified job file 
+    as directories to be excluded (robocopy option /XD).
   #>
   param (
     [String]$jobfile_path,
@@ -460,9 +456,8 @@ function _addExcludedDirs {
 }
 
 function _addExcludedFiles {
-  <#
-  Adds all files in the specified list to the specified job file 
-  as files to be excluded (robocopy option /XF).
+  <# Adds all files in the specified list to the specified job file 
+    as files to be excluded (robocopy option /XF).
   #>
   param (
     [String]$jobfile_path,
@@ -492,9 +487,7 @@ function _addExcludedFiles {
 }
 
 function _finalizeJob {
-  <#
-  Adds all included/excluded entries to the specified job file.
-  #>
+  # Adds all included/excluded entries to the specified job file.
   param (
     [String]$jobfile_path,
     [System.Collections.ArrayList]$included_files,

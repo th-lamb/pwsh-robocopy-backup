@@ -106,15 +106,12 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Checking necessary directories and files..."
 
-<#
-  Some folders/files are mandatory. The rest can be created automatically.
-
-  - Mandatory
+<# Some folders/files are mandatory. The rest can be created automatically.
+  - Mandatory:
     - BACKUP_TEMPLATES_DIR
     - DIRLIST_TEMPLATE
     - ROBOCOPY_JOB_TYPE_TEMPLATE_INCR, ...
-
-  - Created automatically
+  - Created automatically:
     - BACKUP_BASE_DIR
     - BACKUP_USER_BASE_DIR
     - BACKUP_DIR
@@ -223,8 +220,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 
-<#
-  Creates a job file for each dir in the dir-list.
+<# Create a job file for each directory in the dir-list.
   - Loop over all lines.
   - Start new job for every directory (lines without leading spaces).
   - Add included/excluded files/directories (lines with leading "  + " or "  - ") to 

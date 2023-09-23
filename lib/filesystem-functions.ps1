@@ -1,9 +1,8 @@
 #region Object types
 
 function Get-RealFsObjectType {
-  <#
-  Returns the type of the real filesystem object, specified by the path; or
-  $false for non-existent directory/file.
+  <# Returns the type of the real filesystem object, specified by the path; or
+    $false for non-existent directory/file.
   #>
   param (
     [String]$path_spec
@@ -18,11 +17,10 @@ function Get-RealFsObjectType {
 
   $specified_type = Get-SpecifiedFsObjectType "${path_spec}"
 
-  <#
-  We have to "manually" check for a UNC path first because Test-Path recognizes
-  network shares like "\\fileserver\backup\" as directory.
-  Since this script cannot create a network share, we have to distinguish 
-  between directory and network share.
+  <# We have to "manually" check for a UNC path first because Test-Path recognizes
+    network shares like "\\fileserver\backup\" as directory.
+    Since this script cannot create a network share, we have to distinguish 
+    between directory and network share.
   #>
 
   #TODO: This doesn't test if a share really exists or is available!
@@ -32,15 +30,12 @@ function Get-RealFsObjectType {
   }
 
   # Existing directory/file
-  <#
-    ----------------------------------------------------------------------------
-    https://github.com/PowerShell/PowerShell/issues/6473
+  <# https://github.com/PowerShell/PowerShell/issues/6473
     [...]
     Given that they lack a -Force switch, the following cmdlets are currently fundamentally incapable of finding hidden items via wildcards:
 
         Test-Path, Convert-Path, Resolve-Path, Split-Path -Resolve, Join-Path -Resolve, Invoke-Item
     [...]
-    ----------------------------------------------------------------------------
   #>
   if (Test-Path -Path "${path_spec}" -PathType Container) {
     if ("${specified_type}" -eq "drive letter") {
@@ -58,9 +53,8 @@ function Get-RealFsObjectType {
 }
 
 function Get-SpecifiedFsObjectType {
-  <#
-  Returns the type of the specified filesystem object.
-  Note: Based on the string only. Reason: may refer to objects that may not have been created yet.
+  <# Returns the type of the specified filesystem object.
+    Note: Based on the string only. Reason: may refer to objects that may not have been created yet.
   #>
   param (
     [String]$path_spec
@@ -87,10 +81,10 @@ function Get-SpecifiedFsObjectType {
   # Test 3: network share or network computer.
   $is_unc_path=[bool]([System.Uri]"${path_spec}").IsUnc
   if ($is_unc_path) {
-    <#
-    Top-level element : server
-    Second element    : share
-    Further elements  : directories/files (that we might be able to create)
+    <# Path elements:
+      Top-level element : server
+      Second element    : share
+      Further elements  : directories/files (that we might be able to create)
     #>
 
     $test_dir = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.+\\'
@@ -161,12 +155,11 @@ function Get-SpecifiedFsObjectType {
 }
 
 function Get-SpecifiedBackupBaseDirType {
-  <#
-  Returns the type of the specified backup base-dir.
-  Note: Based on the string only.
-  Return values:
-  - "directory" for UNC paths ("\\...") and local paths (e.g. "C:\..."); or
-  - "relative path"
+  <# Returns the type of the specified backup base-dir.
+    Note: Based on the string only.
+    Return values:
+    - "directory" for UNC paths ("\\...") and local paths (e.g. "C:\..."); or
+    - "relative path"
   #>
   param (
     [String]$path_spec
@@ -309,10 +302,9 @@ function Test-NecessaryFile {
 }
 
 function Get-ExecutablePath {
-  <#
-  Returns the path to the specified executable if it exists.
-  Also searches in the Windows PATH environment variable.
-  Throws an exception if the specified file doesn't exist.
+  <# Returns the path to the specified executable if it exists.
+    Also searches in the Windows PATH environment variable.
+    Throws an exception if the specified file doesn't exist.
   #>
   param (
     [String]$definition_name,
@@ -360,9 +352,7 @@ function Get-ExecutablePath {
 #region Object creation
 
 function New-NecessaryDirectory {
-  <#
-  Creates the specified directory and all parent folders if necessary.
-  #>
+  # Creates the specified directory and all parent folders if necessary.
   param (
     [String]$definition_name,
     [String]$dir_spec,
@@ -386,11 +376,10 @@ function New-NecessaryDirectory {
   }
   #endregion
 
-  <#
-  https://stackoverflow.com/a/63311340
-  `New-Item -ItemType "directory" -Path ...`    : Fails if the directory already exists!
-  `New-Item ... -Force`                         : Doesn't show an error if there already is a *file* with the same name!
-  `[System.IO.Directory]::CreateDirectory(...)` : Creates the directory if necessary, and fails if there is a file with the same name.
+  <# https://stackoverflow.com/a/63311340
+    `New-Item -ItemType "directory" -Path ...`    : Fails if the directory already exists!
+    `New-Item ... -Force`                         : Doesn't show an error if there already is a *file* with the same name!
+    `[System.IO.Directory]::CreateDirectory(...)` : Creates the directory if necessary, and fails if there is a file with the same name.
   #>
 
   try {
@@ -403,9 +392,8 @@ function New-NecessaryDirectory {
 }
 
 function New-NecessaryFile {
-  <#
-  Creates the specified file from the specified template.
-  Returns $true if the file has been copied; otherwise $false.
+  <# Creates the specified file from the specified template.
+    Returns $true if the file has been copied; otherwise $false.
   #>
   param (
     [String]$definition_name,
@@ -639,11 +627,10 @@ function Get-KnownFolderPath {
 #region Path functions
 
 function Get-ExpandedPath {
-  <#
-  Expands the specified path in three ways:
-  1. Script variables.          Example: ${BACKUP_BASE_DIR}\ becomes C:\Backup\
-  2. Environment variables.     Example: %HOMEDRIVE% becomes C:
-  3. (Windows) known folders.   Example: %Documents% becomes C:\Users\<username>\Documents
+  <# Expands the specified path in three ways:
+    1. Script variables.          Example: ${BACKUP_BASE_DIR}\ becomes C:\Backup\
+    2. Environment variables.     Example: %HOMEDRIVE% becomes C:
+    3. (Windows) known folders.   Example: %Documents% becomes C:\Users\<username>\Documents
   #>
   param (
     [String]$path_spec
@@ -662,11 +649,10 @@ function Get-ExpandedPath {
   # Expand environment variables of the host.
   $expanded = ([System.Environment]::ExpandEnvironmentVariables("${expanded}"))
 
-  <#
-  Expand special folders (previously known as "User Shell Folders").
-  We expect a known folder to be used in one of two ways:
-  - <known_folder>, or
-  - <known_folder>\subfolder
+  <# Expand special folders (previously known as "User Shell Folders").
+    We expect a known folder to be used in one of two ways:
+    - <known_folder>, or
+    - <known_folder>\subfolder
   #>
   $first_delim_pos = "${expanded}".IndexOf("%")
 
@@ -703,9 +689,7 @@ function Get-ExpandedPath {
 }
 
 function Get-ParentDir {
-  <#
-  Returns the parent directory of the specified file (pattern).
-  #>
+  # Returns the parent directory of the specified file (pattern).
   #TODO: Additional parameter "check_file_exists" needed?
   param (
     [String]$file_spec
