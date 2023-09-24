@@ -18,7 +18,9 @@ BeforeAll {
     param (
       [Parameter()]
       [SeverityKeyword]$test_severity,
+      [Parameter()]
       [String]$message,
+      [Parameter()]
       [String]$expected_backgroundColor
     )
 
@@ -44,7 +46,9 @@ BeforeAll {
     param (
       [Parameter()]
       [SeverityKeyword]$test_severity,
+      [Parameter()]
       [String]$message,
+      [Parameter()]
       [String]$expected_foregroundColor
     )
 
