@@ -7,7 +7,7 @@ BeforeAll {
 
 Describe 'Test-VerbosityIsDefined' {
   Context 'Legal values' {
-    It 'Returns $true for 0..7.' {
+    It 'Returns $true for: 0..7' {
       $values = @(0, 1, 2, 3, 4, 5, 6, 7)
 
       for ($i=0; $i -lt $values.Length; $i++) {
@@ -19,7 +19,7 @@ Describe 'Test-VerbosityIsDefined' {
   }
 
   Context 'Illegal values' {
-    It 'Returns $false for values `< 0 or `> 7.' {
+    It 'Returns $false for values outside: 0..7' {
       $values = @(-2, -1, 8, 9)
 
       for ($i=0; $i -lt $values.Length; $i++) {
