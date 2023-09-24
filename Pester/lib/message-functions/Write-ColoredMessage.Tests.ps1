@@ -16,11 +16,8 @@ BeforeAll {
 
   function Test-SeverityExpectedBackgroundColor {
     param (
-      [Parameter()]
       [SeverityKeyword]$Severity,
-      [Parameter()]
       [String]$Message,
-      [Parameter()]
       [String]$ExpectedBackgroundColor
     )
 
@@ -44,11 +41,8 @@ BeforeAll {
 
   function Test-SeverityExpectedForegroundColor {
     param (
-      [Parameter()]
       [SeverityKeyword]$Severity,
-      [Parameter()]
       [String]$Message,
-      [Parameter()]
       [String]$ExpectedForegroundColor
     )
 
