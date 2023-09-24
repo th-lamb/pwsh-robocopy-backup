@@ -5,10 +5,6 @@ BeforeAll {
 
 
 
-<# Returns false if ${__VERBOSE} is not defined or 
-  if ${__VERBOSE} is not between 0..7.
-#>
-
 Describe 'Test-VerbosityIsDefined' {
   Context 'Legal values' {
     It 'Returns $true for 0..7.' {
