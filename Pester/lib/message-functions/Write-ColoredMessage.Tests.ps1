@@ -16,6 +16,7 @@ BeforeAll {
 
   function Test-SeverityWithExpectedColors {
     param (
+      [Parameter()]
       [SeverityKeyword]$test_severity,
       [String]$message,
       [String]$expected_backgroundColor,
