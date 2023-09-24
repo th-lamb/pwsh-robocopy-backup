@@ -17,47 +17,47 @@ BeforeAll {
   function Test-SeverityExpectedBackgroundColor {
     param (
       [Parameter()]
-      [SeverityKeyword]$test_severity,
+      [SeverityKeyword]$Severity,
       [Parameter()]
-      [String]$message,
+      [String]$Message,
       [Parameter()]
-      [String]$expected_backgroundColor
+      [String]$ExpectedBackgroundColor
     )
 
     #TODO: Does not fail with multiple parameter checks (e.g. $BackgroundColor + $ForegroundColor) at the same time!
     #Mock Write-Host {} -Verifiable
     #
-    #Write-ColoredMessage $test_severity "${message}"
+    #Write-ColoredMessage $Severity "${Message}"
     #
     #TODO: The error message just is "was called 0 times" - but not why!
     #Should -Invoke -CommandName "Write-Host" -Times 1 -Exactly -ParameterFilter {
-    #  $BackgroundColor -eq "${expected_backgroundColor}"
+    #  $BackgroundColor -eq "${ExpectedBackgroundColor}"
     #}
 
     # We store the used BackgroundColor for a better error message.
     Mock Write-Host { $Script:used_backgroundColor = $BackgroundColor } -Verifiable
 
-    Write-ColoredMessage $test_severity "${message}"
+    Write-ColoredMessage $Severity "${Message}"
 
-    $used_backgroundColor | Should -Be $expected_backgroundColor
+    $used_backgroundColor | Should -Be $ExpectedBackgroundColor
   }
 
   function Test-SeverityExpectedForegroundColor {
     param (
       [Parameter()]
-      [SeverityKeyword]$test_severity,
+      [SeverityKeyword]$Severity,
       [Parameter()]
-      [String]$message,
+      [String]$Message,
       [Parameter()]
-      [String]$expected_foregroundColor
+      [String]$ExpectedForegroundColor
     )
 
     # We store the used ForegroundColor for a better error message.
     Mock Write-Host { $Script:used_foregroundColor = $ForegroundColor } -Verifiable
 
-    Write-ColoredMessage $test_severity "${message}"
+    Write-ColoredMessage $Severity "${Message}"
 
-    $used_foregroundColor | Should -Be $expected_foregroundColor
+    $used_foregroundColor | Should -Be $ExpectedForegroundColor
   }
 }
 
@@ -66,115 +66,115 @@ BeforeAll {
 Describe 'Write-ColoredMessage' {
   Context 'Legal severity levels' {
     It 'Uses correct BackgroundColor for severity: EMERG' {
-      $test_severity            = [SeverityKeyword]::EMERG
-      $expected_backgroundColor = "Red"
+      $test_severity  = [SeverityKeyword]::EMERG
+      $expected       = "Red"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: EMERG' {
-      $test_severity            = [SeverityKeyword]::EMERG
-      $expected_foregroundColor = "White"
+      $test_severity  = [SeverityKeyword]::EMERG
+      $expected       = "White"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
 
     It 'Uses correct BackgroundColor for severity: ALERT' {
-      $test_severity            = [SeverityKeyword]::ALERT
-      $expected_backgroundColor = "Red"
+      $test_severity  = [SeverityKeyword]::ALERT
+      $expected       = "Red"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: ALERT' {
-      $test_severity            = [SeverityKeyword]::ALERT
-      $expected_foregroundColor = "Black"
+      $test_severity  = [SeverityKeyword]::ALERT
+      $expected       = "Black"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
 
     It 'Uses correct BackgroundColor for severity: CRIT' {
-      $test_severity            = [SeverityKeyword]::CRIT
-      $expected_backgroundColor = "Yellow"
+      $test_severity  = [SeverityKeyword]::CRIT
+      $expected       = "Yellow"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: CRIT' {
-      $test_severity            = [SeverityKeyword]::CRIT
-      $expected_foregroundColor = "Black"
+      $test_severity  = [SeverityKeyword]::CRIT
+      $expected       = "Black"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
 
     It 'Uses correct BackgroundColor for severity: ERR' {
-      $test_severity            = [SeverityKeyword]::ERR
-      $expected_backgroundColor = "White"
+      $test_severity  = [SeverityKeyword]::ERR
+      $expected       = "White"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: ERR' {
-      $test_severity            = [SeverityKeyword]::ERR
-      $expected_foregroundColor = "Red"
+      $test_severity  = [SeverityKeyword]::ERR
+      $expected       = "Red"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
 
     It 'Uses correct BackgroundColor for severity: WARNING' {
-      $test_severity            = [SeverityKeyword]::WARNING
-      $expected_backgroundColor = "White"
+      $test_severity  = [SeverityKeyword]::WARNING
+      $expected       = "White"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: WARNING' {
-      $test_severity            = [SeverityKeyword]::WARNING
-      $expected_foregroundColor = "Black"
+      $test_severity  = [SeverityKeyword]::WARNING
+      $expected       = "Black"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
 
     It 'Uses correct BackgroundColor for severity: NOTICE' {
-      $test_severity            = [SeverityKeyword]::NOTICE
-      $expected_backgroundColor = "Blue"
+      $test_severity  = [SeverityKeyword]::NOTICE
+      $expected       = "Blue"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: NOTICE' {
-      $test_severity            = [SeverityKeyword]::NOTICE
-      $expected_foregroundColor = "White"
+      $test_severity  = [SeverityKeyword]::NOTICE
+      $expected       = "White"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
 
     It 'Uses correct BackgroundColor for severity: INFO' {
-      $test_severity            = [SeverityKeyword]::INFO
-      $expected_backgroundColor = "Black"
+      $test_severity  = [SeverityKeyword]::INFO
+      $expected       = "Black"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: INFO' {
-      $test_severity            = [SeverityKeyword]::INFO
-      $expected_foregroundColor = "White"
+      $test_severity  = [SeverityKeyword]::INFO
+      $expected       = "White"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
 
     It 'Uses correct BackgroundColor for severity: DEBUG' {
-      $test_severity            = [SeverityKeyword]::DEBUG
-      $expected_backgroundColor = "Black"
+      $test_severity  = [SeverityKeyword]::DEBUG
+      $expected       = "Black"
 
-      Test-SeverityExpectedBackgroundColor $test_severity "This message should be written." $expected_backgroundColor
+      Test-SeverityExpectedBackgroundColor -Severity $test_severity -Message "This message should be written." -ExpectedBackgroundColor $expected
     }
 
     It 'Uses correct ForegroundColor for severity: DEBUG' {
-      $test_severity            = [SeverityKeyword]::DEBUG
-      $expected_foregroundColor = "DarkGray"
+      $test_severity  = [SeverityKeyword]::DEBUG
+      $expected       = "DarkGray"
 
-      Test-SeverityExpectedForegroundColor $test_severity "This message should be written." $expected_foregroundColor
+      Test-SeverityExpectedForegroundColor -Severity $test_severity -Message "This message should be written." -ExpectedForegroundColor $expected
     }
   }
 
@@ -184,47 +184,47 @@ Describe 'Write-ColoredMessage' {
     }
 
     It 'Does NOT write a message for severity: -1' {
-      $test_severity    = -1
+      $test_severity = -1
       $expected_message = "Write-ColoredMessage(): Illegal severity level specified: *"   # Using wildcard
 
       {
-        Write-ColoredMessage $test_severity "This message should NOT be written!"
+        Write-ColoredMessage -Severity $test_severity -Message "This message should NOT be written!"
       } | Should -Throw -ExpectedMessage "${expected_message}"
     }
 
     It 'Does NOT write a message for severity: 0' {
-      $test_severity    = 0
+      $test_severity = 0
       $expected_message = "Write-ColoredMessage(): Illegal severity level specified: *"   # Using wildcard
 
       {
-        Write-ColoredMessage $test_severity "This message should NOT be written!"
+        Write-ColoredMessage -Severity $test_severity -Message "This message should NOT be written!"
       } | Should -Throw -ExpectedMessage "${expected_message}"
     }
 
     It 'Does NOT write a message for severity: 1' {
-      $test_severity    = 1
+      $test_severity = 1
       $expected_message = "Write-ColoredMessage(): Illegal severity level specified: *"   # Using wildcard
 
       {
-        Write-ColoredMessage $test_severity "This message should NOT be written!"
+        Write-ColoredMessage -Severity $test_severity -Message "This message should NOT be written!"
       } | Should -Throw -ExpectedMessage "${expected_message}"
     }
 
     It 'Does NOT write a message for severity: 8' {
-      $test_severity    = 8
+      $test_severity = 8
       $expected_message = "Write-ColoredMessage(): Illegal severity level specified: *"   # Using wildcard
 
       {
-        Write-ColoredMessage $test_severity "This message should NOT be written!"
+        Write-ColoredMessage -Severity $test_severity -Message "This message should NOT be written!"
       } | Should -Throw -ExpectedMessage "${expected_message}"
     }
 
     It 'Does NOT write a message for severity: foo' {
-      $test_severity    = "foo"
+      $test_severity = "foo"
       $expected_message = "Write-ColoredMessage(): Illegal severity level specified: *"   # Using wildcard
 
       {
-        Write-ColoredMessage $test_severity "This message should NOT be written!"
+        Write-ColoredMessage -Severity $test_severity -Message "This message should NOT be written!"
       } | Should -Throw -ExpectedMessage "${expected_message}"
     }
   }
