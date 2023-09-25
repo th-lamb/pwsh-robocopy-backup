@@ -20,6 +20,7 @@ Describe 'Write-EmergMsg' {
 
     Write-EmergMsg -Message "${test_message}"
 
+    Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
     $Script:used_severity | Should -Be "${test_severity}"
     $Script:used_message | Should -Be "${expected_message}"
   }
@@ -33,6 +34,7 @@ Describe 'Write-AlertMsg' {
 
     Write-AlertMsg -Message "${test_message}"
 
+    Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
     $Script:used_severity | Should -Be "${test_severity}"
     $Script:used_message | Should -Be "${expected_message}"
   }
@@ -46,6 +48,7 @@ Describe 'Write-CritMsg' {
 
     Write-CritMsg -Message "${test_message}"
 
+    Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
     $Script:used_severity | Should -Be "${test_severity}"
     $Script:used_message | Should -Be "${expected_message}"
   }
@@ -59,6 +62,7 @@ Describe 'Write-ErrMsg' {
 
     Write-ErrMsg -Message "${test_message}"
 
+    Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
     $Script:used_severity | Should -Be "${test_severity}"
     $Script:used_message | Should -Be "${expected_message}"
   }
