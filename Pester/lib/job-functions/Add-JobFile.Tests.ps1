@@ -223,6 +223,43 @@ Describe 'Add-JobFile' {
 
     "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
   }
+
+  #TODO: %AppData%\WinSCP.ini -> C:\Users\lambecth\AppData\Roaming\
+  #                           -> WinSCP.ini
+  #                           -> /LEV:1
+
+  It 'BUGFIX: Writes a correct job file for %AppData%\WinSCP.ini.' {
+    # Parameters
+    [String]$backup_job_dir             = "${created_jobfiles_folder}"
+    [String]$computername               = "MyComputer"
+    [Int32]$current_job_num             = 7
+    [String]$dirlist_entry              = "%AppData%\WinSCP.ini"
+    [String]$source_dir                 = "C:\Users\lambecth\AppData\Roaming\"
+    [String]$target_dir                 = "C:\Backup\C\Users\lambecth\AppData\Roaming\"
+    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
+    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
+    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    [System.Boolean]$copy_single_file   = $true
+
+    # Add data to the arrays?
+    $included_files.Add("WinSCP.ini") > $null
+    #$excluded_dirs
+    #$excluded_files
+
+    # Function call with all values.
+    Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+
+    # Compare the result with the template!
+    $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
+    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
+
+    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
+    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+
+    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+  }
+
 }
 
 

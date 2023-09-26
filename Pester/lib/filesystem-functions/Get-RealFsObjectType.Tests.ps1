@@ -10,6 +10,8 @@ Describe 'Get-RealFsObjectType' {
   BeforeDiscovery {
     $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "NODE304" -Quiet
     $Script:skip_network_share_subfolder = !$available
+    #TODO: Remove message after successfully testing 'recognizes subfolder of a network share'!
+    Write-Host "skip_network_share_subfolder: $skip_network_share_subfolder" -ForegroundColor Yellow
   }
 
   Context 'Existing directories/files' {
@@ -185,6 +187,8 @@ Describe 'Get-RealFsObjectType' {
       $expected   = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
+      #TODO: Remove message after successfully testing 'recognizes subfolder of a network share'!
+      Write-Host "object_type: ${object_type}" -ForegroundColor Yellow
       "${object_type}" | Should -Be "${expected}"
     }
 

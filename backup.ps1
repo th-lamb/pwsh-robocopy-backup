@@ -255,6 +255,20 @@ function _callCreateJob {
   # Creates the current job using all values collected from the dir-list.
   Write-DebugMsg "_callCreateJob()"
 
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  if ("${current_source_definition}" -eq "%AppData%\WinSCP.ini") {
+    Write-Host "current_job_num           : $current_job_num" -ForegroundColor Yellow
+    Write-Host "current_source_definition : ${current_source_definition}" -ForegroundColor Yellow
+    Write-Host "source_dir                : ${source_dir}" -ForegroundColor Yellow
+    #Write-Host "${target_dir}" -ForegroundColor Yellow
+    Write-Host "included_files            : $included_files" -ForegroundColor Yellow
+    #Write-Host $excluded_dirs -ForegroundColor Yellow
+    #Write-Host $excluded_files -ForegroundColor Yellow
+    Write-Host "copy_single_file          : $copy_single_file" -ForegroundColor Yellow
+
+    exit
+  }
+
   Add-JobFile `
     "${BACKUP_JOB_DIR}" `
     "${COMPUTERNAME}" `
@@ -287,7 +301,8 @@ function _resetJobRelatedInfo {
   $Script:included_files.Clear()
   $Script:excluded_dirs.Clear()
   $Script:excluded_files.Clear()
-  $Script:copy_single_file = $false   # job- and line-related
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  $Script:copy_single_file = $false   #TODO: job- and line-related! Problem for consecutive files in the dir-list!
 }
 
 function _resetLineRelatedInfo {
@@ -296,7 +311,8 @@ function _resetLineRelatedInfo {
   $Script:start_new_job = $false
   $Script:finish_previous_job = $false
   $Script:continue_curr_job = $false
-  $Script:copy_single_file = $false   # job- and line-related
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  $Script:copy_single_file = $false   #TODO: job- and line-related! Problem for consecutive files in the dir-list!
   $Script:line_type = ""
 }
 
@@ -308,6 +324,10 @@ ForEach($line in $dir_list_content) {
 
   # Expand all entries first to avoid interpreting environment variables etc. as filenames.
   $expanded = Get-ExpandedPath "${line}"
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  if ("${line}".Contains("WinSCP.ini")) {
+    Write-Host "expanded                  : ${expanded}" -ForegroundColor Yellow
+  }
 
   <# Determine what to do depending on the type of the current line.
     A job definition ends with:
@@ -317,6 +337,10 @@ ForEach($line in $dir_list_content) {
     - EOF
   #>
   $line_type = Get-DirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  if ("${line}".Contains("WinSCP.ini")) {
+    Write-Host "line_type                 : ${line_type}" -ForegroundColor Yellow
+  }
   Write-DebugMsg "${line_type}: ${expanded}"
 
   switch -Wildcard ("${line_type}") {
@@ -369,6 +393,14 @@ ForEach($line in $dir_list_content) {
     }
   }
 
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  if ("${line}".Contains("WinSCP.ini")) {
+    Write-Host "finish_previous_job       : ${finish_previous_job}" -ForegroundColor Yellow
+    Write-Host "start_new_job             : ${start_new_job}" -ForegroundColor Yellow
+    Write-Host "continue_curr_job         : ${continue_curr_job}" -ForegroundColor Yellow
+    Write-Host "copy_single_file          : ${copy_single_file}" -ForegroundColor Yellow
+  }
+
   # Show what we are going to do.
   if ($finish_previous_job -or $start_new_job -or $continue_curr_job -or $copy_single_file) {
     $task_list = New-Object System.Collections.ArrayList
@@ -386,9 +418,17 @@ ForEach($line in $dir_list_content) {
 
   # Actual job creation
 
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  if ("${line}".Contains("WinSCP.ini")) {
+    Write-Host "copy_single_file          : ${copy_single_file}" -ForegroundColor Yellow
+  }
   if ($finish_previous_job) {
     Write-DebugMsg "----- Finishing the previous job: ------------------------------------"
     _callCreateJob
+  }
+  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
+  if ("${line}".Contains("WinSCP.ini")) {
+    Write-Host "copy_single_file          : ${copy_single_file}" -ForegroundColor Yellow
   }
 
   if ($start_new_job) {
