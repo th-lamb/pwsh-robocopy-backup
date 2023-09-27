@@ -237,7 +237,8 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 
 [System.Boolean]$finish_previous_job = $false
 [System.Boolean]$continue_curr_job = $false
-[System.Boolean]$copy_single_file = $false
+[System.Boolean]$single_file_definition = $false
+[System.Boolean]$single_file_job = $false
 
 [String]$source_dir = ""
 [String]$target_dir = ""
@@ -247,52 +248,34 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 
 [Int32]$jobs_created_count = 0
 
-[Int32]$job_result_ok_count = 0
-[Int32]$job_result_warning_count = 0
-[Int32]$job_result_error_count = 0
-
-function _callCreateJob {
+function Invoke-AddJobFile {
   # Creates the current job using all values collected from the dir-list.
-  Write-DebugMsg "_callCreateJob()"
-
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  if ("${current_source_definition}" -eq "%AppData%\WinSCP.ini") {
-    Write-Host "current_job_num           : $current_job_num" -ForegroundColor Yellow
-    Write-Host "current_source_definition : ${current_source_definition}" -ForegroundColor Yellow
-    Write-Host "source_dir                : ${source_dir}" -ForegroundColor Yellow
-    #Write-Host "${target_dir}" -ForegroundColor Yellow
-    Write-Host "included_files            : $included_files" -ForegroundColor Yellow
-    #Write-Host $excluded_dirs -ForegroundColor Yellow
-    #Write-Host $excluded_files -ForegroundColor Yellow
-    Write-Host "copy_single_file          : $copy_single_file" -ForegroundColor Yellow
-
-    exit
-  }
+  Write-DebugMsg "Invoke-AddJobFile()"
 
   Add-JobFile `
-    "${BACKUP_JOB_DIR}" `
-    "${COMPUTERNAME}" `
-    $current_job_num `
-    "${current_source_definition}" `
-    "${source_dir}" `
-    "${target_dir}" `
-    $included_files `
-    $excluded_dirs `
-    $excluded_files `
-    $copy_single_file
+      "${BACKUP_JOB_DIR}" `
+      "${COMPUTERNAME}" `
+      $Script:current_job_num `
+      "${Script:current_source_definition}" `
+      "${Script:source_dir}" `
+      "${Script:target_dir}" `
+      $Script:included_files `
+      $Script:excluded_dirs `
+      $Script:excluded_files `
+      $Script:single_file_job
 
-  $Script:jobs_created_count = ($jobs_created_count + 1)
-  Write-DebugMsg "jobs_created_count: $jobs_created_count"
+  $Script:jobs_created_count = ($Script:jobs_created_count + 1)
+  Write-DebugMsg "jobs_created_count: $Script:jobs_created_count"
 
-  _resetJobRelatedInfo
+  Reset-JobRelatedInfo
 
   Write-DebugMsg "----------------------------------------------------------------------"
 }
 
-function _resetJobRelatedInfo {
+function Reset-JobRelatedInfo {
   # Resets all values that apply for a whole job definition, possibly
   # consisting of multiple lines in the dir-list.
-  Write-DebugMsg "_resetJobRelatedInfo()"
+  Write-DebugMsg "Reset-JobRelatedInfo()"
   $Script:current_job_num = 0
   $Script:current_source_definition = ""
   $Script:current_source_type = ""
@@ -301,229 +284,227 @@ function _resetJobRelatedInfo {
   $Script:included_files.Clear()
   $Script:excluded_dirs.Clear()
   $Script:excluded_files.Clear()
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  $Script:copy_single_file = $false   #TODO: job- and line-related! Problem for consecutive files in the dir-list!
+  $Script:single_file_job = $false
 }
 
-function _resetLineRelatedInfo {
+function Reset-LineRelatedInfo {
   # Resets all values that apply only for the current line in the dir-list.
-  Write-DebugMsg "_resetLineRelatedInfo()"
+  Write-DebugMsg "Reset-LineRelatedInfo()"
   $Script:start_new_job = $false
   $Script:finish_previous_job = $false
   $Script:continue_curr_job = $false
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  $Script:copy_single_file = $false   #TODO: job- and line-related! Problem for consecutive files in the dir-list!
+  $Script:single_file_definition = $false
   $Script:line_type = ""
 }
 
 # Process the dir-list.
-$dir_list_content = Get-Content "${BACKUP_DIRLIST}"
 
-ForEach($line in $dir_list_content) {
-  Write-DebugMsg "Next line: ${line}"
+function Process-DirectoryList {
+  $dir_list_content = Get-Content "${BACKUP_DIRLIST}"
 
-  # Expand all entries first to avoid interpreting environment variables etc. as filenames.
-  $expanded = Get-ExpandedPath "${line}"
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  if ("${line}".Contains("WinSCP.ini")) {
-    Write-Host "expanded                  : ${expanded}" -ForegroundColor Yellow
-  }
+  ForEach($line in $dir_list_content) {
+    Write-DebugMsg "Next line: ${line}"
 
-  <# Determine what to do depending on the type of the current line.
-    A job definition ends with:
-    - an empty line or comment;
-    - the next source-dir, source-file or source-file-pattern;
-    - on errors; or
-    - EOF
-  #>
-  $line_type = Get-DirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  if ("${line}".Contains("WinSCP.ini")) {
-    Write-Host "line_type                 : ${line_type}" -ForegroundColor Yellow
-  }
-  Write-DebugMsg "${line_type}: ${expanded}"
+    # Expand all entries first to avoid interpreting environment variables etc. as filenames.
+    $expanded = Get-ExpandedPath "${line}"
 
-  switch -Wildcard ("${line_type}") {
-    "error: *" {
-      # The fallback value of function Get-DirlistLineType
-      $finish_previous_job = $true
-      LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
-    }
-    "invalid: *" {
-      $finish_previous_job = $true
-      LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "Invalid entry in dir-list: ${line}"
-    }
-    "ignore" {
-      $finish_previous_job = $true
-    }
-    "source-file" {
-      $copy_single_file = $true
-      $start_new_job = $true
-      $finish_previous_job = $true
-      #https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#multiple-matches
-      continue
-    }
-    "source-*" {
-      # Only source-dir or source-file-pattern
-      $start_new_job = $true
-      $finish_previous_job = $true
-    }
-    "incl-files-pattern" {
-      $continue_curr_job = $true
-    }
-    "excl-files-pattern" {
-      $continue_curr_job = $true
-    }
-    "excl-dirs-pattern" {
-      $continue_curr_job = $true
-    }
-  }
+    #region Determine what to do depending on the type of the current line. ----
 
-  # Plausibility checks
-  if ($finish_previous_job) {
-    if ($current_job_num -eq 0) {
-      $finish_previous_job = $false
-    }
-  }
+    <# A job definition ends with:
+      - an empty line or comment;
+      - the next source-dir, source-file or source-file-pattern;
+      - on errors; or
+      - EOF
+    #>
+    $line_type = Get-DirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
+    Write-DebugMsg "${line_type}: ${expanded}"
 
-  if ($continue_curr_job) {
-    if ($current_job_num -eq 0) {
-      $continue_curr_job = $false
-      LogAndShowMessage "${BACKUP_LOGFILE}" ERR "No folder/job defined for: ${line}"
-    }
-  }
+    switch -Wildcard ("${line_type}") {
+      "error: *" {
+        # The fallback value of function Get-DirlistLineType
+        LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
+        $Script:finish_previous_job = $true
+      }
+      "invalid: *" {
+        LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "Invalid entry in dir-list: ${line}"
+        $Script:finish_previous_job = $true
+      }
+      "ignore" {
+        $Script:finish_previous_job = $true
+      }
+      "source-file" {
+        $Script:start_new_job = $true
+        $Script:finish_previous_job = $true
+        $Script:single_file_definition = $true  # Current line is a single-file definition - the job for it will be a single-file job.
 
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  if ("${line}".Contains("WinSCP.ini")) {
-    Write-Host "finish_previous_job       : ${finish_previous_job}" -ForegroundColor Yellow
-    Write-Host "start_new_job             : ${start_new_job}" -ForegroundColor Yellow
-    Write-Host "continue_curr_job         : ${continue_curr_job}" -ForegroundColor Yellow
-    Write-Host "copy_single_file          : ${copy_single_file}" -ForegroundColor Yellow
-  }
-
-  # Show what we are going to do.
-  if ($finish_previous_job -or $start_new_job -or $continue_curr_job -or $copy_single_file) {
-    $task_list = New-Object System.Collections.ArrayList
-    if ($finish_previous_job) { $task_list.Add("Finish previous job") > $null }
-    if ($start_new_job) { $task_list.Add("Start new job") > $null }
-    if ($continue_curr_job) { $task_list.Add("Continue current job") > $null }
-    if ($copy_single_file) { $task_list.Add("Copy single file") > $null }
-
-    $tasks = ($task_list -join ", ")
-    Write-DebugMsg "Task(s): ${tasks}"
-
-    $task_list.Clear()
-    $tasks = ""
-  }
-
-  # Actual job creation
-
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  if ("${line}".Contains("WinSCP.ini")) {
-    Write-Host "copy_single_file          : ${copy_single_file}" -ForegroundColor Yellow
-  }
-  if ($finish_previous_job) {
-    Write-DebugMsg "----- Finishing the previous job: ------------------------------------"
-    _callCreateJob
-  }
-  #TODO: Bugfix for %AppData%\WinSCP.ini -> $copy_single_file = false!
-  if ("${line}".Contains("WinSCP.ini")) {
-    Write-Host "copy_single_file          : ${copy_single_file}" -ForegroundColor Yellow
-  }
-
-  if ($start_new_job) {
-    Write-DebugMsg "----- Starting a new job: --------------------------------------------"
-    $source_defs_count = ($source_defs_count + 1)
-    $current_job_num = $source_defs_count
-    $current_source_definition = "${line}"
-    $current_source_type = "${line_type}"
-
-    Write-DebugMsg "source_defs_count : $source_defs_count"
-    Write-DebugMsg "current_job_num   : $current_job_num"
-    Write-DebugMsg "current_source_definition: ${current_source_definition}"
-    Write-DebugMsg "current_source_type : ${current_source_type}"
-
-    #TODO: Check here whether source exists?
-    #TODO: Also determine whether the type is correct? (e.g. missing trailing "\" on a folder)
-    #Write-Host "expanded: ${expanded}" -ForegroundColor Yellow
-
-    # Determine basic information for the job.
-    switch -Wildcard ("${current_source_type}") {
-      "source-dir" { $source_dir = "${expanded}" }
-      "source-file*" {                                      # <--- pattern!
-        $source_dir = Get-ParentDir "${expanded}"
-
-        # Add the filename (pattern) to $included_files because we must NOT use *.* later!
-        $source_filename = Split-Path -Leaf "${expanded}"
-        Write-DebugMsg "source_filename   : ${source_filename}"
-        $included_files.Add("${source_filename}") > $null
-        $source_filename = ""
+        # https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#multiple-matches
+        continue
+      }
+      "source-*" {
+        # Only source-dir or source-file-pattern
+        $Script:start_new_job = $true
+        $Script:finish_previous_job = $true
+      }
+      "incl-files-pattern" {
+        $Script:continue_curr_job = $true
+      }
+      "excl-files-pattern" {
+        $Script:continue_curr_job = $true
+      }
+      "excl-dirs-pattern" {
+        $Script:continue_curr_job = $true
       }
     }
-    Write-DebugMsg "source_dir        : ${source_dir}"
 
-    if ("${source_dir}" -eq "") {
-      LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
-      _resetJobRelatedInfo
-    } else {
-      $target_dir = Get-TargetDir "${BACKUP_DIR}" "${source_dir}"
-      Write-DebugMsg "target_dir        : ${target_dir}"
+    #endregion Determine what to do depending on the type of the current line.
+
+    #region Plausibility checks ------------------------------------------------
+
+    if ($Script:finish_previous_job) {
+      if ($Script:current_job_num -eq 0) {
+        $Script:finish_previous_job = $false
+      }
     }
 
-    Write-DebugMsg "----------------------------------------------------------------------"
-  }
-
-  if ($copy_single_file) {
-    Write-DebugMsg "----- Copying a single file: -----------------------------------------"
-    _callCreateJob
-  }
-
-  # Add included/excluded files/directories to the job file (robocopy options /IF, /XF, /XD).
-  if ($continue_curr_job) {
-    Write-DebugMsg "----- Continuing the job: --------------------------------------------"
-    # Determine additional information for the job.
-    $entry = "${line}".Substring(4)   # Remove the leading "  + " or "  - "
-    Write-DebugMsg "entry               : ${entry}"
-
-    switch ("${line_type}") {
-      "incl-files-pattern"  {$included_files.Add("${entry}") > $null}
-      "excl-files-pattern"  {$excluded_files.Add("${entry}") > $null}
-      "excl-dirs-pattern"   {$excluded_dirs.Add("${entry}") > $null}
+    if ($Script:continue_curr_job) {
+      if ($Script:current_job_num -eq 0) {
+        $Script:continue_curr_job = $false
+        LogAndShowMessage "${BACKUP_LOGFILE}" ERR "No folder/job defined for: ${line}"
+      }
     }
 
-    Write-DebugMsg ("included_files.Count: " + $included_files.Count)
-    Write-DebugMsg ("excluded_files.Count: " + $excluded_files.Count)
-    Write-DebugMsg ("excluded_dirs.Count : " + $excluded_dirs.Count)
+    #endregion Plausibility checks ---------------------------------------------
 
-    Write-DebugMsg "----------------------------------------------------------------------"
+    # Show what we are going to do.
+    if ($Script:finish_previous_job -or $Script:start_new_job -or $Script:continue_curr_job -or $Script:single_file_job) {
+      $task_list = New-Object System.Collections.ArrayList
+      if ($Script:finish_previous_job) { $task_list.Add("Finish previous job") > $null }
+      if ($Script:start_new_job) { $task_list.Add("Start new job") > $null }
+      if ($Script:continue_curr_job) { $task_list.Add("Continue current job") > $null }
+      if ($Script:single_file_job) { $task_list.Add("Copy single file") > $null }
+
+      $tasks = ($task_list -join ", ")
+      Write-DebugMsg "Task(s): ${tasks}"
+
+      $task_list.Clear()
+      $tasks = ""
+    }
+
+    #region Actual job creation ------------------------------------------------
+
+    if ($Script:finish_previous_job) {
+      Write-DebugMsg "----- Finishing the previous job: ------------------------------------"
+      Invoke-AddJobFile
+    }
+
+    if ($Script:start_new_job) {
+      Write-DebugMsg "----- Starting a new job: --------------------------------------------"
+      $Script:source_defs_count = ($Script:source_defs_count + 1)
+      $Script:current_job_num = $Script:source_defs_count
+      $Script:current_source_definition = "${line}"
+      $Script:current_source_type = "${line_type}"
+      #TODO: Bug: copy_single_file = false for consecutive files in the dir-list
+      $Script:single_file_job = $Script:single_file_definition
+Write-Host "single_file_job           : ${single_file_job}" -ForegroundColor Yellow
+
+      Write-DebugMsg "source_defs_count : $Script:source_defs_count"
+      Write-DebugMsg "current_job_num   : $Script:current_job_num"
+      Write-DebugMsg "current_source_definition: ${Script:current_source_definition}"
+      Write-DebugMsg "current_source_type : ${Script:current_source_type}"
+
+      #TODO: Check here whether source exists?
+      #TODO: Also determine whether the type is correct? (e.g. missing trailing "\" on a folder)
+      #Write-Host "expanded: ${expanded}" -ForegroundColor Yellow
+
+      # Determine basic information for the job.
+      switch -Wildcard ("${Script:current_source_type}") {
+        "source-dir" { $Script:source_dir = "${expanded}" }
+        "source-file*" {                                      # <--- pattern!
+          $Script:source_dir = Get-ParentDir "${expanded}"
+
+          # Add the filename (pattern) to $included_files because we must NOT use *.* later!
+          $source_filename = Split-Path -Leaf "${expanded}"
+          Write-DebugMsg "source_filename   : ${source_filename}"
+          $Script:included_files.Add("${source_filename}") > $null
+          $source_filename = ""
+        }
+      }
+      Write-DebugMsg "source_dir        : ${Script:source_dir}"
+
+      if ("${Script:source_dir}" -eq "") {
+        LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
+        Reset-JobRelatedInfo
+      } else {
+        $Script:target_dir = Get-TargetDir "${BACKUP_DIR}" "${Script:source_dir}"
+        Write-DebugMsg "target_dir        : ${Script:target_dir}"
+      }
+
+      Write-DebugMsg "----------------------------------------------------------------------"
+    }
+
+    if ($Script:single_file_job) {
+      Write-DebugMsg "----- Copying a single file: -----------------------------------------"
+      Invoke-AddJobFile
+    }
+
+    # Add included/excluded files/directories to the job file (robocopy options /IF, /XF, /XD).
+    if ($Script:continue_curr_job) {
+      Write-DebugMsg "----- Continuing the job: --------------------------------------------"
+      # Determine additional information for the job.
+      $entry = "${line}".Substring(4)   # Remove the leading "  + " or "  - "
+      Write-DebugMsg "entry               : ${entry}"
+
+      switch ("${line_type}") {
+        "incl-files-pattern"  {$Script:included_files.Add("${entry}") > $null}
+        "excl-files-pattern"  {$Script:excluded_files.Add("${entry}") > $null}
+        "excl-dirs-pattern"   {$Script:excluded_dirs.Add("${entry}") > $null}
+      }
+
+      Write-DebugMsg ("included_files.Count: " + $Script:included_files.Count)
+      Write-DebugMsg ("excluded_files.Count: " + $Script:excluded_files.Count)
+      Write-DebugMsg ("excluded_dirs.Count : " + $Script:excluded_dirs.Count)
+
+      Write-DebugMsg "----------------------------------------------------------------------"
+    }
+
+    #endregion Actual job creation ---------------------------------------------
+
+    # Reset values that can only apply for 1 line.
+    Reset-LineRelatedInfo
+
   }
-
-  # Reset values that can only apply for 1 line.
-  _resetLineRelatedInfo
 
 }
+
+Process-DirectoryList
 
 Write-DebugMsg "----- End of the dir-list --------------------------------------------"
 
 # Finish the last job?
-$finish_last_job = ($current_job_num -ne 0)
+$finish_last_job = ($Script:current_job_num -ne 0)
 
 if ($finish_last_job) {
+  $Script:single_file_job = $Script:single_file_definition
+Write-Host "single_file_job           : ${single_file_job}" -ForegroundColor Yellow
+
   Write-DebugMsg "----- Finishing the last job: ----------------------------------------"
-  _callCreateJob
+  Invoke-AddJobFile
 }
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$jobs_created_count job file(s) created."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:jobs_created_count job file(s) created."
+
+#TODO: Bug: copy_single_file = false for consecutive files in the dir-list
+exit
 
 #Write-Host "----- Results ------------------------------------------------------------------" -ForegroundColor DarkCyan
-#Write-Host "source_defs_count   : $source_defs_count" -ForegroundColor DarkCyan
-#Write-Host "start_new_job       : $start_new_job" -ForegroundColor DarkCyan
-#Write-Host "continue_curr_job   : $continue_curr_job" -ForegroundColor DarkCyan
-#Write-Host "finish_previous_job : $finish_previous_job" -ForegroundColor DarkCyan
-#Write-Host "included_files.Count:" $included_files.Count -ForegroundColor DarkCyan
-#Write-Host "excluded_dirs.Count :" $excluded_dirs.Count -ForegroundColor DarkCyan
-#Write-Host "excluded_files.Count:" $excluded_files.Count -ForegroundColor DarkCyan
-#Write-Host "jobs_created_count  : $jobs_created_count" -ForegroundColor DarkCyan
+#Write-Host "source_defs_count   : $Script:source_defs_count" -ForegroundColor DarkCyan
+#Write-Host "start_new_job       : $Script:start_new_job" -ForegroundColor DarkCyan
+#Write-Host "continue_curr_job   : $Script:continue_curr_job" -ForegroundColor DarkCyan
+#Write-Host "finish_previous_job : $Script:finish_previous_job" -ForegroundColor DarkCyan
+#Write-Host "included_files.Count:" $Script:included_files.Count -ForegroundColor DarkCyan
+#Write-Host "excluded_dirs.Count :" $Script:excluded_dirs.Count -ForegroundColor DarkCyan
+#Write-Host "excluded_files.Count:" $Script:excluded_files.Count -ForegroundColor DarkCyan
+#Write-Host "jobs_created_count  : $Script:jobs_created_count" -ForegroundColor DarkCyan
 #Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkCyan
 
 #endregion Create job files ####################################################
@@ -531,6 +512,10 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$jobs_created_count job file(s) crea
 
 
 #region Run jobs
+
+[Int32]$job_result_ok_count = 0
+[Int32]$job_result_warning_count = 0
+[Int32]$job_result_error_count = 0
 
 $jobfiles = New-Object System.Collections.ArrayList
 $jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File
