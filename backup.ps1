@@ -299,7 +299,7 @@ function Reset-LineRelatedInfo {
 
 # Process the dir-list.
 
-function Process-DirectoryList {
+function _processDirectoryList {
   $dir_list_content = Get-Content "${BACKUP_DIRLIST}"
 
   ForEach($line in $dir_list_content) {
@@ -403,9 +403,7 @@ function Process-DirectoryList {
       $Script:current_job_num = $Script:source_defs_count
       $Script:current_source_definition = "${line}"
       $Script:current_source_type = "${line_type}"
-      #TODO: Bug: copy_single_file = false for consecutive files in the dir-list
       $Script:single_file_job = $Script:single_file_definition
-Write-Host "single_file_job           : ${single_file_job}" -ForegroundColor Yellow
 
       Write-DebugMsg "source_defs_count : $Script:source_defs_count"
       Write-DebugMsg "current_job_num   : $Script:current_job_num"
@@ -476,7 +474,7 @@ Write-Host "single_file_job           : ${single_file_job}" -ForegroundColor Yel
 
 }
 
-Process-DirectoryList
+_processDirectoryList
 
 Write-DebugMsg "----- End of the dir-list --------------------------------------------"
 
@@ -484,17 +482,11 @@ Write-DebugMsg "----- End of the dir-list --------------------------------------
 $finish_last_job = ($Script:current_job_num -ne 0)
 
 if ($finish_last_job) {
-  $Script:single_file_job = $Script:single_file_definition
-Write-Host "single_file_job           : ${single_file_job}" -ForegroundColor Yellow
-
   Write-DebugMsg "----- Finishing the last job: ----------------------------------------"
   Invoke-AddJobFile
 }
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:jobs_created_count job file(s) created."
-
-#TODO: Bug: copy_single_file = false for consecutive files in the dir-list
-exit
 
 #Write-Host "----- Results ------------------------------------------------------------------" -ForegroundColor DarkCyan
 #Write-Host "source_defs_count   : $Script:source_defs_count" -ForegroundColor DarkCyan
