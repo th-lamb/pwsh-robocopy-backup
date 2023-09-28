@@ -1,7 +1,7 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\..\"  # Backslashes because PS functions return backslashes.
   . "${ProjectRoot}lib/filesystem-functions.ps1"
-  $Script:workingFolder = "${ProjectRoot}Pester\resources\filesystem-functions\"
+  $Script:workingFolder = "${ProjectRoot}Pester\resources\lib\filesystem-functions\"
 
   # For messages and logging in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
@@ -112,7 +112,7 @@ Describe 'Get-ParentDir' {
 
     It 'returns the parents parent path for .. (link to the parent dir)' {
       $pattern  = "${workingFolder}Test1\.."
-      $expected = "${ProjectRoot}Pester\resources\"   # Parent of $workingFolder
+      $expected = "${ProjectRoot}Pester\resources\lib\"   # Parent of $workingFolder
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -Be "${expected}"
@@ -128,7 +128,7 @@ Describe 'Get-ParentDir' {
 
     It 'returns path with placeholder for dir pattern and ..' {
       $pattern  = "${workingFolder}Test*\.."
-      $expected = "${ProjectRoot}Pester\resources\"   # Parent of $workingFolder
+      $expected = "${ProjectRoot}Pester\resources\lib\"   # Parent of $workingFolder
 
       $parent_dir = Get-ParentDir "${pattern}"
       "${parent_dir}" | Should -Be "${expected}"
