@@ -12,7 +12,7 @@ enum SeverityKeyword {
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$Script:logfile = "${ProjectRoot}Pester/resources/logging-functions/LogAndShowMessage.Tests.log"
+  #$Script:logfile = "${ProjectRoot}Pester/resources/lib/logging-functions/LogAndShowMessage.Tests.log"
 
   . "${ProjectRoot}lib/message-functions.ps1"
   #$Script:__VERBOSE = 6

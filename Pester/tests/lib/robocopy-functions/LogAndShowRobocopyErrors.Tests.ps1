@@ -3,7 +3,7 @@ BeforeAll {
   . "${ProjectRoot}lib/robocopy-functions.ps1"
 
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $Script:logfile = "${ProjectRoot}Pester/resources/robocopy-functions/LogAndShowRobocopyErrors.Tests.log"
+  $Script:logfile = "${ProjectRoot}Pester/resources/lib/robocopy-functions/LogAndShowRobocopyErrors.Tests.log"
 
   . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 6
