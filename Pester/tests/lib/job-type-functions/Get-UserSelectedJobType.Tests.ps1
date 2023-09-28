@@ -1,5 +1,5 @@
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
+  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/job-type-functions.ps1"
 
   # Simulate ini-values

@@ -1,5 +1,5 @@
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\"  # Backslashes for the jobfile!
+  $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\..\"  # Backslashes for the jobfile!
   . "${ProjectRoot}lib/job-functions.ps1"
 
   $workingFolder    = "${ProjectRoot}Pester\resources\job-functions\"  # Backslashes for the jobfile!

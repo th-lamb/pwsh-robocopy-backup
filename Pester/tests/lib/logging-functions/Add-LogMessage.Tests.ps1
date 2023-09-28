@@ -1,5 +1,5 @@
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../"
+  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/logging-functions.ps1"
   $Script:infoLog = "${ProjectRoot}Pester/resources/logging-functions/info.log"
   $Script:errorLog = "${ProjectRoot}Pester/resources/logging-functions/error.log"

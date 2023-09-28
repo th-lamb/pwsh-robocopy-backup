@@ -1,5 +1,5 @@
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\"  # Backslashes because PS functions return backslashes.
+  $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\..\"  # Backslashes because PS functions return backslashes.
   . "${ProjectRoot}lib/filesystem-functions.ps1"
   $Script:workingFolder = "${ProjectRoot}Pester\resources\filesystem-functions\"
 
