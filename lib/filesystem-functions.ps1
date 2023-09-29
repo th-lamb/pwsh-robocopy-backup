@@ -4,6 +4,7 @@ function Get-RealFsObjectType {
   <# Returns the type of the real filesystem object, specified by the path; or
     $false for non-existent directory/file.
   #>
+  [OutputType('System.String[]')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
