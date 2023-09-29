@@ -4,16 +4,11 @@ function Get-RealFsObjectType {
   <# Returns the type of the real filesystem object, specified by the path; or
     $false for non-existent directory/file.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$path_spec
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "Get-RealFsObjectType(): Parameter path_spec not provided!"
-    Throw "Parameter path_spec not provided!"
-  }
-  #endregion
 
   $specified_type = Get-SpecifiedFsObjectType "${path_spec}"
 
