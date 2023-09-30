@@ -56,13 +56,11 @@ Describe 'Get-SpecifiedBackupBaseDirType' {
     }
   }
 
-  Context 'Syntax errors etc.' {
-    It 'recognizes an empty string' {
-      $path_spec  = ""
-      $expected   = "empty string"
-
-      $object_type = Get-SpecifiedBackupBaseDirType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty String.' {
+      {
+        Get-SpecifiedBackupBaseDirType ""
+      } | Should -Throw
     }
   }
 }

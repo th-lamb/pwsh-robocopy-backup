@@ -85,4 +85,12 @@ Describe 'Get-ExpandedPath' {
       $result | Should -Be "${expected}"
     }
   }
+
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty String.' {
+      {
+        Get-ExpandedPath ""
+      } | Should -Throw
+    }
+  }
 }

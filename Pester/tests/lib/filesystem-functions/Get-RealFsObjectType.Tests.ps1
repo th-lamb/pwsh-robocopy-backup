@@ -221,7 +221,7 @@ Describe 'Get-RealFsObjectType' {
   }
 
   Context 'Wrong Usage' {
-    It 'Throws an exception when called with an empty String' {
+    It 'Throws an exception when called with an empty String.' {
       {
         Get-RealFsObjectType ""
       } | Should -Throw

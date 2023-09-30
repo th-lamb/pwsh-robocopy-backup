@@ -1,6 +1,7 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
+
   $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/filesystem-functions/"
 
   # For messages in tested functions
@@ -9,7 +10,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$Script:logfile = "${PSScriptRoot}/New-NecessaryDirectory.Tests.log"
+  $Script:logfile = "${PSScriptRoot}/New-NecessaryDirectory.Tests.log"
 }
 
 
@@ -52,10 +53,32 @@ Describe 'New-NecessaryDirectory' {
       $exists | Should -Be $false
     }
   }
+
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty definition_name.' {
+      {
+        New-NecessaryDirectory ""
+      } | Should -Throw
+    }
+
+    It 'Throws an exception when called with an empty path.' {
+      {
+        New-NecessaryDirectory 'Test' ""
+      } | Should -Throw
+    }
+
+    It 'Throws an exception when called with an empty logfile.' {
+      $dir_to_create  = "${workingFolder}existing_dir"
+
+      {
+        New-NecessaryDirectory 'Test' "${dir_to_create}" ""
+      } | Should -Throw
+    }
+  }
 }
 
 
 
 AfterAll {
-  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

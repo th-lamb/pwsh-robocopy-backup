@@ -53,32 +53,6 @@ Describe 'Get-SpecifiedFsObjectType' {
     }
   }
 
-  Context 'Syntax errors etc.' {
-    It 'recognizes an empty string' {
-      $path_spec  = ""
-      $expected   = "empty string"
-
-      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
-    }
-
-    It 'recognizes Known Folder without first %             e.g. UserProfile%\' {
-      $path_spec  = "UserProfile%\"
-      $expected   = "directory"
-
-      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
-    }
-
-    It 'recognizes files in Known Folder without first %    e.g. UserProfile%\.gitconfig' {
-      $path_spec  = "UserProfile%\.gitconfig"
-      $expected   = "file"
-
-      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
-    }
-  }
-
   Context 'Drive letters' {
     It 'recognizes existing drive letter without \          e.g. C:' {
       $path_spec  = "C:"
@@ -162,6 +136,30 @@ Describe 'Get-SpecifiedFsObjectType' {
     It 'recognizes ".." (parent folder)' {
       $path_spec  = "C:\Users\<...>\Music\.."
       $expected   = "directory entry"
+
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
+      "${object_type}" | Should -Be "${expected}"
+    }
+  }
+
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty String.' {
+      {
+        Get-SpecifiedFsObjectType ""
+      } | Should -Throw
+    }
+
+    It 'recognizes Known Folder without first %             e.g. UserProfile%\' {
+      $path_spec  = "UserProfile%\"
+      $expected   = "directory"
+
+      $object_type = Get-SpecifiedFsObjectType "${path_spec}"
+      "${object_type}" | Should -Be "${expected}"
+    }
+
+    It 'recognizes files in Known Folder without first %    e.g. UserProfile%\.gitconfig' {
+      $path_spec  = "UserProfile%\.gitconfig"
+      $expected   = "file"
 
       $object_type = Get-SpecifiedFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"

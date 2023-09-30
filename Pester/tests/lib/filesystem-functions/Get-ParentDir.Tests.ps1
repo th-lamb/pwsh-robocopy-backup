@@ -166,4 +166,12 @@ Describe 'Get-ParentDir' {
       "${parent_dir}" | Should -Be "${expected}"
     }
   }
+
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty String.' {
+      {
+        Get-ParentDir ""
+      } | Should -Throw
+    }
+  }
 }

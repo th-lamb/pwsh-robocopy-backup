@@ -4,7 +4,7 @@ function Get-RealFsObjectType {
   <# Returns the type of the real filesystem object, specified by the path; or
     $false for non-existent directory/file.
   #>
-  [OutputType('System.String[]')]
+  [OutputType([System.String])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -52,29 +52,20 @@ function Get-SpecifiedFsObjectType {
   <# Returns the type of the specified filesystem object.
     Note: Based on the string only. Reason: may refer to objects that may not have been created yet.
   #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$path_spec
   )
 
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "Get-SpecifiedFsObjectType(): Parameter path_spec not provided!"
-    Throw "Parameter path_spec not provided!"
-  }
-  #endregion
-
-  # Test 1: syntax errors
-  if ("${path_spec}" -eq "") {
-    return "empty string"
-  }
-
-  # Test 2: drive letter
+  # Test 1: drive letter
   $test_driveletter = "${path_spec}" | Select-String -Pattern '^[A-Z]:\\{0,1}$'
   if ("${path_spec}" -eq "${test_driveletter}") {
     return "drive letter"
   }
 
-  # Test 3: network share or network computer.
+  # Test 2: network share or network computer.
   $is_unc_path=[bool]([System.Uri]"${path_spec}").IsUnc
   if ($is_unc_path) {
     <# Path elements:
@@ -101,7 +92,7 @@ function Get-SpecifiedFsObjectType {
     }
   }
 
-  # Test 4: directory (pattern) or file (pattern).
+  # Test 3: directory (pattern) or file (pattern).
   $is_pattern = $false
   $is_directory = $false
   $is_file = $false
@@ -157,16 +148,12 @@ function Get-SpecifiedBackupBaseDirType {
     - "directory" for UNC paths ("\\...") and local paths (e.g. "C:\..."); or
     - "relative path"
   #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$path_spec
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "Get-SpecifiedBackupBaseDirType(): Parameter path_spec not provided!"
-    Throw "Parameter path_spec not provided!"
-  }
-  #endregion
 
   $specified_type = Get-SpecifiedFsObjectType "${path_spec}"
 
@@ -193,39 +180,14 @@ function Get-SpecifiedBackupBaseDirType {
 
 #region Existence checks
 
-function Test-FolderExists {
-  # Returns $true if the specified folder exists; otherwise $false.
-  param (
-    [String]$folder_spec
-  )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('folder_spec')) {
-    Write-Error "Test-FolderExists(): Parameter folder_spec not provided!"
-    Throw "Parameter folder_spec not provided!"
-  }
-  #endregion
-
-  if (Test-Path -Path "${folder_spec}" -PathType Container) {
-    return $true
-  }
-
-  return $false
-
-}
-
 function Test-FileExists {
   # Returns $true if the specified file exists; otherwise $false.
+  [OutputType([System.Boolean])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$file_spec
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "Test-FileExists(): Parameter file_spec not provided!"
-    Throw "Parameter file_spec not provided!"
-  }
-  #endregion
 
   if (Test-Path -Path "${file_spec}" -PathType Leaf) {
     return $true
@@ -235,66 +197,59 @@ function Test-FileExists {
 
 }
 
-function Test-NecessaryDirectory {
-  # Throws an exception if the specified directory doesn't exist.
+function Test-FolderExists {
+  # Returns $true if the specified folder exists; otherwise $false.
+  [OutputType([System.Boolean])]
+  [CmdletBinding()]
   param (
-    [String]$definition_name,
-    [String]$directory_spec,
-    [String]$logfile
+    [Parameter(Mandatory=$true)]
+    [String]$folder_spec
   )
 
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "Test-NecessaryDirectory(): Parameter definition_name not provided!"
-    Throw "Parameter definition_name not provided!"
+  if (Test-Path -Path "${folder_spec}" -PathType Container) {
+    return $true
   }
 
-  if (! $PSBoundParameters.ContainsKey('directory_spec')) {
-    Write-Error "Test-NecessaryDirectory(): Parameter directory_spec not provided!"
-    Throw "Parameter directory_spec not provided!"
-  }
+  return $false
 
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Test-NecessaryDirectory(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-  #endregion
+}
+
+function Test-NecessaryDirectory {
+  # Throws an exception if the specified directory doesn't exist.
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory=$true)]
+    [String]$definition_name,
+    [Parameter(Mandatory=$true)]
+    [String]$directory_spec,
+    [Parameter(Mandatory=$true)]
+    [String]$logfile
+  )
 
   if (! (Test-FolderExists "${directory_spec}") ) {
     LogAndShowMessage "${logfile}" ERR "The directory '${definition_name}' has been moved or deleted:`n${directory_spec}"
     Throw
   }
+
 }
 
 function Test-NecessaryFile {
   # Throws an exception if the specified file doesn't exist.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$definition_name,
+    [Parameter(Mandatory=$true)]
     [String]$file_spec,
+    [Parameter(Mandatory=$true)]
     [String]$logfile
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "Test-NecessaryFile(): Parameter definition_name not provided!"
-    Throw "Parameter definition_name not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "Test-NecessaryFile(): Parameter file_spec not provided!"
-    Throw "Parameter file_spec not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Test-NecessaryFile(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-  #endregion
 
   if (! (Test-FileExists "${file_spec}") ) {
     LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
     Throw
   }
+
 }
 
 function Get-ExecutablePath {
@@ -302,28 +257,16 @@ function Get-ExecutablePath {
     Also searches in the Windows PATH environment variable.
     Throws an exception if the specified file doesn't exist.
   #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$definition_name,
+    [Parameter(Mandatory=$true)]
     [String]$file_spec,
+    [Parameter(Mandatory=$true)]
     [String]$logfile
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "Get-ExecutablePath(): Parameter definition_name not provided!"
-    Throw "Parameter definition_name not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "Get-ExecutablePath(): Parameter file_spec not provided!"
-    Throw "Parameter file_spec not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Get-ExecutablePath(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-  #endregion
 
   if (Test-FileExists "${file_spec}") {
     return "${file_spec}"
@@ -349,28 +292,15 @@ function Get-ExecutablePath {
 
 function New-NecessaryDirectory {
   # Creates the specified directory and all parent folders if necessary.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$definition_name,
+    [Parameter(Mandatory=$true)]
     [String]$dir_spec,
+    [Parameter(Mandatory=$true)]
     [String]$logfile
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "New-NecessaryDirectory(): Parameter definition_name not provided!"
-    Throw "Parameter definition_name not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('dir_spec')) {
-    Write-Error "New-NecessaryDirectory(): Parameter dir_spec not provided!"
-    Throw "Parameter dir_spec not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "New-NecessaryDirectory(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-  #endregion
 
   <# https://stackoverflow.com/a/63311340
     `New-Item -ItemType "directory" -Path ...`    : Fails if the directory already exists!
@@ -391,34 +321,17 @@ function New-NecessaryFile {
   <# Creates the specified file from the specified template.
     Returns $true if the file has been copied; otherwise $false.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$definition_name,
+    [Parameter(Mandatory=$true)]
     [String]$file_spec,
+    [Parameter(Mandatory=$true)]
     [String]$template,
+    [Parameter(Mandatory=$true)]
     [String]$logfile
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('definition_name')) {
-    Write-Error "New-NecessaryFile(): Parameter definition_name not provided!"
-    Throw "Parameter definition_name not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "New-NecessaryFile(): Parameter file_spec not provided!"
-    Throw "Parameter file_spec not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('template')) {
-    Write-Error "New-NecessaryFile(): Parameter template not provided!"
-    Throw "Parameter template not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "New-NecessaryFile(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-  #endregion
 
   if (Test-FileExists "${file_spec}") {
     return $false
@@ -628,16 +541,12 @@ function Get-ExpandedPath {
     2. Environment variables.     Example: %HOMEDRIVE% becomes C:
     3. (Windows) known folders.   Example: %Documents% becomes C:\Users\<username>\Documents
   #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$path_spec
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('path_spec')) {
-    Write-Error "Get-ExpandedPath(): Parameter path_spec not provided!"
-    Throw "Parameter path_spec not provided!"
-  }
-  #endregion
 
   # Expand script variables.
   $expanded = $ExecutionContext.InvokeCommand.ExpandString("${path_spec}")
@@ -687,16 +596,12 @@ function Get-ExpandedPath {
 function Get-ParentDir {
   # Returns the parent directory of the specified file (pattern).
   #TODO: Additional parameter "check_file_exists" needed?
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$file_spec
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('file_spec')) {
-    Write-Error "Get-ParentDir(): Parameter file_spec not provided!"
-    Throw "Parameter file_spec not provided!"
-  }
-  #endregion
 
   Write-DebugMsg "Get-ParentDir(): file_spec     : ${file_spec}"
 
