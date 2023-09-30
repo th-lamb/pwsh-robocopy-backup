@@ -16,7 +16,7 @@ enum SeverityKeyword {
 #region Helper functions
 
 function Format-InSquareBrackets {
-  # Wraps severity keywords in square brackets of fix length 
+  # Wraps severity keywords in square brackets of fix length
   # for easy to read log entries. Examples:
   # - ERR   : [ERR    ]
   # - NOTICE: [NOTICE ]

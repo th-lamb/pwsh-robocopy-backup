@@ -145,7 +145,7 @@ switch ("${dir_type}") {
     # Interpret as path below script dir, current drive or ...?
     $absolute_base_dir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
     New-NecessaryDirectory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}"
-  } 
+  }
   "network computer" {
     Write-CritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
     exit 1
@@ -223,7 +223,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 <# Create a job file for each directory in the dir-list.
   - Loop over all lines.
   - Start new job for every directory (lines without leading spaces).
-  - Add included/excluded files/directories (lines with leading "  + " or "  - ") to 
+  - Add included/excluded files/directories (lines with leading "  + " or "  - ") to
     the job file (robocopy options /IF, /XF, /XD).
 #>
 

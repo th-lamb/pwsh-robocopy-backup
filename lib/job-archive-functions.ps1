@@ -12,7 +12,7 @@
 #
 #     Helper functions
 #     ================
-# 
+#
 # Not meant to be called directly:
 # - Remove-AllFilesInArray()
 # - Get-LastDateTime()

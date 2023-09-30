@@ -15,7 +15,7 @@ function Get-RealFsObjectType {
 
   <# We have to "manually" check for a UNC path first because Test-Path recognizes
     network shares like "\\fileserver\backup\" as directory.
-    Since this script cannot create a network share, we have to distinguish 
+    Since this script cannot create a network share, we have to distinguish
     between directory and network share.
   #>
 
@@ -133,7 +133,7 @@ function Get-SpecifiedFsObjectType {
   } elseif ($is_pattern) {
     # Directory pattern or file pattern
 
-    # We cannot just use (Split-Path -Path "${path_spec}").Contains("*") because 
+    # We cannot just use (Split-Path -Path "${path_spec}").Contains("*") because
     # it would give us the parent directory if $path_spec itself is a directory!
     $first_placeholder_pos = "${path_spec}".IndexOf('*')            # -1 if not found
     $last_path_separator_pos = "${path_spec}".LastIndexOf("\")      # -1 if not found
@@ -462,7 +462,7 @@ function New-NecessaryFile {
 .EXAMPLE
     PS> # dot source this script to make the functions available
     PS> . ./knownfolder.ps1
-    
+
     PS> # Get the desktop path
     PS> Get-KnownFolderPath 'Desktop'
 .EXAMPLE
@@ -589,7 +589,7 @@ function Get-KnownFolderPath {
             {
                 [DllImport("shell32.dll")]
                 private static extern int SHGetKnownFolderPath(
-                    [MarshalAs(UnmanagedType.LPStruct)] 
+                    [MarshalAs(UnmanagedType.LPStruct)]
                     Guid       rfid,
                     uint       dwFlags,
                     IntPtr     hToken,

@@ -1,38 +1,38 @@
 #         Message functions library
 #         =========================
-# 
+#
 # Provides different (colored) messages depending on their severity level.
 # - Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
 # - Colors inspired by ANSI Z535.6
-# 
+#
 # Does not use the standard PowerShell streams 1..6 (Output, Error, Warning,
 # Verbose, ...), only Write-Host to write to the console with different colors.
-# 
+#
 # There are two variants of all message functions. Example:
 # - Write-InfoMsg(): Prints the message only.
 #TODO: infoLog is removed?
 # - infoLog(): Prints a timestamp before the message.
-# 
-# 
+#
+#
 #     How to use in your script?
 #     ==========================
-# 
+#
 # 1. Source this file.
-# 
+#
 # 2. Define variable ${__VERBOSE} with value 0..7 in your script.
 #    -> Set ${__VERBOSE} via options --quiet, --verbose or similar.
-# 
+#
 # 3. Replace Write-Host commands with function calls depending on the message severity.
 #    -> e.g. Write-NoticeMsg() for important (but expected) messages, and Write-ErrMsg()
 #       for unexpected errors
-# 
-# 
+#
+#
 #     When will a message be written?
 #     ===============================
-# 
+#
 # The message functions are related to a specific severity level. Messages will
 # be written if $__VERBOSE is equal to or higher than this level.
-# 
+#
 #   | Function            | Severity (value)| Condition             |
 #   +---------------------+-----------------+-----------------------+
 #   | Write-EmergMsg()    | emerg     (0)   | none (always written) |
@@ -43,26 +43,26 @@
 #   | Write-NoticeMsg()   | notice    (5)   | ${__VERBOSE} >= 5     |
 #   | Write-InfoMsg()     | info      (6)   | ${__VERBOSE} >= 6     |
 #   | Write-DebugMsg()    | debug     (7)   | ${__VERBOSE} = 7      |
-# 
-# 
+#
+#
 #     Helper functions
 #     ================
-# 
+#
 # Not meant to be called directly:
 # - Write-ColoredMessage()
 # - _coloredLog()
 # - Test-VerbosityIsDefined()
-# 
-# 
+#
+#
 #     Wrappers for simple verbose modes
 #     =================================
-# 
+#
 # - Write-QuietMessage()  : Interpreted as a warning
 # - Write-NormalMessage() : Interpreted as "info" but will already be written at
 #                           verbose level 5 (severity level "notice").
-# - Write-VerboseMessage(): Interpreted as "info" but will only be written at 
+# - Write-VerboseMessage(): Interpreted as "info" but will only be written at
 #                           verbose level 7 (severity level "debug").
-# 
+#
 ################################################################################
 
 
@@ -183,7 +183,7 @@ TODO:
 #region Helper functions - checks
 
 function Test-VerbosityIsDefined {
-  <# Returns false if ${__VERBOSE} is not defined or 
+  <# Returns false if ${__VERBOSE} is not defined or
     if ${__VERBOSE} is not between 0..7.
   #>
 

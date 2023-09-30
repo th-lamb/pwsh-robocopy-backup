@@ -1,6 +1,6 @@
 #     Helper functions
 #     ================
-# 
+#
 # Not meant to be called directly:
 # - _writeToJobfile()
 # - _writeHeader()
@@ -16,7 +16,7 @@
 #region Object types
 
 function Test-FsObjectTypeMismatch {
-  <# Warns if the real object type (e.g. "directory") does NOT match 
+  <# Warns if the real object type (e.g. "directory") does NOT match
     the specified type (e.g. "file pattern").
 
     Possible specified types:
@@ -394,7 +394,7 @@ function _addUserSettings {
 }
 
 function _addIncludedFiles {
-  <# Adds all files in the specified list to the specified job file 
+  <# Adds all files in the specified list to the specified job file
     as files to be included (robocopy option /IF).
   #>
   param (
@@ -425,7 +425,7 @@ function _addIncludedFiles {
 }
 
 function _addExcludedDirs {
-  <# Adds all directories in the specified list to the specified job file 
+  <# Adds all directories in the specified list to the specified job file
     as directories to be excluded (robocopy option /XD).
   #>
   param (
@@ -456,7 +456,7 @@ function _addExcludedDirs {
 }
 
 function _addExcludedFiles {
-  <# Adds all files in the specified list to the specified job file 
+  <# Adds all files in the specified list to the specified job file
     as files to be excluded (robocopy option /XF).
   #>
   param (
