@@ -321,6 +321,7 @@ function New-NecessaryFile {
   <# Creates the specified file from the specified template.
     Returns $true if the file has been copied; otherwise $false.
   #>
+  [OutputType([System.Boolean])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
