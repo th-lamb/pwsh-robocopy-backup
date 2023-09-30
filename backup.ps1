@@ -267,15 +267,15 @@ function Invoke-AddJobFile {
   $Script:jobs_created_count = ($Script:jobs_created_count + 1)
   Write-DebugMsg "jobs_created_count: $Script:jobs_created_count"
 
-  Reset-JobRelatedInfo
+  Remove-JobRelatedInfo
 
   Write-DebugMsg "----------------------------------------------------------------------"
 }
 
-function Reset-JobRelatedInfo {
+function Remove-JobRelatedInfo {
   # Resets all values that apply for a whole job definition, possibly
   # consisting of multiple lines in the dir-list.
-  Write-DebugMsg "Reset-JobRelatedInfo()"
+  Write-DebugMsg "Remove-JobRelatedInfo()"
   $Script:current_job_num = 0
   $Script:current_source_definition = ""
   $Script:current_source_type = ""
@@ -431,7 +431,7 @@ function _processDirectoryList {
 
       if ("${Script:source_dir}" -eq "") {
         LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
-        Reset-JobRelatedInfo
+        Remove-JobRelatedInfo
       } else {
         $Script:target_dir = Get-TargetDir "${BACKUP_DIR}" "${Script:source_dir}"
         Write-DebugMsg "target_dir        : ${Script:target_dir}"
