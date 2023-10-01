@@ -1,6 +1,6 @@
 #region Helper functions
 
-function Write-FormattedIniValues {
+function Write-FormattedValueList {
   param (
     [System.Collections.ArrayList]$var_names,
     [System.Collections.ArrayList]$var_values
@@ -81,6 +81,6 @@ function Read-SettingsFile {
 
   }
 
-  Write-FormattedIniValues $var_names $var_values
+  Write-FormattedValueList $var_names $var_values
 
 }
