@@ -10,7 +10,7 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $Script:logfile = "${PSScriptRoot}/New-NecessaryDirectory.Tests.log"
+  $Script:logfile = "${workingFolder}New-NecessaryDirectory.Tests.log"
 }
 
 

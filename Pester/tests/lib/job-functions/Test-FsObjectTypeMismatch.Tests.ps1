@@ -2,9 +2,11 @@ BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/job-functions.ps1"
 
+  #$Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-functions/"
+
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$Script:logfile = "${PSScriptRoot}/Test-FsObjectTypeMismatch.Tests.log"
+  #$Script:logfile = "${workingFolder}Test-FsObjectTypeMismatch.Tests.log"
 }
 
 

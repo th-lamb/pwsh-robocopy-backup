@@ -2,12 +2,14 @@ BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/job-type-functions.ps1"
 
+  #$Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-type-functions/"
+
   # Simulate ini-values
   $Script:JOB_TYPE_SELECTION_MAX_WAITING_TIME_S = 3
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$Script:logfile = "${PSScriptRoot}/Get-UserSelectedJobType.Tests.log"
+  #$Script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
 }
 
 
