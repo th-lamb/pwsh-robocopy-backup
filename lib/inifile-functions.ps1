@@ -41,7 +41,9 @@ function Test-IsNumeric ($Value) {
 
 
 function Read-SettingsFile {
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$ini_file
   )
 

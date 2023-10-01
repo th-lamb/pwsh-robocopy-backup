@@ -32,4 +32,12 @@ Describe 'Read-SettingsFile' {
     $result = $( Get-Variable "${var_name}" -ValueOnly ).GetType().Name
     $result | Should -Be "${expected}"
   }
+
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty String.' {
+      {
+        Read-SettingsFile ""
+      } | Should -Throw
+    }
+  }
 }
