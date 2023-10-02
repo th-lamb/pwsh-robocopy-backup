@@ -3,7 +3,7 @@
 #
 # - Get all old jobfiles.
 # - Continue if they exist.
-# - Find all existing (0..5?) archives.
+# - Find all existing (0..n) archives.
 # - Delete the oldest archive if it exists.
 # - Determine the name of the new archive. (Use date and time of the jobfiles?)
 # - Archive the jobs (jobfiles and logfiles).
@@ -23,11 +23,14 @@
 
 function Remove-AllFilesInArray {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
+  [OutputType([System.Int32])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [System.Collections.ArrayList]$files_to_delete
   )
 
-  $num_files_deleted = 0
+  [Int32]$num_files_deleted = 0
 
   foreach ($file_to_delete in $files_to_delete) {
     Write-Host "${file_to_delete}" -ForegroundColor DarkRed
@@ -40,9 +43,13 @@ function Remove-AllFilesInArray {
 }
 
 function Get-LastDateTime {
-  # Returns the date/time of the latest (youngest) file in the specified list;
-  # or "" if the list is empty.
+  <# Returns the date/time of the latest (youngest) file in the specified list;
+    or "" if the list is empty.
+  #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [System.Collections.ArrayList]$file_list
   )
 
@@ -59,11 +66,18 @@ function Get-LastDateTime {
 
 function Export-OldJobs {
   # Archives old jobfiles (zip file) and then deletes them.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$backup_job_dir,
+    [Parameter(Mandatory=$true)]
     [String]$job_name_scheme,
+    [Parameter(Mandatory=$true)]
     [String]$job_log_name_scheme,
+    [Parameter(Mandatory=$true)]
     [String]$archive_name_scheme,
+    [Parameter(Mandatory=$true)]
+    [ValidateRange("NonNegative")]
     [Int32]$max_archives_count
   )
 
@@ -90,7 +104,7 @@ function Export-OldJobs {
     return
   }
 
-  # Find all existing (0..5?) archives.
+  # Find all existing (0..n) archives.
   $old_archives = New-Object System.Collections.ArrayList
   $old_archives = Get-ChildItem -Path "${backup_job_dir}*" -Include "${archive_name_scheme}" -File
 

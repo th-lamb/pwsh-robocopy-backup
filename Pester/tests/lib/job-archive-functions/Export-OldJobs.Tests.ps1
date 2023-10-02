@@ -1,6 +1,7 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/job-archive-functions.ps1"
+
   $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-archive-functions/"
 
   # For messages in tested functions
@@ -82,78 +83,131 @@ BeforeAll {
 
 
 Describe 'Export-OldJobs' {
-  BeforeEach {
-    Remove-TestFiles
-    Remove-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}"
-  }
-
-  It 'Archives old jobfiles to a zip file.' {
-    # Create test files.
-    Add-TestFiles
-
-    # Omit output within the tested function.
-    Mock Write-Host {}
-
-    # Archive the test files.
-    Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
-
-    # Check if the zip file (or *a* zip file?) exists?
-    #TODO: This might fail if the next minute (even second?) starts just before we test the filename!
-    #TODO: -> Store date/time before and after calling Export-OldJobs and search for an archive between these two?
-    $formatted_date = Get-Date -Format "yyyy-MM-ddTHHmmss"
-    $archive_name = "${ARCHIVE_NAME_SCHEME}".Replace("*", "${formatted_date}")
-    $expected = "${workingFolder}${archive_name}"
-
-    Test-Path -Path "${expected}" -PathType Leaf | Should -Be $true
-  }
-
-  It 'Deletes the old jobfiles after archiving.' {
-    # Create test files.
-    Add-TestFiles
-
-    # Check if the test files exist.
-    $testFiles = Get-TestFileNames
-    for ($i = 0; $i -lt $testFiles.Count; $i++) {
-      $nextFile = $testFiles[$i]
-      Test-Path -Path "${workingFolder}${nextFile}" -PathType Leaf | Should -Be $true
+  Context 'Correctly used' {
+    BeforeEach {
+      Remove-TestFiles
+      Remove-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}"
     }
 
-    # Omit output within the tested function.
-    Mock Write-Host {}
+    It 'Archives old jobfiles to a zip file.' {
+      # Create test files.
+      Add-TestFiles
 
-    # Archive the test files.
-    Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+      # Omit output within the tested function.
+      Mock Write-Host {}
 
-    # Check if the test files are removed.
-    for ($i = 0; $i -lt $testFiles.Count; $i++) {
-      $nextFile = $testFiles[$i]
-      Test-Path -Path "${workingFolder}${nextFile}" -PathType Leaf | Should -Be $false
+      # Archive the test files.
+      Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+
+      # Check if the zip file (or *a* zip file?) exists?
+      #TODO: This might fail if the next minute (even second?) starts just before we test the filename!
+      #TODO: -> Store date/time before and after calling Export-OldJobs and search for an archive between these two?
+      $formatted_date = Get-Date -Format "yyyy-MM-ddTHHmmss"
+      $archive_name = "${ARCHIVE_NAME_SCHEME}".Replace("*", "${formatted_date}")
+      $expected = "${workingFolder}${archive_name}"
+
+      Test-Path -Path "${expected}" -PathType Leaf | Should -Be $true
+    }
+
+    It 'Deletes the old jobfiles after archiving.' {
+      # Create test files.
+      Add-TestFiles
+
+      # Check if the test files exist.
+      $testFiles = Get-TestFileNames
+      for ($i = 0; $i -lt $testFiles.Count; $i++) {
+        $nextFile = $testFiles[$i]
+        Test-Path -Path "${workingFolder}${nextFile}" -PathType Leaf | Should -Be $true
+      }
+
+      # Omit output within the tested function.
+      Mock Write-Host {}
+
+      # Archive the test files.
+      Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+
+      # Check if the test files are removed.
+      for ($i = 0; $i -lt $testFiles.Count; $i++) {
+        $nextFile = $testFiles[$i]
+        Test-Path -Path "${workingFolder}${nextFile}" -PathType Leaf | Should -Be $false
+      }
+    }
+
+    It 'Keeps the specified amount of old archives.' {
+      Add-TestFiles
+      Add-TestArchives
+
+      # Store the amount of test archives.
+      $old_number_of_archives = $( Get-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}" ).Length
+
+      # Omit output within the tested function.
+      Mock Write-Host {}
+
+      # Archive the test files.
+      Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+
+      # Check the amount of test archives again.
+      $new_number_of_archives = $( Get-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}" ).Length
+
+      $new_number_of_archives | Should -Be $old_number_of_archives
+    }
+
+#    It 'Shows the correct filename of the archive' {
+#      #TODO: Use Mock Write-InfoMsg {...} to get the reported zip file's name?
+#      #TODO: The archive name is written using Write-Host.
+#    }
+
+    AfterAll {
+      # Cleanup
+      Remove-TestFiles
+      Remove-Item -Path "${workingFolder}*.zip" -ErrorAction SilentlyContinue
     }
   }
 
-  It 'Keeps the specified amount of old archives.' {
-    Add-TestFiles
-    Add-TestArchives
+  Context 'Wrong Usage' {
+    #TODO: Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
-    # Store the amount of test archives.
-    $old_number_of_archives = $( Get-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}" ).Length
+    It 'Throws an exception when called with an empty backup_job_dir.' {
+      {
+        Export-OldJobs ""
+      } | Should -Throw
+    }
 
-    # Omit output within the tested function.
-    Mock Write-Host {}
+    It 'Throws an exception when called with an empty job_name_scheme.' {
+      {
+        Export-OldJobs "${workingFolder}" ""
+      } | Should -Throw
+    }
 
-    # Archive the test files.
-    Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+    It 'Throws an exception when called with an empty job_log_name_scheme.' {
+      {
+        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" ""
+      } | Should -Throw
+    }
 
-    # Check the amount of test archives again.
-    $new_number_of_archives = $( Get-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}" ).Length
+    It 'Throws an exception when called with an empty archive_name_scheme.' {
+      {
+        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" ""
+      } | Should -Throw
+    }
 
-    $new_number_of_archives | Should -Be $old_number_of_archives
+    It 'Throws an exception when called with an invalid max_archives_count.' {
+      {
+        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" -1
+      } | Should -Throw
+
+      {
+        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" "a"
+      } | Should -Throw
+    }
+
+    #TODO: Throws an exception when called without parameter.
+#    It 'Throws an exception when called without parameter.' {
+#      {
+#        Get-LastDateTime
+#      } | Should -Throw
+#    }
   }
-
-#  It 'Shows the correct filename of the archive' {
-#    #TODO: Use Mock Write-InfoMsg {...} to get the reported zip file's name?
-#    #TODO: The archive name is written using Write-Host.
-#  }
 }
 
 
