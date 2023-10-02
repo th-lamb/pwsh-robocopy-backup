@@ -77,8 +77,7 @@ function Export-OldJobs {
     [Parameter(Mandatory=$true)]
     [String]$archive_name_scheme,
     [Parameter(Mandatory=$true)]
-    [ValidateRange("NonNegative")]
-    [Int32]$max_archives_count
+    [System.Byte]$max_archives_count  # 0..255
   )
 
   Write-DebugMsg "Export-OldJobs(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
