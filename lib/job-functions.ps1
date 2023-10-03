@@ -290,12 +290,12 @@ function _addDirectories {
     [String]$target_dir
   )
 
-  _writeToJobfile "${jobfile_path}" ":: Source Directory" $false
-  _writeToJobfile "${jobfile_path}" "/SD:${source_dir}" $false
-  _writeToJobfile "${jobfile_path}" "" $false
-  _writeToJobfile "${jobfile_path}" ":: Destination Directory" $false
-  _writeToJobfile "${jobfile_path}" "/DD:${target_dir}" $false
-  _writeToJobfile "${jobfile_path}" "" $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Source Directory" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/SD:${source_dir}" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Destination Directory" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/DD:${target_dir}" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
 
 }
 
@@ -309,12 +309,12 @@ function _addUserSettings {
     [String]$logfile_path
   )
 
-  _writeToJobfile "${jobfile_path}" ":: ----- User settings ---------------------------------------------------------" $false
-  _writeToJobfile "${jobfile_path}" "" $false
-  _writeToJobfile "${jobfile_path}" ":: Logging options" $false
-  _writeToJobfile "${jobfile_path}" "/UNILOG:${logfile_path}" $false
-  _writeToJobfile "${jobfile_path}" "" $false
-  _writeToJobfile "${jobfile_path}" ":: Copy options" $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: ----- User settings ---------------------------------------------------------" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Logging options" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/UNILOG:${logfile_path}" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Copy options" -create_new_file $false
 
 }
 
@@ -330,11 +330,11 @@ function _addIncludedFiles {
   )
 
   # Append the Robocopy switch
-  _writeToJobfile "${jobfile_path}" "/IF :: Include the following Files." $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/IF :: Include the following Files." -create_new_file $false
 
   # Append all entries
   foreach ($entry in $included_files) {
-    _writeToJobfile "${jobfile_path}" "  ${entry}" $false
+    _writeToJobfile -jobfile_path "${jobfile_path}" -line "  ${entry}" -create_new_file $false
   }
 
 }
@@ -351,11 +351,11 @@ function _addExcludedDirs {
   )
 
   # Append the Robocopy switch
-  _writeToJobfile "${jobfile_path}" "/XD :: eXclude Directories matching given names/paths." $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/XD :: eXclude Directories matching given names/paths." -create_new_file $false
 
   # Append all entries
   foreach ($entry in $excluded_dirs) {
-    _writeToJobfile "${jobfile_path}" "  ${entry}" $false
+    _writeToJobfile -jobfile_path "${jobfile_path}" -line "  ${entry}" -create_new_file $false
   }
 
 }
@@ -372,11 +372,11 @@ function _addExcludedFiles {
   )
 
   # Append the Robocopy switch
-  _writeToJobfile "${jobfile_path}" "/XF :: eXclude Files matching given names/paths/wildcards." $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/XF :: eXclude Files matching given names/paths/wildcards." -create_new_file $false
 
   # Append all entries
   foreach ($entry in $excluded_files) {
-    _writeToJobfile "${jobfile_path}" "  ${entry}" $false
+    _writeToJobfile -jobfile_path "${jobfile_path}" -line "  ${entry}" -create_new_file $false
   }
 
 }
@@ -407,7 +407,7 @@ function _finalizeJob {
   # Add excluded dirs?
   if (! ($excluded_dirs.Count -eq 0) ) {
     if ($spacer_needed) {
-      _writeToJobfile "${jobfile_path}" "" $false
+      _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
       $spacer_needed = $false
     }
 
@@ -417,7 +417,7 @@ function _finalizeJob {
 
   if (! ($excluded_files.Count -eq 0) ) {
     if ($spacer_needed) {
-      _writeToJobfile "${jobfile_path}" "" $false
+      _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
       $spacer_needed = $false
     }
 
@@ -426,8 +426,8 @@ function _finalizeJob {
 
   # Add robocopy option /LEV:1 to copy only a single file?
   if ($copy_single_file) {
-    _writeToJobfile "${jobfile_path}" "" $false
-    _writeToJobfile "${jobfile_path}" "/LEV:1 :: only copy the top n LEVels of the source directory tree." $false
+    _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
+    _writeToJobfile -jobfile_path "${jobfile_path}" -line "/LEV:1 :: only copy the top n LEVels of the source directory tree." -create_new_file $false
   }
 
 }
