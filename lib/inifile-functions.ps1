@@ -23,7 +23,7 @@ function Write-FormattedValueList {
   # Show debug messages.
   Write-DebugMsg "--------------------------------------------------------------------------------"
   Write-DebugMsg "Values from the settings file:"
-  Write-DebugMsg ""
+  Write-DebugMsg " "
   for ($i = 0; $i -lt $var_names.Count; $i++) {
     Write-DebugMsg "$($var_names_same_length[$i]): $($var_values[$i])"
   }
