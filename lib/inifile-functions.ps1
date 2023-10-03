@@ -1,10 +1,33 @@
 #region Helper functions
 
 function Write-FormattedValueList {
+  [CmdletBinding()]
   param (
+    #TODO: [Parameter(Mandatory=$true)]
+    #[Parameter(Mandatory=$true)]
+    #[AllowEmptyCollection()]
     [System.Collections.ArrayList]$var_names,
+    #TODO: [Parameter(Mandatory=$true)]
+    #[Parameter(Mandatory=$true)]
+    #[AllowEmptyCollection()]
     [System.Collections.ArrayList]$var_values
   )
+
+  #region Check parameters
+  if ($PSBoundParameters.Count -eq 0) {
+    Write-Error "Write-FormattedValueList(): No parameters provided!"
+    Throw "No parameters provided!"
+  }
+
+  #TODO: [Parameter(Mandatory=$true)] for var_names
+  if (! $PSBoundParameters.ContainsKey('var_names')) {
+    Write-Error "Write-FormattedValueList(): Parameter var_names not provided!"
+    Throw "Parameter var_names not provided!"
+  }
+
+  #TODO: [Parameter(Mandatory=$true)] for var_values
+  # [...]
+  #endregion Check parameters
 
   [System.Collections.ArrayList]$var_names_same_length = New-Object System.Collections.ArrayList
 
@@ -23,7 +46,6 @@ function Write-FormattedValueList {
   # Show debug messages.
   Write-DebugMsg "--------------------------------------------------------------------------------"
   Write-DebugMsg "Values from the settings file:"
-  Write-DebugMsg " "
   for ($i = 0; $i -lt $var_names.Count; $i++) {
     Write-DebugMsg "$($var_names_same_length[$i]): $($var_values[$i])"
   }
@@ -81,6 +103,8 @@ function Read-SettingsFile {
 
   }
 
-  Write-FormattedValueList $var_names $var_values
+  if ($var_names.Count -gt 0) {
+    Write-FormattedValueList $var_names $var_values
+  }
 
 }
