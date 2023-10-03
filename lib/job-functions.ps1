@@ -477,16 +477,16 @@ function Add-JobFile {
   Write-DebugMsg "Add-JobFile(): logfile_path         : ${logfile_path}"
 
   # Create job file
-  _writeHeader "${jobfile_path}" "${computername}" $current_job_num "${dirlist_entry}"
+  _writeHeader -jobfile_path "${jobfile_path}" -computername "${computername}" -current_job_num $current_job_num -dirlist_entry "${dirlist_entry}"
 
   # Add paths
-  _addDirectories "${jobfile_path}" "${source_dir}" "${target_dir}"
+  _addDirectories -jobfile_path "${jobfile_path}" -source_dir "${source_dir}" -target_dir "${target_dir}"
 
   # Add next section for user-dependent settings
-  _addUserSettings "${jobfile_path}" "${logfile_path}"
+  _addUserSettings -jobfile_path "${jobfile_path}" -logfile_path "${logfile_path}"
 
   # Add included/excluded files/directories (and additional options).
-  _finalizeJob "${jobfile_path}" $included_files $excluded_dirs $excluded_files $copy_single_file
+  _finalizeJob -jobfile_path "${jobfile_path}" -included_files $included_files -excluded_dirs $excluded_dirs -excluded_files $excluded_files -copy_single_file $copy_single_file
 
 }
 
