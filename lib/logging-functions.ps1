@@ -16,26 +16,30 @@ enum SeverityKeyword {
 #region Helper functions
 
 function Format-InSquareBrackets {
-  # Wraps severity keywords in square brackets of fix length
-  # for easy to read log entries. Examples:
-  # - ERR   : [ERR    ]
-  # - NOTICE: [NOTICE ]
-  # - INFO  : [INFO   ]
+  <# Wraps severity keywords in square brackets of fix length
+    for easy to read log entries. Examples:
+    - ERR   : [ERR    ]
+    - NOTICE: [NOTICE ]
+    - INFO  : [INFO   ]
+  #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
     #[ValidateSet("EMERG", "ALERT", "CRIT", "ERR", "WARNING", "NOTICE", "INFO", "DEBUG")]
     #[String]$keyword
+    [Parameter(Mandatory=$true)]
     [SeverityKeyword]$keyword
   )
 
-  $result = "[$keyword"
+  $sb = [System.Text.StringBuilder]::new("[$keyword")
 
-  while ("${result}".Length -lt 8) {
-    $result = "${result} "
+  while ($sb.Length -lt 8) {
+    [void]$sb.Append(" ")
   }
 
-  $result = "${result}]"
+  [void]$sb.Append("]")
 
-  return $result
+  return $sb.ToString()
 
 }
 
@@ -48,26 +52,15 @@ function Add-LogMessage {
     The Entry gets preceded with date/time and $severity. Example:
   2023-04-25T13:46:16 [INFO   ] This is an info message.
   #>
+  [CmdletBinding()]
   Param(
+    [Parameter(Mandatory=$true)]
     [String]$logfile,
+    [Parameter(Mandatory=$true)]
     [SeverityKeyword]$severity,
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Add-LogMessage(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-
-  # No check for $severity since it is declared as enum value. (Error when PowerShell
-  # tries to map the next parameter (message) to one of the enum values.
-
-  if (! $PSBoundParameters.ContainsKey('message')) {
-    Write-Error "Add-LogMessage(): Parameter message not provided!"
-    Throw "Parameter message not provided!"
-  }
-  #endregion
 
   $date_time = (Get-Date -Format s)
   $severity_header = Format-InSquareBrackets $severity  # e.g. [INFO   ]
@@ -84,16 +77,11 @@ function Add-LogMessage {
 
 function Add-EmptyLineToLogfile {
   # Appends an empty line to the $logfile.
+  [CmdletBinding()]
   Param(
+    [Parameter(Mandatory=$true)]
     [String]$logfile
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Add-EmptyLineToLogfile(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-  #endregion
 
   try {
     "" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
@@ -108,9 +96,13 @@ function LogAndShowMessage {
   <# Appends the $message to the $logfile, and writes it to the console.
     The type of message written to the console depends on the $severity.
   #>
+  [CmdletBinding()]
   Param(
+    [Parameter(Mandatory=$true)]
     [String]$logfile,
+    [Parameter(Mandatory=$true)]
     [SeverityKeyword]$severity,
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
