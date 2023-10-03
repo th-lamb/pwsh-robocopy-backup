@@ -1,6 +1,7 @@
 #region Helper functions
 
 function Get-ComputernameFromUncPath {
+  [OutputType([System.String])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -32,7 +33,7 @@ function Get-ComputernameFromUncPath {
 
 function Test-ServerIsAvailable {
   # Returns $true if the specified server is available; otherwise $false.
-  [OutputType([System.String])]
+  [OutputType([System.Boolean])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
