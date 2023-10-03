@@ -227,4 +227,17 @@ Describe 'Write-ColoredMessage' {
 
   #TODO: Use the enum in logging-functions for $severity?
 
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called without severity.' {
+      {
+        Write-ColoredMessage ""
+      } | Should -Throw
+    }
+
+    It 'Throws an exception when called with an empty message.' {
+      {
+        Write-ColoredMessage [SeverityKeyword]::INFO ""
+      } | Should -Throw
+    }
+  }
 }

@@ -18,7 +18,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = "directory"
       $expected = "match"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
 
@@ -27,7 +27,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = "directory"
       $expected = "match"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
 
@@ -36,7 +36,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = "file"
       $expected = "match"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
 
@@ -45,7 +45,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = "file"
       $expected = "match"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
   }
@@ -56,7 +56,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = $false
       $expected = "missing"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
 
@@ -65,7 +65,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = $false
       $expected = "missing"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
 
@@ -74,7 +74,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = $false
       $expected = "missing"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
 
@@ -83,7 +83,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = $false
       $expected = "missing"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
   }
@@ -94,7 +94,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = "file"
       $expected = "type mismatch"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
 
@@ -103,7 +103,7 @@ Describe 'Test-FsObjectTypeMismatch' {
       $existing_type = "directory"
       $expected = "type mismatch"
 
-      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+      $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
     }
   }

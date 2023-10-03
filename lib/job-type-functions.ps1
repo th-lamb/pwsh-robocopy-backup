@@ -68,10 +68,13 @@ function _showOptions {
 }
 
 function Get-UserSelectedJobType {
+  [OutputType([System.String])]
+  [CmdletBinding()]
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
     [String]$default_job_type,
+    [Parameter(Mandatory = $true)]
     [String]$logfile
   )
 

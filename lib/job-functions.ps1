@@ -36,22 +36,14 @@ function Test-FsObjectTypeMismatch {
     - directory pattern : directory or $false
     - file pattern      : file or $false
   #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$specified_type,
+    [Parameter(Mandatory=$true)]
     [String]$existing_type
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('specified_type')) {
-    Write-Error "Test-FsObjectTypeMismatch(): Parameter specified_type not provided!"
-    Throw "Parameter specified_type not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('existing_type')) {
-    Write-Error "Test-FsObjectTypeMismatch(): Parameter existing_type not provided!"
-    Throw "Parameter existing_type not provided!"
-  }
-  #endregion
 
   # non-existent objects
   if ("${existing_type}" -eq $false) {
@@ -103,22 +95,14 @@ function Get-DirlistLineType {
     - source-dir-pattern  -> invalid
     - directory-entry     -> invalid
   #>
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    #[Parameter(Mandatory=$true)]   # A line in the dir-list can be empty!
     [String]$entry,
+    [Parameter(Mandatory=$true)]
     [String]$logfile
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('entry')) {
-    Write-Error "Get-DirlistLineType(): Parameter entry not provided!"
-    Throw "Parameter entry not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('logfile')) {
-    Write-Error "Get-DirlistLineType(): Parameter logfile not provided!"
-    Throw "Parameter logfile not provided!"
-  }
-  #endregion
 
   # ignore
   if (($entry -eq "") -or ($entry.StartsWith("::"))) {
@@ -137,7 +121,7 @@ function Get-DirlistLineType {
     }
 
     $existing_type = Get-RealFsObjectType "${entry}"
-    $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}" "${logfile}"
+    $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
 
     switch ("${result}") {
       "match" {
@@ -211,22 +195,14 @@ function Get-DirlistLineType {
 
 function Get-TargetDir {
   # Returns the desired target (backup) directory for the specified directory.
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$base_dir,
+    [Parameter(Mandatory=$true)]
     [String]$folder_spec
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('base_dir')) {
-    Write-Error "Get-TargetDir(): Parameter base_dir not provided!"
-    Throw "Parameter base_dir not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('folder_spec')) {
-    Write-Error "Get-TargetDir(): Parameter folder_spec not provided!"
-    Throw "Parameter folder_spec not provided!"
-  }
-  #endregion
 
   # Checks
   if ("${folder_spec}" -eq "") {
@@ -563,70 +539,26 @@ function _finalizeJob {
 
 function Add-JobFile {
   # Creates the specified job file, including a simple header.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$backup_job_dir,
+    [Parameter(Mandatory=$true)]
     [String]$computername,
+    [Parameter(Mandatory=$true)]
     [Int32]$current_job_num,
+    [Parameter(Mandatory=$true)]
     [String]$dirlist_entry,
+    [Parameter(Mandatory=$true)]
     [String]$source_dir,
+    [Parameter(Mandatory=$true)]
     [String]$target_dir,
     [System.Collections.ArrayList]$included_files,
     [System.Collections.ArrayList]$excluded_dirs,
     [System.Collections.ArrayList]$excluded_files,
+    [Parameter(Mandatory=$true)]
     [System.Boolean]$copy_single_file
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('backup_job_dir')) {
-    Write-Error "Add-JobFile(): Parameter backup_job_dir not provided!"
-    Throw "Parameter backup_job_dir not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('computername')) {
-    Write-Error "Add-JobFile(): Parameter computername not provided!"
-    Throw "Parameter computername not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('current_job_num')) {
-    Write-Error "Add-JobFile(): Parameter current_job_num not provided!"
-    Throw "Parameter current_job_num not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('dirlist_entry')) {
-    Write-Error "Add-JobFile(): Parameter dirlist_entry not provided!"
-    Throw "Parameter dirlist_entry not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('source_dir')) {
-    Write-Error "Add-JobFile(): Parameter source_dir not provided!"
-    Throw "Parameter source_dir not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('target_dir')) {
-    Write-Error "Add-JobFile(): Parameter target_dir not provided!"
-    Throw "Parameter target_dir not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('included_files')) {
-    Write-Error "Add-JobFile(): Parameter included_files not provided!"
-    Throw "Parameter included_files not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_dirs')) {
-    Write-Error "Add-JobFile(): Parameter excluded_dirs not provided!"
-    Throw "Parameter excluded_dirs not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_files')) {
-    Write-Error "Add-JobFile(): Parameter excluded_files not provided!"
-    Throw "Parameter excluded_files not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('copy_single_file')) {
-    Write-Error "Add-JobFile(): Parameter copy_single_file not provided!"
-    Throw "Parameter copy_single_file not provided!"
-  }
-  #endregion
 
   Write-DebugMsg "Add-JobFile(): backup_job_dir       : ${backup_job_dir}"
   Write-DebugMsg "Add-JobFile(): computername         : ${computername}"

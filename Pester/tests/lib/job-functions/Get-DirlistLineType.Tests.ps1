@@ -2,11 +2,11 @@ BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/job-functions.ps1"
 
-  #$Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-functions/"
+  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-functions/"
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  #$Script:logfile = "${workingFolder}Get-DirlistLineType.Tests.log"
+  $Script:logfile = "${workingFolder}Get-DirlistLineType.Tests.log"
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
@@ -139,5 +139,5 @@ Describe 'Get-DirlistLineType' {
 
 
 AfterAll {
-  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

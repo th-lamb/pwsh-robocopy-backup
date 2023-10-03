@@ -6,37 +6,47 @@ BeforeAll {
 
 
 Describe 'Get-ComputernameFromUncPath' {
-  It 'Returns computername from UNC path.' {
-    $unc_path = "\\server"
-    $expected = "server"
+  Context 'Correctly used' {
+    It 'Returns computername from UNC path.' {
+      $unc_path = "\\server"
+      $expected = "server"
 
-    $result = Get-ComputernameFromUncPath "${unc_path}"
-    "${result}" | Should -Be "${expected}"
+      $result = Get-ComputernameFromUncPath "${unc_path}"
+      "${result}" | Should -Be "${expected}"
+    }
+
+    It 'Returns computername from UNC path with share.' {
+      $unc_path = "\\server\share"
+      $expected = "server"
+
+      $result = Get-ComputernameFromUncPath "${unc_path}"
+      "${result}" | Should -Be "${expected}"
+    }
+
+    It 'Returns computername from UNC path with subfolders.' {
+      $unc_path = "\\server\share\foo\bar"
+      $expected = "server"
+
+      $result = Get-ComputernameFromUncPath "${unc_path}"
+      "${result}" | Should -Be "${expected}"
+    }
   }
 
-  It 'Returns computername from UNC path with share.' {
-    $unc_path = "\\server\share"
-    $expected = "server"
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty String.' {
+      {
+        Get-ComputernameFromUncPath ""
+      } | Should -Throw
+    }
 
-    $result = Get-ComputernameFromUncPath "${unc_path}"
-    "${result}" | Should -Be "${expected}"
-  }
+    It 'Throws exception is path is not a UNC path.' {
+      $invalid_path = "\server"
 
-  It 'Returns computername from UNC path with subfolders.' {
-    $unc_path = "\\server\share\foo\bar"
-    $expected = "server"
+      Mock Write-Error {}
 
-    $result = Get-ComputernameFromUncPath "${unc_path}"
-    "${result}" | Should -Be "${expected}"
-  }
-
-  It 'Throws exception is path is not a UNC path.' {
-    $unc_path = "\server"
-
-    Mock Write-Error {}
-
-    {
-      Get-ComputernameFromUncPath "${unc_path}"
-    } | Should -Throw
+      {
+        Get-ComputernameFromUncPath "${invalid_path}"
+      } | Should -Throw
+    }
   }
 }

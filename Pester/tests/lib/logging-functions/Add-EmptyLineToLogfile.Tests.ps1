@@ -1,7 +1,9 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $Script:logfile = "${ProjectRoot}Pester/resources/lib/logging-functions/Add-EmptyLineToLogfile.Tests.log"
+
+  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/logging-functions/"
+  $Script:logfile = "${workingFolder}Add-EmptyLineToLogfile.Tests.log"
 }
 
 

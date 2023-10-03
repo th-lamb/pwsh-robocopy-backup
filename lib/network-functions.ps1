@@ -1,7 +1,9 @@
 #region Helper functions
 
 function Get-ComputernameFromUncPath {
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$unc_path
   )
 
@@ -30,22 +32,17 @@ function Get-ComputernameFromUncPath {
 
 function Test-ServerIsAvailable {
   # Returns $true if the specified server is available; otherwise $false.
+  [OutputType([System.String])]
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$server_path_spec
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('server_path_spec')) {
-    Write-Error "Test-ServerIsAvailable(): Parameter server_path_spec not provided!"
-    Throw "Parameter server_path_spec not provided!"
-  }
-  #endregion
 
   # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
   # Test-Connection -BufferSize 32 -Count 1 -ComputerName 192.168.0.41 -Quiet
 
   $server_name = Get-ComputernameFromUncPath "${server_path_spec}"
-  #Write-Host "server_name : ${server_name}" -ForegroundColor Blue
 
   #$available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet
 
@@ -62,7 +59,6 @@ function Test-ServerIsAvailable {
   } catch [System.Net.NetworkInformation.PingException] {
     $available = $false
   }
-  #Write-Host "available   : $available" -ForegroundColor Blue
 
   return $available
 

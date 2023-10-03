@@ -8,11 +8,6 @@
 # Does not use the standard PowerShell streams 1..6 (Output, Error, Warning,
 # Verbose, ...), only Write-Host to write to the console with different colors.
 #
-# There are two variants of all message functions. Example:
-# - Write-InfoMsg(): Prints the message only.
-#TODO: infoLog is removed?
-# - infoLog(): Prints a timestamp before the message.
-#
 #
 #     How to use in your script?
 #     ==========================
@@ -50,7 +45,6 @@
 #
 # Not meant to be called directly:
 # - Write-ColoredMessage()
-# - _coloredLog()
 # - Test-VerbosityIsDefined()
 #
 #
@@ -93,8 +87,11 @@ TODO:
     $2   The message
   #>
   #TODO: Use the enum in logging-functions for $severity.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$severity,
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -207,7 +204,9 @@ function Write-EmergMsg {
   <# Write-ColoredMessage() for severity level 0 (emerg).
     Notice: No verbose level check, always written.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -219,7 +218,9 @@ function Write-AlertMsg {
   <# Write-ColoredMessage() for severity level 1 (alert).
     Notice: No verbose level check, always written.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -231,7 +232,9 @@ function Write-CritMsg {
   <# Write-ColoredMessage() for severity level 2 (crit).
     Notice: No verbose level check, always written.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -243,7 +246,9 @@ function Write-ErrMsg {
   <# Write-ColoredMessage() for severity level 3 (err).
     Notice: No verbose level check, always written.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -253,7 +258,9 @@ function Write-ErrMsg {
 
 function Write-WarningMsg {
   # Write-ColoredMessage() for severity level 4 (warning).
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -272,7 +279,9 @@ function Write-WarningMsg {
 
 function Write-NoticeMsg {
   # Write-ColoredMessage() for severity level 5 (notice).
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -291,7 +300,9 @@ function Write-NoticeMsg {
 
 function Write-InfoMsg {
   # Write-ColoredMessage() for severity level 6 (info).
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -310,7 +321,9 @@ function Write-InfoMsg {
 
 function Write-DebugMsg {
   # Write-ColoredMessage() for severity level 7 (debug).
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -334,16 +347,18 @@ function Write-DebugMsg {
 #region ... with additional exit codes
 
 function Stop-WithEmergMessage {
-  #TODO: Change text: no "_coloredLog" anymore!
-  <# _coloredLog() for severity level 0 (emerg) and exit with specified exit code.
+  <# Writes a message for severity level 0 (emerg) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
     Parameters:
     $1  exit with code
     $2  string to log
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [Int32]$exit_code,
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -353,16 +368,18 @@ function Stop-WithEmergMessage {
 }
 
 function Stop-WithAlertMessage {
-  #TODO: Change text: no "_coloredLog" anymore!
-  <# _coloredLog() for severity level 1 (alert) and exit with specified exit code.
+  <# Writes a message for severity level 1 (alert) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
     Parameters:
     $1  exit with code
     $2  string to log
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [Int32]$exit_code,
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -372,16 +389,18 @@ function Stop-WithAlertMessage {
 }
 
 function Stop-WithCritMessage {
-  #TODO: Change text: no "_coloredLog" anymore!
-  <# _coloredLog() for severity level 2 (crit) and exit with specified exit code.
+  <# Writes a message for severity level 2 (crit) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
     Parameters:
     $1  exit with code
     $2  string to log
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [Int32]$exit_code,
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -391,16 +410,18 @@ function Stop-WithCritMessage {
 }
 
 function Stop-WithErrMessage {
-  #TODO: Change text: no "_coloredLog" anymore!
-  <# _coloredLog() for severity level 3 (err) and exit with specified exit code.
+  <# Writes a message for severity level 3 (err) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
     Parameters:
     $1  exit with code
     $2  string to log
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [Int32]$exit_code,
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -419,7 +440,9 @@ function Write-QuietMessage {
   <# Writes the specified message even in quiet mode.
     -> Message is interpreted as a warning.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -435,7 +458,9 @@ function Write-NormalMessage {
     The Message will be interpreted as "info" but will already be written at
     verbose level 5 (severity level "notice").
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
@@ -456,7 +481,9 @@ function Write-VerboseMessage {
   <# Writes the specified message only in verbose mode.
     -> Message is interpreted as an info message.
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$message
   )
 
