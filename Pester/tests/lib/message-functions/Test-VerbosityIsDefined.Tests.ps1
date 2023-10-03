@@ -12,7 +12,6 @@ Describe 'Test-VerbosityIsDefined' {
 
       for ($i=0; $i -lt $values.Length; $i++) {
         $Script:__VERBOSE = $values[$i]
-
         Test-VerbosityIsDefined | Should -Be $true
       }
     }
@@ -24,14 +23,12 @@ Describe 'Test-VerbosityIsDefined' {
 
       for ($i=0; $i -lt $values.Length; $i++) {
         $Script:__VERBOSE = $values[$i]
-
         Test-VerbosityIsDefined | Should -Be $false
       }
     }
 
     It 'Returns $false for non-numeric values.' {
       $Script:__VERBOSE = "foo"
-
       Test-VerbosityIsDefined | Should -Be $false
     }
   }
