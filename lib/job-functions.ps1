@@ -272,9 +272,9 @@ function _writeHeader {
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
   # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
   # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
-  _writeToJobfile "${jobfile_path}" ":: Robocopy Job ${computername}-Job${current_job_num}" $true
-  _writeToJobfile "${jobfile_path}" ":: For dir-list entry: ${dirlist_entry}" $false
-  _writeToJobfile "${jobfile_path}" "" $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Robocopy Job ${computername}-Job${current_job_num}" -create_new_file $true
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: For dir-list entry: ${dirlist_entry}" -create_new_file $false
+  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
 
 }
 
