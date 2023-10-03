@@ -236,28 +236,16 @@ function Get-TargetDir {
 
 function _writeToJobfile {
   # Writes the specified line to the specified job file.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
+    [Parameter(Mandatory=$true)]
+    [AllowEmptyString()]
     [String]$line,
+    [Parameter(Mandatory=$true)]
     [System.Boolean]$create_new_file
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_writeToJobfile(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('line')) {
-    Write-Error "_writeToJobfile(): Parameter line not provided!"
-    Throw "Parameter line not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('create_new_file')) {
-    Write-Error "_writeToJobfile(): Parameter create_new_file not provided!"
-    Throw "Parameter create_new_file not provided!"
-  }
-  #endregion
 
   if (${create_new_file}) {
     "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding utf8
@@ -269,34 +257,17 @@ function _writeToJobfile {
 
 function _writeHeader {
   # Writes the job file header.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
+    [Parameter(Mandatory=$true)]
     [String]$computername,
+    [Parameter(Mandatory=$true)]
     [Int32]$current_job_num,
+    [Parameter(Mandatory=$true)]
     [String]$dirlist_entry
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_writeHeader(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('computername')) {
-    Write-Error "_writeHeader(): Parameter computername not provided!"
-    Throw "Parameter computername not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('current_job_num')) {
-    Write-Error "_writeHeader(): Parameter current_job_num not provided!"
-    Throw "Parameter current_job_num not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('dirlist_entry')) {
-    Write-Error "_writeHeader(): Parameter dirlist_entry not provided!"
-    Throw "Parameter dirlist_entry not provided!"
-  }
-  #endregion
 
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
   # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
@@ -309,28 +280,15 @@ function _writeHeader {
 
 function _addDirectories {
   # Adds source and target directory to the job file.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
+    [Parameter(Mandatory=$true)]
     [String]$source_dir,
+    [Parameter(Mandatory=$true)]
     [String]$target_dir
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_addDirectories(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('source_dir')) {
-    Write-Error "_addDirectories(): Parameter source_dir not provided!"
-    Throw "Parameter source_dir not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('target_dir')) {
-    Write-Error "_addDirectories(): Parameter target_dir not provided!"
-    Throw "Parameter target_dir not provided!"
-  }
-  #endregion
 
   _writeToJobfile "${jobfile_path}" ":: Source Directory" $false
   _writeToJobfile "${jobfile_path}" "/SD:${source_dir}" $false
@@ -343,22 +301,13 @@ function _addDirectories {
 
 function _addUserSettings {
   # Adds user settings (e.g. logging options) to the job file.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
+    [Parameter(Mandatory=$true)]
     [String]$logfile_path
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_addUserSettings(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('logfile_path')) {
-    Write-Error "_addUserSettings(): Parameter logfile_path not provided!"
-    Throw "Parameter logfile_path not provided!"
-  }
-  #endregion
 
   _writeToJobfile "${jobfile_path}" ":: ----- User settings ---------------------------------------------------------" $false
   _writeToJobfile "${jobfile_path}" "" $false
@@ -373,22 +322,12 @@ function _addIncludedFiles {
   <# Adds all files in the specified list to the specified job file
     as files to be included (robocopy option /IF).
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$included_files
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_addIncludedFiles(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('included_files')) {
-    Write-Error "_addIncludedFiles(): Parameter included_files not provided!"
-    Throw "Parameter included_files not provided!"
-  }
-  #endregion
 
   # Append the Robocopy switch
   _writeToJobfile "${jobfile_path}" "/IF :: Include the following Files." $false
@@ -404,22 +343,12 @@ function _addExcludedDirs {
   <# Adds all directories in the specified list to the specified job file
     as directories to be excluded (robocopy option /XD).
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$excluded_dirs
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_addExcludedDirs(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_dirs')) {
-    Write-Error "_addExcludedDirs(): Parameter excluded_dirs not provided!"
-    Throw "Parameter excluded_dirs not provided!"
-  }
-  #endregion
 
   # Append the Robocopy switch
   _writeToJobfile "${jobfile_path}" "/XD :: eXclude Directories matching given names/paths." $false
@@ -435,22 +364,12 @@ function _addExcludedFiles {
   <# Adds all files in the specified list to the specified job file
     as files to be excluded (robocopy option /XF).
   #>
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$excluded_files
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_addExcludedFiles(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_files')) {
-    Write-Error "_addExcludedFiles(): Parameter excluded_files not provided!"
-    Throw "Parameter excluded_files not provided!"
-  }
-  #endregion
 
   # Append the Robocopy switch
   _writeToJobfile "${jobfile_path}" "/XF :: eXclude Files matching given names/paths/wildcards." $false
@@ -464,40 +383,16 @@ function _addExcludedFiles {
 
 function _finalizeJob {
   # Adds all included/excluded entries to the specified job file.
+  [CmdletBinding()]
   param (
+    [Parameter(Mandatory=$true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$included_files,
     [System.Collections.ArrayList]$excluded_dirs,
     [System.Collections.ArrayList]$excluded_files,
+    [Parameter(Mandatory=$true)]
     [System.Boolean]$copy_single_file
   )
-
-  #region Check parameters
-  if (! $PSBoundParameters.ContainsKey('jobfile_path')) {
-    Write-Error "_finalizeJob(): Parameter jobfile_path not provided!"
-    Throw "Parameter jobfile_path not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('included_files')) {
-    Write-Error "_finalizeJob(): Parameter included_files not provided!"
-    Throw "Parameter included_files not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_dirs')) {
-    Write-Error "_finalizeJob(): Parameter excluded_dirs not provided!"
-    Throw "Parameter excluded_dirs not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('excluded_files')) {
-    Write-Error "_finalizeJob(): Parameter excluded_files not provided!"
-    Throw "Parameter excluded_files not provided!"
-  }
-
-  if (! $PSBoundParameters.ContainsKey('copy_single_file')) {
-    Write-Error "_finalizeJob(): Parameter copy_single_file not provided!"
-    Throw "Parameter copy_single_file not provided!"
-  }
-  #endregion
 
   $spacer_needed = $false
 
