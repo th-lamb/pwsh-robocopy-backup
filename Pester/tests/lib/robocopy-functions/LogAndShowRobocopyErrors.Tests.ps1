@@ -2,8 +2,10 @@ BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/robocopy-functions.ps1"
 
+  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/robocopy-functions/"
+
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $Script:logfile = "${ProjectRoot}Pester/resources/lib/robocopy-functions/LogAndShowRobocopyErrors.Tests.log"
+  $Script:logfile = "${workingFolder}LogAndShowRobocopyErrors.Tests.log"
 
   . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 6
@@ -471,35 +473,32 @@ Describe 'LogAndShowRobocopyErrors' {
     }
   }
 
-  Context 'Invalid exit code' {
-    It 'Correctly logs an invalid exit code.' {
-      $exit_code = 17
-      $expected_log_entry = "[ERR    ] Job1: Invalid robocopy exit code: $exit_code"
-
-      Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-      Mock Write-ErrMsg {}
-
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
-
-      $expected_regex = Format-RegexString "${expected_log_entry}"
-      "${logfile}" | Should -FileContentMatch "${expected_regex}"
-
-      Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Context 'Invalid exit code' {
+  Context 'Wrong Usage' {
+    It 'Throws an exception when called with an empty logfile.' {
+      {
+        LogAndShowRobocopyErrors ""
+      } | Should -Throw
     }
 
-    It '...and calls Write-ErrMsg exactly once.' {
-      $exit_code = 17
-      $expected_message = "Job1: Invalid robocopy exit code: $exit_code"
+    It 'Throws an exception when called with an empty job_name.' {
+      {
+        LogAndShowRobocopyErrors "${logfile}" ""
+      } | Should -Throw
+    }
 
-      Mock Write-ErrMsg {} -Verifiable
+    It 'Throws an exception when called with an invalid exit code.' {
+      {
+        LogAndShowRobocopyErrors "${logfile}" 'Job1' -1
+      } | Should -Throw
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      {
+        LogAndShowRobocopyErrors "${logfile}" 'Job1' 17
+      } | Should -Throw
 
-      Should -Invoke -CommandName "Write-ErrMsg" -Times 1 -Exactly -ParameterFilter {
-        $message -eq "${expected_message}"
-      }
-
-      Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+      {
+        LogAndShowRobocopyErrors "${logfile}" 'Job1' "foo"
+      } | Should -Throw
     }
   }
 }

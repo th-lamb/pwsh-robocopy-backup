@@ -17,10 +17,15 @@
 }
 
 function LogAndShowRobocopyErrors {
-  Param(
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory=$true)]
     [String]$logfile,
+    [Parameter(Mandatory=$true)]
     [String]$job_name,
-    [Int32]$exit_code
+    [Parameter(Mandatory=$true)]
+    [ValidateRange(0,16)]
+    [System.Byte]$exit_code
   )
 
   $result = $([RoboCopyExitCodes]$exit_code)
@@ -38,9 +43,6 @@ function LogAndShowRobocopyErrors {
     }
     16 {
       LogAndShowMessage "${logfile}" ERR "${job_name}: ${result}"
-    }
-    Default {
-      LogAndShowMessage "${logfile}" ERR "${job_name}: Invalid robocopy exit code: $exit_code"
     }
   }
 
