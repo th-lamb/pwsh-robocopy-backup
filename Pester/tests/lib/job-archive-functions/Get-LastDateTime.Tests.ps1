@@ -44,6 +44,12 @@ Describe 'Get-LastDateTime' {
       } | Should -Throw
     }
 
+    It 'Throws an exception when called with $null.' {
+      {
+        Get-LastDateTime $null
+      } | Should -Throw
+    }
+
     #TODO: Throws an exception when called without parameter.
 #    It 'Throws an exception when called without parameter.' {
 #      {

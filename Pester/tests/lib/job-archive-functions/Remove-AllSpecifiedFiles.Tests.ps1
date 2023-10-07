@@ -1,12 +1,17 @@
 BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/job-archive-functions.ps1"
+
   $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-archive-functions/"
+
+  # For messages in tested functions
+  . "${ProjectRoot}lib/message-functions.ps1"
+  $Script:__VERBOSE = 6
 }
 
 
 
-Describe 'Remove-AllFilesInArray' {
+Describe 'Remove-AllSpecifiedFiles' {
   Context 'Correctly used' {
     It 'Removes all files specified in array.' {
       # Create 3 test files.
@@ -24,9 +29,9 @@ Describe 'Remove-AllFilesInArray' {
       $files_to_delete.Add("${workingFolder}testfile2") > $null
       $files_to_delete.Add("${workingFolder}testfile3") > $null
 
-      # Call Remove-AllFilesInArray with that array.
+      # Call Remove-AllSpecifiedFiles with that array.
       Mock Write-Host {}  # Omit output within the tested function.
-      Remove-AllFilesInArray $files_to_delete
+      Remove-AllSpecifiedFiles $files_to_delete
 
       # Test
       Test-Path "${workingFolder}testfile1" -PathType Leaf | Should -Be $false
@@ -50,9 +55,9 @@ Describe 'Remove-AllFilesInArray' {
       $files_to_delete.Add("${workingFolder}testfile2") > $null
       $files_to_delete.Add("${workingFolder}testfile3") > $null
 
-      # Call Remove-AllFilesInArray with that array.
+      # Call Remove-AllSpecifiedFiles with that array.
       Mock Write-Host {}  # Omit output within the tested function.
-      $result = Remove-AllFilesInArray $files_to_delete
+      $result = Remove-AllSpecifiedFiles $files_to_delete
 
       # Test
       $result | Should -Be 3
@@ -60,24 +65,48 @@ Describe 'Remove-AllFilesInArray' {
   }
 
   Context 'Wrong Usage' {
-    It 'Throws an exception when called with an empty String.' {
+    # https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-arrays?view=powershell-7.3#null-or-empty
+
+    It 'Throws an exception when called with a null value.' {
       {
-        Remove-AllFilesInArray ""
+        Remove-AllSpecifiedFiles $null
       } | Should -Throw
     }
 
-    It 'Throws an exception when called with an empty array.' {
-      $empty_array = New-Object System.Collections.ArrayList
+    It 'Writes a warning when called with an empty collection.' {
+      Mock Write-WarningMsg {} -Verifiable
+
+      Remove-AllSpecifiedFiles @()
+      Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly
+    }
+
+    It 'Returns 0 when called with an empty collection.' {
+      Mock Write-WarningMsg {}
+
+      $result = Remove-AllSpecifiedFiles @()
+      $result | Should -Be 0
+    }
+
+    It 'Does not call Remove-Item when called with an empty collection.' {
+      Mock Write-WarningMsg {}
+      Mock Remove-Item {} -Verifiable
+
+      Remove-AllSpecifiedFiles @()
+      Should -Invoke -CommandName "Remove-Item" -Times 0
+    }
+
+    It 'Throws an exception when called with an empty String.' {
+      Mock Write-Error {} -Verifiable
 
       {
-        Remove-AllFilesInArray $empty_array
-      } | Should -Throw
+        Remove-AllSpecifiedFiles ""
+      } | Should -Throw "Parameter files_to_delete equals an empty String!"
     }
 
     #TODO: Throws an exception when called without parameter.
 #    It 'Throws an exception when called without parameter.' {
 #      {
-#        Remove-AllFilesInArray
+#        Remove-AllSpecifiedFiles
 #      } | Should -Throw
 #    }
   }

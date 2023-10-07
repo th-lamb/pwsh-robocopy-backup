@@ -14,14 +14,14 @@
 #     ================
 #
 # Not meant to be called directly:
-# - Remove-AllFilesInArray()
+# - Remove-AllSpecifiedFiles()
 # - Get-LastDateTime()
 #
 ################################################################################
 
 #TODO: Add logging - not only console messages!
 
-function Remove-AllFilesInArray {
+function Remove-AllSpecifiedFiles {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
   [OutputType([System.Int32])]
   [CmdletBinding()]
@@ -30,6 +30,18 @@ function Remove-AllFilesInArray {
     [AllowEmptyCollection()]
     [System.Collections.ArrayList]$files_to_delete
   )
+
+  #region Check parameters
+  if ( $files_to_delete.Count -eq 0 ) {
+    Write-WarningMsg "Remove-AllSpecifiedFiles(): Parameter files_to_delete is an empty collection!"
+    return 0
+  }
+
+  if ( "" -eq $files_to_delete ) {
+    Write-Error "Remove-AllSpecifiedFiles(): Parameter files_to_delete equals an empty String!"
+    Throw "Parameter files_to_delete equals an empty String!"
+  }
+  #endregion Check parameters
 
   [Int32]$num_files_deleted = 0
 
@@ -83,7 +95,7 @@ function Export-OldJobs {
 
   Write-DebugMsg "Export-OldJobs(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
 
-  # Get all old jobfiles.
+  # Get all old job- and logfiles (null if nothing was found).
   $old_jobfiles = New-Object System.Collections.ArrayList
   $old_jobfiles = Get-ChildItem -Path "${backup_job_dir}*" -Include "${job_name_scheme}" -File
 
@@ -130,9 +142,9 @@ function Export-OldJobs {
 
   # Determine the name of the new archive. (Use date and time of the jobfiles?)
   # Get date/time from the logfiles if there were no jobfiles.
-  $last_datetime = Get-LastDateTime $old_jobfiles
-
-  if ("${last_datetime}" -eq "") {
+  if ($old_jobfiles_count -gt 0) {
+    $last_datetime = Get-LastDateTime $old_jobfiles
+  } else {
     $last_datetime = Get-LastDateTime $old_logfiles
   }
 
@@ -156,12 +168,13 @@ function Export-OldJobs {
   Write-DebugMsg "Deleting old jobs..."
 
   if ( $null -ne $old_jobfiles ) {
-    $num_jobfiles_deleted = Remove-AllFilesInArray $old_jobfiles
+    $num_jobfiles_deleted = Remove-AllSpecifiedFiles $old_jobfiles
     Write-DebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
   }
 
   if ( $null -ne $old_logfiles ) {
-    $num_logfiles_deleted = Remove-AllFilesInArray $old_logfiles
+    $num_logfiles_deleted = Remove-AllSpecifiedFiles $old_logfiles
     Write-DebugMsg "$num_logfiles_deleted logfile(s) deleted."
   }
+
 }
