@@ -3,30 +3,35 @@
 function Write-FormattedValueList {
   [CmdletBinding()]
   param (
-    #TODO: [Parameter(Mandatory=$true)]
-    #[Parameter(Mandatory=$true)]
-    #[AllowEmptyCollection()]
     [System.Collections.ArrayList]$var_names,
-    #TODO: [Parameter(Mandatory=$true)]
-    #[Parameter(Mandatory=$true)]
-    #[AllowEmptyCollection()]
     [System.Collections.ArrayList]$var_values
   )
 
   #region Check parameters
-  if ($PSBoundParameters.Count -eq 0) {
-    Write-Error "Write-FormattedValueList(): No parameters provided!"
-    Throw "No parameters provided!"
+  if ($PSBoundParameters.Count -ne 2) {
+    Write-Error "Write-FormattedValueList(): Wrong number of parameters provided!"
+    Throw "Wrong number of parameters provided!"
   }
 
-  #TODO: [Parameter(Mandatory=$true)] for var_names
-  if (! $PSBoundParameters.ContainsKey('var_names')) {
-    Write-Error "Write-FormattedValueList(): Parameter var_names not provided!"
-    Throw "Parameter var_names not provided!"
+  if ( $var_names.Count -eq 0 ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter var_names is an empty collection!"
+    return
   }
 
-  #TODO: [Parameter(Mandatory=$true)] for var_values
-  # [...]
+  if ( $var_values.Count -eq 0 ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter var_values is an empty collection!"
+    return
+  }
+
+  if ( "" -eq $var_names ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter var_names equals an empty String!"
+    return
+  }
+
+  if ( "" -eq $var_values ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter var_values equals an empty String!"
+    return
+  }
   #endregion Check parameters
 
   [System.Collections.ArrayList]$var_names_same_length = New-Object System.Collections.ArrayList

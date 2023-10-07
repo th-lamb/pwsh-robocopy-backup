@@ -27,6 +27,7 @@ function Remove-AllFilesInArray {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
+    [AllowEmptyCollection()]
     [System.Collections.ArrayList]$files_to_delete
   )
 
@@ -154,9 +155,13 @@ function Export-OldJobs {
   # Delete the jobs.
   Write-DebugMsg "Deleting old jobs..."
 
-  $num_jobfiles_deleted = Remove-AllFilesInArray $old_jobfiles
-  Write-DebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
+  if ( $null -ne $old_jobfiles ) {
+    $num_jobfiles_deleted = Remove-AllFilesInArray $old_jobfiles
+    Write-DebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
+  }
 
-  $num_logfiles_deleted = Remove-AllFilesInArray $old_logfiles
-  Write-DebugMsg "$num_logfiles_deleted logfile(s) deleted."
+  if ( $null -ne $old_logfiles ) {
+    $num_logfiles_deleted = Remove-AllFilesInArray $old_logfiles
+    Write-DebugMsg "$num_logfiles_deleted logfile(s) deleted."
+  }
 }

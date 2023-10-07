@@ -546,6 +546,7 @@ function Get-ExpandedPath {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
+    [AllowEmptyString()]
     [String]$path_spec
   )
 
