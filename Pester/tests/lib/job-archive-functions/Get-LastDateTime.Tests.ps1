@@ -37,10 +37,8 @@ Describe 'Get-LastDateTime' {
     }
 
     It 'Throws an exception when called with an empty array.' {
-      $empty_array = New-Object System.Collections.ArrayList
-
       {
-        Get-LastDateTime $empty_array
+        Get-LastDateTime @()
       } | Should -Throw
     }
 
