@@ -168,7 +168,7 @@ function Get-DirlistLineType {
     }
 
   } elseif ($entry.StartsWith("  - ")) {
-    $temp = "${entry}".Substring(4)   # Remove the leading "  + "
+    $temp = "${entry}".Substring(4)   # Remove the leading "  - "
 
     # Type of the entry
     # -> An inclusion should always be a file (pattern)!
