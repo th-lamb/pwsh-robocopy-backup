@@ -89,12 +89,18 @@ function Get-UserSelectedJobType {
   Write-Host "Automatic start in ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} seconds."
 
   # https://powershell.one/tricks/input-devices/detect-key-press
-  do {
+  :waitForKey do {
     # Wait for a key to be available:
     if ([Console]::KeyAvailable) {
       # Read the key, and consume it so it won't be echoed to the console:
       $keyInfo = [Console]::ReadKey($true)
-      break
+
+      # Ignore some keys.
+      switch($keyInfo.key) {
+        'LeftWindows' {}
+        'Tab' {}
+        Default { break waitForKey }
+      }
     }
 
     # Wait.
