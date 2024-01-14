@@ -96,9 +96,9 @@ function Get-UserSelectedJobType {
       $keyInfo = [Console]::ReadKey($true)
 
       # Ignore some keys.
-      switch($keyInfo.key) {
-        'LeftWindows' {}
-        'Tab' {}
+      switch($keyInfo.Key) {
+        'LeftWindows' { $keyInfo = "" }
+        'Tab' { $keyInfo = "" }
         Default { break waitForKey }
       }
     }
@@ -117,7 +117,7 @@ function Get-UserSelectedJobType {
   # Emit a new line
   Write-Host
 
-  switch($keyInfo.key) {
+  switch($keyInfo.Key) {
     'i' {
       $result = "Incremental"
       Add-LogMessage "${logfile}" INFO "Incremental selected."
@@ -165,7 +165,7 @@ function Get-UserSelectedJobType {
       # Illegal choice
       LogAndShowMessage "${logfile}" WARN "Illegal choice. Cancel."
       $result = "Cancel"
-      Add-LogMessage "${logfile}" DEBUG "User clicked: $($keyInfo.key)"
+      Add-LogMessage "${logfile}" DEBUG "User clicked: $($keyInfo.Key)"
     }
 
   }
