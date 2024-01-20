@@ -23,17 +23,25 @@
 
 #region TODO
 
-<#
-  - Sections?
-    - ...
-    - Get options and option arguments.
-    - Check the plausibility of the provided option arguments.
-    - ...
-    - ??? more?
-    - Is it possible to log errors directly?
+<# TODO: Sections?
+  - ...
+  - Get options and option arguments.
+  - Check the plausibility of the provided option arguments.
+  - ...
+  - ??? more?
+  - Is it possible to log errors directly?
 #>
 
 #TODO: Use more Write-NormalMessage() and Write-VerboseMessage() instead of Write-DebugMsg() or Write-InfoMsg()?
+
+<# TODO: Check for Constrained Language Mode!
+  - Disables access to Environment Variables.
+  - more?
+
+  Info:
+  - https://www.youtube.com/watch?v=zW69MisrsWk
+  - https://devblogs.microsoft.com/powershell/powershell-constrained-language-mode/
+#>
 
 #endregion TODO ################################################################
 
@@ -449,7 +457,7 @@ function _processDirectoryList {
     if ($Script:continue_curr_job) {
       Write-DebugMsg "----- Continuing the job: --------------------------------------------"
       # Determine additional information for the job.
-      $entry = "${line}".Substring(4)   # Remove the leading "  + " or "  - "
+      $entry = "${expanded}".Substring(4)   # Remove the leading "  + " or "  - "
       Write-DebugMsg "entry               : ${entry}"
 
       switch ("${line_type}") {
