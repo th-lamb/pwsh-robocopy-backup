@@ -57,6 +57,23 @@ Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]:
 
 
 
+#region Helpers
+
+[Boolean]$CalledViaRightclick=$false
+
+if ($MyInvocation.InvocationName.Equals("&")) {
+  # Windows PowerShell
+  if ( (Get-ExecutionPolicy -Scope Process) -eq 'Bypass') { $CalledViaRightclick=$true }
+}
+else {
+  # PowerShell 7
+  if ($MyInvocation.Line -eq "") { $CalledViaRightclick=$true }
+}
+
+#endregion Helpers
+
+
+
 $startTime = (Get-Date)
 
 
@@ -579,7 +596,8 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "${message}"
 
 
 
-#:Abort
-#:End
-#Write-Host -NoNewLine "Press any key to quit..."
-#[void][System.Console]::ReadKey($true)
+# Pause if started via right-click.
+if ($CalledViaRightclick) {
+  Write-Host -NoNewLine "Press any key to quit..."
+  [void][System.Console]::ReadKey($true)
+}
