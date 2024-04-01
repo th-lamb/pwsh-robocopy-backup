@@ -99,6 +99,8 @@ function Get-UserSelectedJobType {
       switch($keyInfo.Key) {
         'LeftWindows' { $keyInfo = "" }
         'Tab' { $keyInfo = "" }
+        'VolumeDown' { $keyInfo = "" }
+        'VolumeUp' { $keyInfo = "" }
         Default { break waitForKey }
       }
     }
