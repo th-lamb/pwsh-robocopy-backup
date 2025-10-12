@@ -165,7 +165,7 @@ function Export-OldJobs {
   Write-Host "${archive_path}" -ForegroundColor DarkGreen
 
   # Delete the jobs.
-  Write-DebugMsg "Deleting old jobs..."
+  Write-InfoMsg "Deleting old jobs..."
 
   if ( $null -ne $old_jobfiles ) {
     $num_jobfiles_deleted = Remove-AllSpecifiedFiles $old_jobfiles
