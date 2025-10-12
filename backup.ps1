@@ -118,7 +118,8 @@ try {
 #TODO: Maybe use cmdline parameters if provided? (Maybe too much effort to just get some more info messages.)
 #LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Reading the settings file..."
 
-Read-SettingsFile ($PSCommandPath -replace ".ps1", ".ini")
+$iniFile = $PSCommandPath -replace ".ps1", ".ini"
+Read-SettingsFile ("${iniFile}")
 
 Add-EmptyLineToLogfile "${BACKUP_LOGFILE}"
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
@@ -542,6 +543,18 @@ if ($jobfiles_count -eq 0) {
   LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
 } else {
   LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
+
+  #TODO: Use 'chcp 65001' to avoid problems with German Umlauts etc. in the Job file?
+  # https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
+  # ANSI code pages can be different on different computers, or can be changed for a single computer, 
+  # leading to data corruption. For the most consistent results, applications should use Unicode, 
+  # such as UTF-8 or UTF-16, instead of a specific code page.
+  #
+  # 850 	ibm850 	OEM Multilingual Latin 1; Western European (DOS)
+  # 1252 	windows-1252 	ANSI Latin 1; Western European (Windows)
+  #chcp 65001  # UTF-8 -> Doesn't work.
+  #chcp 1252   # Doesn't work.
+  #chcp 850    # Doesn't work.
 
   for ($i = 0; $i -lt $jobfiles_count; $i++) {
     $user_defined_job = $jobfiles[$i]
