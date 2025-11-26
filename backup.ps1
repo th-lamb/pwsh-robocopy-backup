@@ -348,7 +348,8 @@ function _processDirectoryList {
     switch -Wildcard ("${line_type}") {
       "error: *" {
         # The fallback value of function Get-DirlistLineType
-        LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
+        # No message: function Get-DirlistLineType reports the error/warning.
+        #LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
         $Script:finish_previous_job = $true
       }
       "invalid: *" {

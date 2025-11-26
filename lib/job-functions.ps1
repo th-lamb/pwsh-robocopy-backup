@@ -253,6 +253,21 @@ function _writeToJobfile {
     "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding utf8 -Append
   }
 
+  #TODO: Find out if we can write the Jobfile in a way so that robocopy reads this correctly!
+  #if (${create_new_file}) {
+  #  "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding ansi
+  #} else {
+  #  "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding ansi -Append
+  #}
+
+  # ascii           : _tempor?r\Bahnversp?tung
+  # ansi            : _tempor�r\Bahnversp�tung
+  # bigendianunicode: _temporär\Bahnverspätung, but Robocopy reads: _temporõr\Bahnverspõtung
+  # unicode         : _temporär\Bahnverspätung, but Robocopy reads: _temporõr\Bahnverspõtung
+  # utf8            : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung
+  # utf8BOM         : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung
+  # utf8NoBOM       : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung
+
 }
 
 function _writeHeader {
