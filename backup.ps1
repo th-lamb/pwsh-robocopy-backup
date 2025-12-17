@@ -594,7 +594,7 @@ if ($jobfiles_count -eq 0) {
 
   }
 
-  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$job_result_ok_count jobs finished successful, $job_result_warning_count with warnings, $job_result_error_count with errors."
+  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$job_result_ok_count jobs finished successfully, $job_result_warning_count with warnings, $job_result_error_count with errors."
 
 }
 
