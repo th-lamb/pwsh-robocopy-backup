@@ -23,4 +23,4 @@ jobs:
           $pesterConfig.TestResult.OutputPath = 'test-results.xml'
 
           # Run Pester and fail the job if tests don't pass
-          Invoke-Pester -Configuration $pesterConfig -Path './Pester/tests' -CI
+          Invoke-Pester -Configuration $pesterConfig -Path './Pester/tests'
