@@ -6,6 +6,10 @@
   C:\$Recycle.Bin\
   C:\PerfLogs\
   C:\System Volume Information\
+  .git
+  node_modules
+  .angular
+  .metadata
 
 :: global-exclude-files
 /XF
