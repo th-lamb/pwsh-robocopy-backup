@@ -2,7 +2,7 @@
 
 :: global-exclude-dirs
 /XD
-  %Temp%\   ::  C:\Users\lambecth\AppData\Local\Temp\
+  %Temp%\   ::  C:\Users\<username>\AppData\Local\Temp\
   C:\$Recycle.Bin\
   C:\PerfLogs\
   C:\System Volume Information\
