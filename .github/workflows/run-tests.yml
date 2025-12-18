@@ -16,11 +16,14 @@ jobs:
       - name: Run Pester tests
         shell: pwsh
         run: |
-          # Create and configure the Pester object
+          # Create a new configuration object for Pester
           $pesterConfig = New-PesterConfiguration
+
+          # Configure it to produce an XML test report
           $pesterConfig.TestResult.Enabled = $true
           $pesterConfig.TestResult.OutputFormat = 'NUnitXML'
-          $pesterConfig.TestResult.OutputPath = 'test-results.xml'
+          $pesterConfig.TestResult.OutputPath = 'testResults.xml'
+
           # Set the path to the tests inside the configuration
           $pesterConfig.Run.Path = './Pester/tests'
 
@@ -31,4 +34,7 @@ jobs:
           if ($result.FailedCount -gt 0) {
             Write-Error "Pester tests failed!"
             exit 1
+          } else {
+            Write-Host "Pester tests passed."
+            exit 0
           }
