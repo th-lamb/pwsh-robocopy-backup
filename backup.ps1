@@ -537,7 +537,8 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:jobs_created_count job file(
 [Int32]$job_result_error_count = 0
 
 $jobfiles = New-Object System.Collections.ArrayList
-$jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File
+$jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File |
+            Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) }
 $jobfiles_count = $jobfiles.Count
 
 if ($jobfiles_count -eq 0) {
