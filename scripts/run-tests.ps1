@@ -25,7 +25,7 @@ try {
   }
 
   # 3. Set the common configuration for all runs
-  $pesterConfig.Run.Path = './Pester/tests'
+  $pesterConfig.Run.Path = '../Pester/tests'
 
   # Add any other configurations you need here
   # For example, to enable code coverage:
