@@ -38,6 +38,9 @@ jobs:
           $version = "${{ github.ref_name }}"
           Compress-Archive -Path "pwsh-robocopy-backup\*" -DestinationPath "pwsh-robocopy-backup-$version.zip"
 
+          # 6. Cleanup
+          Remove-Item -Path "pwsh-robocopy-backup" -Recurse -Force
+
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         with:
