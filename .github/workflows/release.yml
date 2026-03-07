@@ -1,0 +1,46 @@
+name: Create Release Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Release Package
+        shell: pwsh
+        run: |
+          # 1. Create temporary folder structure
+          New-Item -ItemType Directory -Path "pwsh-robocopy-backup\lib"
+          New-Item -ItemType Directory -Path "pwsh-robocopy-backup\templates"
+
+          # 2. Copy main script, templates, and README
+          Copy-Item "backup.ps1" "pwsh-robocopy-backup\"
+          Copy-Item "example-backup.ini" "pwsh-robocopy-backup\"
+          Copy-Item "example-dir-list.conf" "pwsh-robocopy-backup\"
+          Copy-Item "README.md" "pwsh-robocopy-backup\"
+
+          # 3. Copy ONLY .ps1 files into the lib folder
+          Copy-Item "lib\*.ps1" "pwsh-robocopy-backup\lib\"
+
+          # 4. Copy ONLY template files into the templates folder
+          Copy-Item "templates\*.RCJ" "pwsh-robocopy-backup\templates\"
+          Copy-Item "templates\*.conf" "pwsh-robocopy-backup\templates\"
+
+          # 5. Create the ZIP archive with the version name
+          $version = "${{ github.ref_name }}"
+          Compress-Archive -Path "pwsh-robocopy-backup\*" -DestinationPath "pwsh-robocopy-backup-$version.zip"
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: pwsh-robocopy-backup-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
