@@ -1,0 +1,41 @@
+name: Validate Version Consistency
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  check-version:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compare Script Version with Tag
+        shell: pwsh
+        run: |
+          # 1. Get the tag name (e.g., v0.1.00)
+          $tagName = "${{ github.ref_name }}"
+          # Remove the 'v' prefix for comparison
+          $expectedVersion = $tagName.TrimStart('v')
+
+          # 2. Extract SCRIPT_VERSION from backup.ps1
+          # We look for: Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.1.00
+          $versionLine = Get-Content "backup.ps1" | Select-String "Set-Variable -Name `"SCRIPT_VERSION`""
+          
+          if ($versionLine -match "Value\s+([0-9\.]+)") {
+              $actualVersion = $Matches[1]
+              Write-Host "Tag version: $expectedVersion"
+              Write-Host "Script version: $actualVersion"
+
+              if ($actualVersion -ne $expectedVersion) {
+                  Write-Error "CRITICAL: Version mismatch! Script version ($actualVersion) does not match Git tag ($tagName)."
+                  exit 1
+              }
+              Write-Host "SUCCESS: Versions match." -ForegroundColor Green
+          }
+          else {
+              Write-Error "ERROR: Could not find SCRIPT_VERSION in backup.ps1."
+              exit 1
+          }
