@@ -16,7 +16,7 @@ BeforeAll {
 
 
 Describe 'Get-ExecutablePath' {
-  Context 'File exists' {
+  Context 'File exists' -Tag 'LocalOnly' {
     It 'Returns the specified file if it exists' {
       $path_spec  = "C:\TOOLS\CMD\robocopy\Win10_engl\Robocopy.exe"
       $expected   = "C:\TOOLS\CMD\robocopy\Win10_engl\Robocopy.exe"
