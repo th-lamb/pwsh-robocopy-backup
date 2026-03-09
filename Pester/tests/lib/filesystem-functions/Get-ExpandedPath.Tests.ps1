@@ -86,11 +86,23 @@ Describe 'Get-ExpandedPath' {
     }
   }
 
-  Context 'Wrong Usage' {
-    It 'Throws an exception when called with an empty String.' {
-      {
-        Get-ExpandedPath ""
-      } | Should -Throw
+  Context 'Umlauts (e.g. german characters)' {
+    It 'Handles Umlauts correctly' {
+      $path_spec = "C:\test\äöüß"
+
+      $expected = "C:\test\äöüß"
+
+      $result = Get-ExpandedPath "${path_spec}"
+      $result | Should -Be "${expected}"
     }
   }
+
+  # Context 'Wrong Usage' {
+  #   Empty String is allowed because the dir-list may contain empty lines.
+  #   It 'Throws an exception when called with an empty String.' {
+  #    {
+  #      Get-ExpandedPath ""
+  #    } | Should -Throw
+  #   }
+  # }
 }

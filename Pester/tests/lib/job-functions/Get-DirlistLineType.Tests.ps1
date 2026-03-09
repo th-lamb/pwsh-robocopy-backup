@@ -36,7 +36,7 @@ Describe 'Get-DirlistLineType' {
       $result | Should -Be "${expected}"
     }
 
-    It 'Recognizes a source-file.' {
+    It 'Recognizes a source-file.' -Tag 'LocalOnly' {
       $entry = "C:\Users\desktop.ini"
       $expected = "source-file"
 
@@ -44,7 +44,7 @@ Describe 'Get-DirlistLineType' {
       $result | Should -Be "${expected}"
     }
 
-    It 'Recognizes a source-dir.' {
+    It 'Recognizes a source-dir.' -Tag 'LocalOnly' {
       $entry = "C:\Users\"
       $expected = "source-dir"
 
@@ -52,7 +52,7 @@ Describe 'Get-DirlistLineType' {
       $result | Should -Be "${expected}"
     }
 
-    It 'Recognizes a source-file-pattern.' {
+    It 'Recognizes a source-file-pattern.' -Tag 'LocalOnly' {
       $entry = "C:\cygwin64\*.ico"
       $expected = "source-file-pattern"
 
