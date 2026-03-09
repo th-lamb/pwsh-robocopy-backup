@@ -25,7 +25,8 @@ try {
   }
 
   # 3. Set the common configuration for all runs
-  $pesterConfig.Run.Path = '../Pester/tests'
+  # Point to Pester/tests relative to script location
+  $pesterConfig.Run.Path = Join-Path $PSScriptRoot "..\Pester\tests"
 
   # Add any other configurations you need here
   # For example, to enable code coverage:
