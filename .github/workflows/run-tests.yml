@@ -16,3 +16,10 @@ jobs:
       - name: Run Pester tests
         shell: pwsh
         run: ./scripts/run-tests.ps1 -CI
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-results
+          path: testResults.xml
