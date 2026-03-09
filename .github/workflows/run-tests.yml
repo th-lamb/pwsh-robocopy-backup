@@ -15,16 +15,4 @@ jobs:
 
       - name: Run Pester tests
         shell: pwsh
-        run: |
-          # Create and configure the Pester object
-          $pesterConfig = New-PesterConfiguration
-          $pesterConfig.TestResult.Enabled = $true
-          $pesterConfig.TestResult.OutputFormat = 'NUnitXML'
-          $pesterConfig.TestResult.OutputPath = 'testResults.xml'
-          $pesterConfig.Run.Path = './Pester/tests'
-
-          # Configure Pester to automatically exit with a non-zero code on failure
-          $pesterConfig.Run.Exit = $true
-
-          # Run Pester. It will now automatically handle the exit code.
-          Invoke-Pester -Configuration $pesterConfig
+        run: ./scripts/run-tests.ps1 -CI

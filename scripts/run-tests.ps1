@@ -21,11 +21,12 @@ try {
     Write-Host "CI mode enabled: Configuring XML output."
     $pesterConfig.TestResult.Enabled = $true
     $pesterConfig.TestResult.OutputFormat = 'NUnitXML'
-    $pesterConfig.TestResult.OutputPath = 'testResults.xml'
+    $pesterConfig.TestResult.OutputPath = Join-Path $PSScriptRoot "..\testResults.xml"
+    $pesterConfig.Run.Exit = $true
+    $pesterConfig.Run.Throw = $true
   }
 
   # 3. Set the common configuration for all runs
-  # Point to Pester/tests relative to script location
   $pesterConfig.Run.Path = Join-Path $PSScriptRoot "..\Pester\tests"
 
   # Add any other configurations you need here
