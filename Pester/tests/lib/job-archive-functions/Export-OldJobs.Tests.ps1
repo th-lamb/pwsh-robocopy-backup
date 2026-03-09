@@ -93,19 +93,19 @@ Describe 'Export-OldJobs' {
       # Create test files.
       Add-TestFiles
 
+      # Get the expected timestamp from the actual files created
+      $testFiles = Get-ChildItem -Path "${workingFolder}*" -Include "${JOB_FILE_NAME_SCHEME}" -File
+      $last_datetime = ($testFiles | Sort-Object -Descending -Property LastWriteTime)[0].LastWriteTime.GetDateTimeFormats('s').Replace(":","")
+      $archive_name = "${ARCHIVE_NAME_SCHEME}".Replace("*", "${last_datetime}")
+      $expected = "${workingFolder}${archive_name}"
+
       # Omit output within the tested function.
       Mock Write-Host {}
 
       # Archive the test files.
       Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
-      # Check if the zip file (or *a* zip file?) exists?
-      #TODO: This might fail if the next minute (even second?) starts just before we test the filename!
-      #TODO: -> Store date/time before and after calling Export-OldJobs and search for an archive between these two?
-      $formatted_date = Get-Date -Format "yyyy-MM-ddTHHmmss"
-      $archive_name = "${ARCHIVE_NAME_SCHEME}".Replace("*", "${formatted_date}")
-      $expected = "${workingFolder}${archive_name}"
-
+      # Check if the zip file exists.
       Test-Path -Path "${expected}" -PathType Leaf | Should -Be $true
     }
 
