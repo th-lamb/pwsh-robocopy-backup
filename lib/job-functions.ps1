@@ -295,6 +295,7 @@ function _writeHeader {
 
 function _addDirectories {
   # Adds source and target directory to the job file.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -316,6 +317,7 @@ function _addDirectories {
 
 function _addUserSettings {
   # Adds user settings (e.g. logging options) to the job file.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -337,6 +339,7 @@ function _addIncludedFiles {
   <# Adds all files in the specified list to the specified job file
     as files to be included (robocopy option /IF).
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -358,6 +361,7 @@ function _addExcludedDirs {
   <# Adds all directories in the specified list to the specified job file
     as directories to be excluded (robocopy option /XD).
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -379,6 +383,7 @@ function _addExcludedFiles {
   <# Adds all files in the specified list to the specified job file
     as files to be excluded (robocopy option /XF).
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]

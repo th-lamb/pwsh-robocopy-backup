@@ -22,6 +22,7 @@ function Format-InSquareBrackets {
     - NOTICE: [NOTICE ]
     - INFO  : [INFO   ]
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [OutputType([System.String])]
   [CmdletBinding()]
   param (

@@ -23,6 +23,7 @@
 
 function Remove-AllSpecifiedFiles {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [OutputType([System.Int32])]
   [CmdletBinding()]
   param (
@@ -79,6 +80,7 @@ function Get-LastDateTime {
 
 function Export-OldJobs {
   # Archives old jobfiles (zip file) and then deletes them.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]

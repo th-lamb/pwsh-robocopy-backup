@@ -21,6 +21,7 @@ function Write-Color([String[]]$Text, [ConsoleColor[]]$Color) {
 
 
 function _showOptions {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]

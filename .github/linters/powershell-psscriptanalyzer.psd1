@@ -10,8 +10,7 @@
     ExcludeRules = @(
         'PSAvoidUsingWriteHost',
         'PSMissingModuleManifestField',
-        'PSUseShouldProcessForStateChangingFunctions',
-        'PSUseSingularNouns'
+        'PSUseShouldProcessForStateChangingFunctions'
     )
     #IncludeRules = @(
     #    'PSAvoidUsingWriteHost',

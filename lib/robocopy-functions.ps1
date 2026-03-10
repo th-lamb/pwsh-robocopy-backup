@@ -17,6 +17,7 @@
 }
 
 function LogAndShowRobocopyErrors {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]

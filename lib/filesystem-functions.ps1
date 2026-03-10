@@ -182,6 +182,7 @@ function Get-SpecifiedBackupBaseDirType {
 
 function Test-FileExists {
   # Returns $true if the specified file exists; otherwise $false.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [OutputType([System.Boolean])]
   [CmdletBinding()]
   param (
@@ -199,6 +200,7 @@ function Test-FileExists {
 
 function Test-FolderExists {
   # Returns $true if the specified folder exists; otherwise $false.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [OutputType([System.Boolean])]
   [CmdletBinding()]
   param (
@@ -292,6 +294,7 @@ function Get-ExecutablePath {
 
 function New-NecessaryDirectory {
   # Creates the specified directory and all parent folders if necessary.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -321,6 +324,7 @@ function New-NecessaryFile {
   <# Creates the specified file from the specified template.
     Returns $true if the file has been copied; otherwise $false.
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [OutputType([System.Boolean])]
   [CmdletBinding()]
   param (
