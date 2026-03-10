@@ -13,7 +13,6 @@
         'PSUseShouldProcessForStateChangingFunctions'
     )
     #IncludeRules = @(
-    #    'PSAvoidUsingWriteHost',
     #    'MyCustomRuleName'
     #)
 }
