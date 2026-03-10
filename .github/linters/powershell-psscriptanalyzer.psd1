@@ -11,9 +11,7 @@
         'PSAvoidUsingWriteHost',
         'PSMissingModuleManifestField',
         'PSUseShouldProcessForStateChangingFunctions',
-        'PSUseSingularNouns',
-        'PSUseApprovedVerbs',
-        'PSUsePascalCase'
+        'PSUseSingularNouns'
     )
     #IncludeRules = @(
     #    'PSAvoidUsingWriteHost',
