@@ -293,9 +293,8 @@ function _writeHeader {
 
 }
 
-function _addDirectories {
+function _addSourceAndTarget {
   # Adds source and target directory to the job file.
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -315,9 +314,8 @@ function _addDirectories {
 
 }
 
-function _addUserSettings {
+function _addJobConfig {
   # Adds user settings (e.g. logging options) to the job file.
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -500,10 +498,10 @@ function Add-JobFile {
   _writeHeader -jobfile_path "${jobfile_path}" -computername "${computername}" -current_job_num $current_job_num -dirlist_entry "${dirlist_entry}"
 
   # Add paths
-  _addDirectories -jobfile_path "${jobfile_path}" -source_dir "${source_dir}" -target_dir "${target_dir}"
+  _addSourceAndTarget -jobfile_path "${jobfile_path}" -source_dir "${source_dir}" -target_dir "${target_dir}"
 
   # Add next section for user-dependent settings
-  _addUserSettings -jobfile_path "${jobfile_path}" -logfile_path "${logfile_path}"
+  _addJobConfig -jobfile_path "${jobfile_path}" -logfile_path "${logfile_path}"
 
   # Add included/excluded files/directories (and additional options).
   _finalizeJob -jobfile_path "${jobfile_path}" -included_files $included_files -excluded_dirs $excluded_dirs -excluded_files $excluded_files -copy_single_file $copy_single_file
