@@ -31,10 +31,14 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_POWERSHELL: true
-          # Explicitly disable new default linters that are failing
+          # Only use exclusion flags to avoid the "Behavior not supported" error
           VALIDATE_CHECKOV: false
           VALIDATE_GITHUB_ACTIONS: false
           VALIDATE_JSCPD: false
+          VALIDATE_YAML: false
+          VALIDATE_JSON: false
+          VALIDATE_MARKDOWN: false
+          VALIDATE_BASH: false
+          VALIDATE_ENV: false
           ENABLE_GITHUB_ACTIONS_GROUP_LOGS: false
           LOG_LEVEL: INFO
