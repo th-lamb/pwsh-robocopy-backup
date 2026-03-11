@@ -16,8 +16,7 @@
   FatalError = 16
 }
 
-function LogAndShowRobocopyErrors {
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
+function LogAndShowRobocopyError {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]

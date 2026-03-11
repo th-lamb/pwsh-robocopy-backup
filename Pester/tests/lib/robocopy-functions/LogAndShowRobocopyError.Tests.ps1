@@ -5,7 +5,7 @@ BeforeAll {
   $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/robocopy-functions/"
 
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $Script:logfile = "${workingFolder}LogAndShowRobocopyErrors.Tests.log"
+  $Script:logfile = "${workingFolder}LogAndShowRobocopyError.Tests.log"
 
   . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 6
@@ -27,7 +27,7 @@ BeforeAll {
 
 
 
-Describe 'LogAndShowRobocopyErrors' {
+Describe 'LogAndShowRobocopyError' {
   # Check file content: https://pester.dev/docs/v4/usage/assertions#filecontentmatch
 
   Context 'Only information' {
@@ -35,16 +35,16 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 
       $exit_code = 0
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $exit_code = 1
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $exit_code = 2
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $exit_code = 3
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $result = Test-Path -Path "${logfile}" -PathType Leaf
       $result | Should -Be $false   # No logfile created
@@ -54,16 +54,16 @@ Describe 'LogAndShowRobocopyErrors' {
       Mock Write-InfoMsg {} -Verifiable
 
       $exit_code = 0
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $exit_code = 1
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $exit_code = 2
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $exit_code = 3
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-InfoMsg" -Times 0      # 0 is interpreted as: 0 times exactly
     }
@@ -79,7 +79,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Mock Write-NoticeMsg {}
 
       # Test
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       # Check result
       $expected_regex = Format-RegexString "${expected_log_entry}"
@@ -97,7 +97,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Mock Write-NoticeMsg {} -Verifiable
 
       # Test
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       # Check result
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
@@ -115,7 +115,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-NoticeMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -129,7 +129,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-NoticeMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -145,7 +145,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-NoticeMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -159,7 +159,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-NoticeMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -175,7 +175,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-NoticeMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -189,7 +189,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-NoticeMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -207,7 +207,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -221,7 +221,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -237,7 +237,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -251,7 +251,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -267,7 +267,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -281,7 +281,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -297,7 +297,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -311,7 +311,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -327,7 +327,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -341,7 +341,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -357,7 +357,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -371,7 +371,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -387,7 +387,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -401,7 +401,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -417,7 +417,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -431,7 +431,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -449,7 +449,7 @@ Describe 'LogAndShowRobocopyErrors' {
       Remove-Item "${logfile}" -ErrorAction SilentlyContinue
       Mock Write-ErrMsg {}
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "${logfile}" | Should -FileContentMatch "${expected_regex}"
@@ -463,7 +463,7 @@ Describe 'LogAndShowRobocopyErrors' {
 
       Mock Write-ErrMsg {} -Verifiable
 
-      LogAndShowRobocopyErrors "${logfile}" "Job1" $exit_code
+      LogAndShowRobocopyError "${logfile}" "Job1" $exit_code
 
       Should -Invoke -CommandName "Write-ErrMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -477,27 +477,27 @@ Describe 'LogAndShowRobocopyErrors' {
   Context 'Wrong Usage' {
     It 'Throws an exception when called with an empty logfile.' {
       {
-        LogAndShowRobocopyErrors ""
+        LogAndShowRobocopyError ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an empty job_name.' {
       {
-        LogAndShowRobocopyErrors "${logfile}" ""
+        LogAndShowRobocopyError "${logfile}" ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an invalid exit code.' {
       {
-        LogAndShowRobocopyErrors "${logfile}" 'Job1' -1
+        LogAndShowRobocopyError "${logfile}" 'Job1' -1
       } | Should -Throw
 
       {
-        LogAndShowRobocopyErrors "${logfile}" 'Job1' 17
+        LogAndShowRobocopyError "${logfile}" 'Job1' 17
       } | Should -Throw
 
       {
-        LogAndShowRobocopyErrors "${logfile}" 'Job1' "foo"
+        LogAndShowRobocopyError "${logfile}" 'Job1' "foo"
       } | Should -Throw
     }
   }
