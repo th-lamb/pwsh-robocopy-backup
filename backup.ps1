@@ -546,18 +546,6 @@ if ($jobfiles_count -eq 0) {
 } else {
   LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
 
-  #TODO: Use 'chcp 65001' to avoid problems with German Umlauts etc. in the Job file?
-  # https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
-  # ANSI code pages can be different on different computers, or can be changed for a single computer, 
-  # leading to data corruption. For the most consistent results, applications should use Unicode, 
-  # such as UTF-8 or UTF-16, instead of a specific code page.
-  #
-  # 850 	ibm850 	OEM Multilingual Latin 1; Western European (DOS)
-  # 1252 	windows-1252 	ANSI Latin 1; Western European (Windows)
-  #chcp 65001  # UTF-8 -> Doesn't work.
-  #chcp 1252   # Doesn't work.
-  #chcp 850    # Doesn't work.
-
   for ($i = 0; $i -lt $jobfiles_count; $i++) {
     $user_defined_job = $jobfiles[$i]
     Write-InfoMsg "Job: ${user_defined_job}..."

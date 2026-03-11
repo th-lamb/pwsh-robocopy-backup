@@ -248,25 +248,19 @@ function _writeToJobfile {
   )
 
   if (${create_new_file}) {
-    "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding utf8
+    "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding oem
   } else {
-    "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding utf8 -Append
+    "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding oem -Append
   }
 
-  #TODO: Find out if we can write the Jobfile in a way so that robocopy reads this correctly!
-  #if (${create_new_file}) {
-  #  "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding ansi
-  #} else {
-  #  "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding ansi -Append
-  #}
-
+  # Robocopy job files (.RCJ) are expected to be in the OEM code page (e.g. CP850 on German systems).
+  # Using '-Encoding oem' ensures that German umlauts etc. are written correctly for Robocopy.
+  # Tested encodings and their results in Robocopy log:
   # ascii           : _tempor?r\Bahnversp?tung
-  # ansi            : _tempor�r\Bahnversp�tung
-  # bigendianunicode: _temporär\Bahnverspätung, but Robocopy reads: _temporõr\Bahnverspõtung
-  # unicode         : _temporär\Bahnverspätung, but Robocopy reads: _temporõr\Bahnverspõtung
-  # utf8            : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung
-  # utf8BOM         : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung
-  # utf8NoBOM       : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung
+  # ansi (CP1252)   : _temporr\Bahnversptung (0xE4 in CP1252 is 0xD5 in CP850, which is 'Õ')
+  # unicode (UTF-16): _temporär\Bahnverspätung, but Robocopy reads: _temporõr\Bahnverspõtung
+  # utf8            : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung (UTF-8 bytes read as CP850)
+  # oem (CP850)     : _temporär\Bahnverspätung (CORRECT)
 
 }
 
