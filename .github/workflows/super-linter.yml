@@ -31,3 +31,5 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENABLE_GITHUB_ACTIONS_GROUP_LOGS: false
+          LOG_LEVEL: DEBUG
