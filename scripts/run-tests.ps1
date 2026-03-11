@@ -21,7 +21,8 @@ try {
     Write-Host "CI mode enabled: Configuring XML output and excluding LocalOnly tests."
     $pesterConfig.TestResult.Enabled = $true
     $pesterConfig.TestResult.OutputFormat = 'NUnitXML'
-    $pesterConfig.TestResult.OutputPath = Join-Path $PSScriptRoot "..\testResults.xml"
+    # $pesterConfig.TestResult.OutputPath = Join-Path $PSScriptRoot "..\testResults.xml"
+    $pesterConfig.TestResult.OutputPath = Join-Path $PSScriptRoot "..\test-results\testResults.xml"
     $pesterConfig.Run.Exit = $true
     $pesterConfig.Run.Throw = $true
     $pesterConfig.Filter.ExcludeTag = 'LocalOnly'
