@@ -52,6 +52,7 @@ function Add-LogMessage {
     The Entry gets preceded with date/time and $severity. Example:
     2023-04-25T13:46:16 [INFO   ] This is an info message.
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory=$true)]
@@ -77,6 +78,7 @@ function Add-LogMessage {
 
 function Add-EmptyLineToLogfile {
   # Appends an empty line to the $logfile.
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory=$true)]
