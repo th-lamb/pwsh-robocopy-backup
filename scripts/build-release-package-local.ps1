@@ -2,6 +2,10 @@
 # This script simulates the GitHub Actions release workflow locally.
 # Use this to verify that your ZIP package has the correct folder structure.
 
+# Hardening: Ensure build process is not interrupted by an inherited confirmation state.
+# (Prevents inherited -Confirm prompts from nested/suspended shells).
+$ConfirmPreference = 'High'
+
 $packageName = "pwsh-robocopy-backup"
 $version = "v-local-test"
 $stagingDir = "$packageName"

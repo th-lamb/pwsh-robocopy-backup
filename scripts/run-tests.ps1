@@ -7,6 +7,23 @@ param (
   [Switch]$CI
 )
 
+# Hardening: Ensure tests are not interrupted by an inherited confirmation state.
+#
+# If this script is run from a nested or suspended shell (indicated by extra '>'
+# symbols in the prompt, e.g., '>>>'), the parent's confirmation preference
+# (e.g., from a -Confirm call) might be inherited.
+#
+# This can cause Pester's internal use of 'Set-Alias' (used for Mocking) to
+# trigger unexpected 'Are you sure?' prompts because 'Set-Alias' has a
+# 'Medium' ConfirmImpact.
+#
+# Setting $ConfirmPreference to 'High' (the default) ensures that only commands
+# with 'High' impact prompt for confirmation, allowing the test suite to run
+# autonomously even in unusual shell states.
+#
+# We are raising the bar for what is considered "dangerous enough" to interrupt tests.
+$ConfirmPreference = 'High' # Only prompt if the command's danger rating is >= my preference.
+
 try {
   # 1. Create a new configuration object
   $pesterConfig = New-PesterConfiguration
@@ -21,7 +38,6 @@ try {
     Write-Host "CI mode enabled: Configuring XML output and excluding LocalOnly tests."
     $pesterConfig.TestResult.Enabled = $true
     $pesterConfig.TestResult.OutputFormat = 'NUnitXML'
-    # $pesterConfig.TestResult.OutputPath = Join-Path $PSScriptRoot "..\testResults.xml"
     $pesterConfig.TestResult.OutputPath = Join-Path $PSScriptRoot "..\test-results\testResults.xml"
     $pesterConfig.Run.Exit = $true
     $pesterConfig.Run.Throw = $true
