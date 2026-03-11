@@ -30,4 +30,4 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          POWERSHELL_CONFIG_FILE: powershell-psscriptanalyzer.psd1
+          POWERSHELL_CONFIG_FILE: .github/linters/powershell-psscriptanalyzer.psd1
