@@ -5,13 +5,13 @@ BeforeAll {
 
 
 
-Describe 'Format-InSquareBrackets' {
+Describe 'Format-SeverityLabel' {
   Context 'Correctly used' {
     It 'Correctly formats EMERG.' {
       $keyword  = "EMERG"
       $expected = "[EMERG  ]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
 
@@ -19,7 +19,7 @@ Describe 'Format-InSquareBrackets' {
       $keyword  = "ALERT"
       $expected = "[ALERT  ]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
 
@@ -27,7 +27,7 @@ Describe 'Format-InSquareBrackets' {
       $keyword  = "CRIT"
       $expected = "[CRIT   ]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
 
@@ -35,7 +35,7 @@ Describe 'Format-InSquareBrackets' {
       $keyword  = "ERR"
       $expected = "[ERR    ]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
 
@@ -43,7 +43,7 @@ Describe 'Format-InSquareBrackets' {
       $keyword  = "WARNING"
       $expected = "[WARNING]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
 
@@ -51,7 +51,7 @@ Describe 'Format-InSquareBrackets' {
       $keyword  = "NOTICE"
       $expected = "[NOTICE ]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
 
@@ -59,7 +59,7 @@ Describe 'Format-InSquareBrackets' {
       $keyword  = "INFO"
       $expected = "[INFO   ]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
 
@@ -67,7 +67,7 @@ Describe 'Format-InSquareBrackets' {
       $keyword  = "DEBUG"
       $expected = "[DEBUG  ]"
 
-      $result = Format-InSquareBrackets "${keyword}"
+      $result = Format-SeverityLabel "${keyword}"
       $result | Should -Be "${expected}"
     }
   }
@@ -75,13 +75,13 @@ Describe 'Format-InSquareBrackets' {
   Context 'Wrong Usage' {
     It 'Throws an exception when called with an empty String.' {
       {
-        Format-InSquareBrackets ""
+        Format-SeverityLabel ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an illegal keyword.' {
       {
-        Format-InSquareBrackets "foo"
+        Format-SeverityLabel "foo"
       } | Should -Throw
     }
   }

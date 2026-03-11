@@ -15,14 +15,13 @@ enum SeverityKeyword {
 
 #region Helper functions
 
-function Format-InSquareBrackets {
+function Format-SeverityLabel {
   <# Wraps severity keywords in square brackets of fix length
     for easy to read log entries. Examples:
     - ERR   : [ERR    ]
     - NOTICE: [NOTICE ]
     - INFO  : [INFO   ]
   #>
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [OutputType([System.String])]
   [CmdletBinding()]
   param (
@@ -64,7 +63,7 @@ function Add-LogMessage {
   )
 
   $date_time = (Get-Date -Format s)
-  $severity_header = Format-InSquareBrackets $severity  # e.g. [INFO   ]
+  $severity_header = Format-SeverityLabel $severity  # e.g. [INFO   ]
 
   try {
     "${date_time} ${severity_header} ${message}" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
