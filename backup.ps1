@@ -234,7 +234,7 @@ switch ($selected_job_type) {
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Archiving previous jobs..."
 
-Export-OldJobs "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+Export-PreviousJob "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 

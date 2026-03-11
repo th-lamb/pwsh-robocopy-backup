@@ -14,16 +14,15 @@
 #     ================
 #
 # Not meant to be called directly:
-# - Remove-AllSpecifiedFiles()
+# - Remove-FileCollection()
 # - Get-LastDateTime()
 #
 ################################################################################
 
 #TODO: Add logging - not only console messages!
 
-function Remove-AllSpecifiedFiles {
+function Remove-FileCollection {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [OutputType([System.Int32])]
   [CmdletBinding()]
   param (
@@ -34,12 +33,12 @@ function Remove-AllSpecifiedFiles {
 
   #region Check parameters
   if ( $files_to_delete.Count -eq 0 ) {
-    Write-WarningMsg "Remove-AllSpecifiedFiles(): Parameter files_to_delete is an empty collection!"
+    Write-WarningMsg "Remove-FileCollection(): Parameter files_to_delete is an empty collection!"
     return 0
   }
 
   if ( "" -eq $files_to_delete ) {
-    Write-Error "Remove-AllSpecifiedFiles(): Parameter files_to_delete equals an empty String!"
+    Write-Error "Remove-FileCollection(): Parameter files_to_delete equals an empty String!"
     Throw "Parameter files_to_delete equals an empty String!"
   }
   #endregion Check parameters
@@ -78,9 +77,8 @@ function Get-LastDateTime {
 
 }
 
-function Export-OldJobs {
+function Export-PreviousJob {
   # Archives old jobfiles (zip file) and then deletes them.
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
@@ -95,7 +93,7 @@ function Export-OldJobs {
     [System.Byte]$max_archives_count  # 0..255
   )
 
-  Write-DebugMsg "Export-OldJobs(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
+  Write-DebugMsg "Export-PreviousJob(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
 
   # Get all old job- and logfiles (null if nothing was found).
   $old_jobfiles = New-Object System.Collections.ArrayList
@@ -170,12 +168,12 @@ function Export-OldJobs {
   Write-InfoMsg "Deleting old jobs..."
 
   if ( $null -ne $old_jobfiles ) {
-    $num_jobfiles_deleted = Remove-AllSpecifiedFiles $old_jobfiles
+    $num_jobfiles_deleted = Remove-FileCollection $old_jobfiles
     Write-DebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
   }
 
   if ( $null -ne $old_logfiles ) {
-    $num_logfiles_deleted = Remove-AllSpecifiedFiles $old_logfiles
+    $num_logfiles_deleted = Remove-FileCollection $old_logfiles
     Write-DebugMsg "$num_logfiles_deleted logfile(s) deleted."
   }
 

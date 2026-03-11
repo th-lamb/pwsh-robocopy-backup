@@ -11,7 +11,7 @@ BeforeAll {
 
 
 
-Describe 'Remove-AllSpecifiedFiles' {
+Describe 'Remove-FileCollection' {
   Context 'Correctly used' {
     It 'Removes all files specified in array.' {
       # Create 3 test files.
@@ -29,9 +29,9 @@ Describe 'Remove-AllSpecifiedFiles' {
       $files_to_delete.Add("${workingFolder}testfile2") > $null
       $files_to_delete.Add("${workingFolder}testfile3") > $null
 
-      # Call Remove-AllSpecifiedFiles with that array.
+      # Call Remove-FileCollection with that array.
       Mock Write-Host {}  # Omit output within the tested function.
-      Remove-AllSpecifiedFiles $files_to_delete
+      Remove-FileCollection $files_to_delete
 
       # Test
       Test-Path "${workingFolder}testfile1" -PathType Leaf | Should -Be $false
@@ -55,9 +55,9 @@ Describe 'Remove-AllSpecifiedFiles' {
       $files_to_delete.Add("${workingFolder}testfile2") > $null
       $files_to_delete.Add("${workingFolder}testfile3") > $null
 
-      # Call Remove-AllSpecifiedFiles with that array.
+      # Call Remove-FileCollection with that array.
       Mock Write-Host {}  # Omit output within the tested function.
-      $result = Remove-AllSpecifiedFiles $files_to_delete
+      $result = Remove-FileCollection $files_to_delete
 
       # Test
       $result | Should -Be 3
@@ -69,21 +69,21 @@ Describe 'Remove-AllSpecifiedFiles' {
 
     It 'Throws an exception when called with a null value.' {
       {
-        Remove-AllSpecifiedFiles $null
+        Remove-FileCollection $null
       } | Should -Throw
     }
 
     It 'Writes a warning when called with an empty collection.' {
       Mock Write-WarningMsg {} -Verifiable
 
-      Remove-AllSpecifiedFiles @()
+      Remove-FileCollection @()
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly
     }
 
     It 'Returns 0 when called with an empty collection.' {
       Mock Write-WarningMsg {}
 
-      $result = Remove-AllSpecifiedFiles @()
+      $result = Remove-FileCollection @()
       $result | Should -Be 0
     }
 
@@ -91,7 +91,7 @@ Describe 'Remove-AllSpecifiedFiles' {
       Mock Write-WarningMsg {}
       Mock Remove-Item {} -Verifiable
 
-      Remove-AllSpecifiedFiles @()
+      Remove-FileCollection @()
       Should -Invoke -CommandName "Remove-Item" -Times 0
     }
 
@@ -99,14 +99,14 @@ Describe 'Remove-AllSpecifiedFiles' {
       Mock Write-Error {} -Verifiable
 
       {
-        Remove-AllSpecifiedFiles ""
+        Remove-FileCollection ""
       } | Should -Throw "Parameter files_to_delete equals an empty String!"
     }
 
     #TODO: Throws an exception when called without parameter.
 #    It 'Throws an exception when called without parameter.' {
 #      {
-#        Remove-AllSpecifiedFiles
+#        Remove-FileCollection
 #      } | Should -Throw
 #    }
   }

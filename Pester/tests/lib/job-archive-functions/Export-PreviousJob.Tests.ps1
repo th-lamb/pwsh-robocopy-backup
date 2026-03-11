@@ -82,7 +82,7 @@ BeforeAll {
 
 
 
-Describe 'Export-OldJobs' {
+Describe 'Export-PreviousJob' {
   Context 'Correctly used' {
     BeforeEach {
       Remove-TestFiles
@@ -103,7 +103,7 @@ Describe 'Export-OldJobs' {
       Mock Write-Host {}
 
       # Archive the test files.
-      Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+      Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
       # Check if the zip file exists.
       Test-Path -Path "${expected}" -PathType Leaf | Should -Be $true
@@ -124,7 +124,7 @@ Describe 'Export-OldJobs' {
       Mock Write-Host {}
 
       # Archive the test files.
-      Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+      Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
       # Check if the test files are removed.
       for ($i = 0; $i -lt $testFiles.Count; $i++) {
@@ -144,7 +144,7 @@ Describe 'Export-OldJobs' {
       Mock Write-Host {}
 
       # Archive the test files.
-      Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+      Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
       # Check the amount of test archives again.
       $new_number_of_archives = $( Get-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}" ).Length
@@ -165,39 +165,39 @@ Describe 'Export-OldJobs' {
   }
 
   Context 'Wrong Usage' {
-    #TODO: Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+    #TODO: Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
     It 'Throws an exception when called with an empty backup_job_dir.' {
       {
-        Export-OldJobs ""
+        Export-PreviousJob ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an empty job_name_scheme.' {
       {
-        Export-OldJobs "${workingFolder}" ""
+        Export-PreviousJob "${workingFolder}" ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an empty job_log_name_scheme.' {
       {
-        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" ""
+        Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an empty archive_name_scheme.' {
       {
-        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" ""
+        Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an invalid max_archives_count.' {
       {
-        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" -1
+        Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" -1
       } | Should -Throw
 
       {
-        Export-OldJobs "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" "a"
+        Export-PreviousJob "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" "a"
       } | Should -Throw
     }
 
