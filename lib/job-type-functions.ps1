@@ -20,8 +20,7 @@ function Write-Color([String[]]$Text, [ConsoleColor[]]$Color) {
 
 
 
-function _showOptions {
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
+function _showJobTypeList {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
@@ -86,7 +85,7 @@ function Get-UserSelectedJobType {
   [Int32]$already_waited_ms = 0
   [String]$result = ""
 
-  _showOptions "${default_job_type}"
+  _showJobTypeList "${default_job_type}"
   Write-Host "Automatic start in ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} seconds."
 
   # https://powershell.one/tricks/input-devices/detect-key-press
