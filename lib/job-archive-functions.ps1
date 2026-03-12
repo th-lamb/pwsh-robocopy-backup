@@ -24,9 +24,9 @@
 function Remove-FileCollection {
   # Deletes all files specified in the ArrayList and returns the number of deleted files.
   [OutputType([System.Int32])]
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess = $true)]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [AllowEmptyCollection()]
     [System.Collections.ArrayList]$files_to_delete
   )
@@ -46,9 +46,16 @@ function Remove-FileCollection {
   [Int32]$num_files_deleted = 0
 
   foreach ($file_to_delete in $files_to_delete) {
-    Write-Host "${file_to_delete}" -ForegroundColor DarkRed
-    Remove-Item "${file_to_delete}"
-    $num_files_deleted = ($num_files_deleted + 1)
+    if ($PSCmdlet.ShouldProcess("${file_to_delete}", "Delete file")) {
+      Write-Host "${file_to_delete}" -ForegroundColor DarkRed
+      try {
+        Remove-Item "${file_to_delete}" -ErrorAction Stop -Confirm:$false
+        $num_files_deleted++
+      }
+      catch {
+        Write-Error "Cannot delete file: ${file_to_delete}"
+      }
+    }
   }
 
   $num_files_deleted
@@ -62,7 +69,7 @@ function Get-LastDateTime {
   [OutputType([System.String])]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [System.Collections.ArrayList]$file_list
   )
 
@@ -71,7 +78,7 @@ function Get-LastDateTime {
   }
 
   $last_file = ($file_list | Sort-Object -Descending -Property LastWriteTime)[0]
-  $last_datetime = $last_file.LastWriteTime.GetDateTimeFormats('s').Replace(":","")
+  $last_datetime = $last_file.LastWriteTime.GetDateTimeFormats('s').Replace(":", "")
 
   $last_datetime
 
@@ -79,17 +86,17 @@ function Get-LastDateTime {
 
 function Export-PreviousJob {
   # Archives old jobfiles (zip file) and then deletes them.
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess = $true)]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$backup_job_dir,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$job_name_scheme,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$job_log_name_scheme,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$archive_name_scheme,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [System.Byte]$max_archives_count  # 0..255
   )
 
@@ -126,17 +133,25 @@ function Export-PreviousJob {
 
   if ($old_archives_count -lt $max_archives_count) {
     Write-DebugMsg "$old_archives_count job archive(s) (MAX=$max_archives_count), just archiving the existing jobs."
-  } else {
+  }
+  else {
     Write-InfoMsg "$old_archives_count job archives (MAX=$max_archives_count), deleting the oldest one(s)."
 
     $old_archives = $old_archives | Sort-Object -Descending
     for ($i = $max_archives_count - 1; $i -lt $old_archives.Count; $i++) {
       $archive_to_delete = $old_archives[$i]
       $archive_name = Split-Path -Leaf "${archive_to_delete}"
-      Write-InfoMsg "Deleting job archive ${archive_name}"
 
-      Write-Host "${archive_to_delete}" -ForegroundColor DarkRed
-      Remove-Item "$archive_to_delete"
+      if ($PSCmdlet.ShouldProcess("${archive_to_delete}", "Delete job archive")) {
+        Write-InfoMsg "Deleting job archive ${archive_name}"
+        Write-Host "${archive_to_delete}" -ForegroundColor DarkRed
+        try {
+          Remove-Item "$archive_to_delete" -ErrorAction Stop -Confirm:$false
+        }
+        catch {
+          Write-Error "Cannot delete archive: ${archive_to_delete}"
+        }
+      }
     }
   }
 
@@ -144,7 +159,8 @@ function Export-PreviousJob {
   # Get date/time from the logfiles if there were no jobfiles.
   if ($old_jobfiles_count -gt 0) {
     $last_datetime = Get-LastDateTime $old_jobfiles
-  } else {
+  }
+  else {
     $last_datetime = Get-LastDateTime $old_logfiles
   }
 
@@ -155,14 +171,21 @@ function Export-PreviousJob {
   $archive_path = "${backup_job_dir}${archive_name}"
   Write-DebugMsg "archive_name: ${archive_name}"
   Write-DebugMsg "archive_path: ${archive_path}"
-  Write-InfoMsg "Archiving old jobs in ${archive_name}"
 
-  Compress-Archive -Path "${backup_job_dir}${job_name_scheme}" -DestinationPath "${archive_path}" -Force        # -Force to overwrite if needed.
-  # Update the archive only if logfiles exist! Otherwise the archive gets deleted.
-  if ($old_logfiles_count -gt 0) {
-    Compress-Archive -Path "${backup_job_dir}${job_log_name_scheme}" -Update -DestinationPath "${archive_path}"   # -Update to add.
+  if ($PSCmdlet.ShouldProcess("${archive_path}", "Create job archive")) {
+    Write-InfoMsg "Archiving old jobs in ${archive_name}"
+    try {
+      Compress-Archive -Path "${backup_job_dir}${job_name_scheme}" -DestinationPath "${archive_path}" -Force -Confirm:$false        # -Force to overwrite if needed.
+      # Update the archive only if logfiles exist! Otherwise the archive gets deleted.
+      if ($old_logfiles_count -gt 0) {
+        Compress-Archive -Path "${backup_job_dir}${job_log_name_scheme}" -Update -DestinationPath "${archive_path}" -Confirm:$false   # -Update to add.
+      }
+      Write-Host "${archive_path}" -ForegroundColor DarkGreen
+    }
+    catch {
+      Write-Error "Cannot create archive: ${archive_path}"
+    }
   }
-  Write-Host "${archive_path}" -ForegroundColor DarkGreen
 
   # Delete the jobs.
   Write-InfoMsg "Deleting old jobs..."

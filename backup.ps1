@@ -47,6 +47,9 @@
 
 
 
+[CmdletBinding(SupportsShouldProcess=$true)]
+param()
+
 #region Constant values
 
 Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.1.00
@@ -551,14 +554,22 @@ if ($jobfiles_count -eq 0) {
     Write-InfoMsg "Job: ${user_defined_job}..."
 
     #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
-    $process = Start-Process -Wait -PassThru -NoNewWindow `
-      -FilePath "${robocopy_exe}" `
-      -ArgumentList "/job:""${robocopy_job_type_template}""", `
-                    "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
-                    "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
-                    "/job:""${user_defined_job}"""
+    [Int32]$robocopy_exit_code = 0
+    if ($PSCmdlet.ShouldProcess("${user_defined_job}", "Run Robocopy job")) {
+      $process = Start-Process -Wait -PassThru -NoNewWindow `
+        -FilePath "${robocopy_exe}" `
+        -ArgumentList "/job:""${robocopy_job_type_template}""", `
+                      "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
+                      "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
+                      "/job:""${user_defined_job}"""
 
-    [Int32]$robocopy_exit_code = $process.ExitCode
+      $robocopy_exit_code = $process.ExitCode
+
+    } else {
+      # In -WhatIf mode, we simulate a successful (no changes) exit code.
+      $robocopy_exit_code = 0
+    }
+
     Write-DebugMsg "Robocopy exit code: $robocopy_exit_code"
 
     # Log errors. Use the jobname (Job1..n) from the filename.

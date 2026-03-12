@@ -9,8 +9,7 @@
     #IncludeDefaultRules=${true}
     ExcludeRules = @(
         'PSAvoidUsingWriteHost',
-        'PSMissingModuleManifestField',
-        'PSUseShouldProcessForStateChangingFunctions'
+        'PSMissingModuleManifestField'
     )
     #IncludeRules = @(
     #    'MyCustomRuleName'

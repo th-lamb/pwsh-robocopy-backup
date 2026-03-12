@@ -39,9 +39,9 @@ function Test-FsObjectTypeMismatch {
   [OutputType([System.String])]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$specified_type,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$existing_type
   )
 
@@ -100,7 +100,7 @@ function Get-DirlistLineType {
   param (
     #[Parameter(Mandatory=$true)]   # A line in the dir-list can be empty!
     [String]$entry,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$logfile
   )
 
@@ -116,8 +116,8 @@ function Get-DirlistLineType {
 
     # Ignore invalid entries.
     switch ("${specified_type}") {
-      "directory pattern" {return "invalid: source directory pattern"}
-      "directory entry"   {return "invalid: directory entry (for current or parent folder)"}
+      "directory pattern" { return "invalid: source directory pattern" }
+      "directory entry" { return "invalid: directory entry (for current or parent folder)" }
     }
 
     $existing_type = Get-RealFsObjectType "${entry}"
@@ -144,10 +144,10 @@ function Get-DirlistLineType {
     Write-DebugMsg "Get-DirlistLineType(): object_type: ${object_type}"
 
     switch ("${object_type}") {
-      "directory"         {return "source-dir"}
-      "file"              {return "source-file"}
-      "file pattern"      {return "source-file-pattern"}
-      "missing"           {return "error: not found"}
+      "directory" { return "source-dir" }
+      "file" { return "source-file" }
+      "file pattern" { return "source-file-pattern" }
+      "missing" { return "error: not found" }
     }
 
   }
@@ -161,13 +161,14 @@ function Get-DirlistLineType {
     $object_type = Get-SpecifiedFsObjectType "${temp}"
 
     switch ("${object_type}") {
-      "directory"         {return "invalid: only file (patterns) can be included: ${entry}"}
-      "file"              {return "incl-files-pattern"}
-      "directory pattern" {return "invalid: only file (patterns) can be included: ${entry}"}
-      "file pattern"      {return "incl-files-pattern"}
+      "directory" { return "invalid: only file (patterns) can be included: ${entry}" }
+      "file" { return "incl-files-pattern" }
+      "directory pattern" { return "invalid: only file (patterns) can be included: ${entry}" }
+      "file pattern" { return "incl-files-pattern" }
     }
 
-  } elseif ($entry.StartsWith("  - ")) {
+  }
+  elseif ($entry.StartsWith("  - ")) {
     $temp = "${entry}".Substring(4)   # Remove the leading "  - "
 
     # Type of the entry
@@ -175,10 +176,10 @@ function Get-DirlistLineType {
     $object_type = Get-SpecifiedFsObjectType "${temp}"
 
     switch ("${object_type}") {
-      "directory"         {return "excl-dirs-pattern"}
-      "file"              {return "excl-files-pattern"}
-      "directory pattern" {return "excl-dirs-pattern"}
-      "file pattern"      {return "excl-files-pattern"}
+      "directory" { return "excl-dirs-pattern" }
+      "file" { return "excl-files-pattern" }
+      "directory pattern" { return "excl-dirs-pattern" }
+      "file pattern" { return "excl-files-pattern" }
     }
 
   }
@@ -198,9 +199,9 @@ function Get-TargetDir {
   [OutputType([System.String])]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$base_dir,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$folder_spec
   )
 
@@ -221,7 +222,7 @@ function Get-TargetDir {
   }
 
   # Result
-  $sub_dir= ($folder_spec -replace ":", "")
+  $sub_dir = ($folder_spec -replace ":", "")
   $target_dir = ${base_dir} + "$sub_dir"
 
   return $target_dir
@@ -238,18 +239,19 @@ function _writeToJobfile {
   # Writes the specified line to the specified job file.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [AllowEmptyString()]
     [String]$line,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [System.Boolean]$create_new_file
   )
 
   if (${create_new_file}) {
     "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding oem
-  } else {
+  }
+  else {
     "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding oem -Append
   }
 
@@ -268,13 +270,13 @@ function _writeHeader {
   # Writes the job file header.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$computername,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [Int32]$current_job_num,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$dirlist_entry
   )
 
@@ -291,11 +293,11 @@ function _addSourceAndTarget {
   # Adds source and target directory to the job file.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$source_dir,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$target_dir
   )
 
@@ -312,9 +314,9 @@ function _addJobConfig {
   # Adds user settings (e.g. logging options) to the job file.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$logfile_path
   )
 
@@ -334,7 +336,7 @@ function _addIncludedFiles {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$included_files
   )
@@ -356,7 +358,7 @@ function _addExcludedDirs {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$excluded_dirs
   )
@@ -378,7 +380,7 @@ function _addExcludedFiles {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$excluded_files
   )
@@ -397,12 +399,12 @@ function _finalizeJob {
   # Adds all included/excluded entries to the specified job file.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$jobfile_path,
     [System.Collections.ArrayList]$included_files,
     [System.Collections.ArrayList]$excluded_dirs,
     [System.Collections.ArrayList]$excluded_files,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [System.Boolean]$copy_single_file
   )
 
@@ -446,24 +448,24 @@ function _finalizeJob {
 
 function Add-JobFile {
   # Creates the specified job file, including a simple header.
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess = $true)]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$backup_job_dir,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$computername,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [Int32]$current_job_num,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$dirlist_entry,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$source_dir,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$target_dir,
     [System.Collections.ArrayList]$included_files,
     [System.Collections.ArrayList]$excluded_dirs,
     [System.Collections.ArrayList]$excluded_files,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [System.Boolean]$copy_single_file
   )
 
@@ -488,17 +490,19 @@ function Add-JobFile {
   Write-DebugMsg "Add-JobFile(): jobfile_path         : ${jobfile_path}"
   Write-DebugMsg "Add-JobFile(): logfile_path         : ${logfile_path}"
 
-  # Create job file
-  _writeHeader -jobfile_path "${jobfile_path}" -computername "${computername}" -current_job_num $current_job_num -dirlist_entry "${dirlist_entry}"
+  if ($PSCmdlet.ShouldProcess("${jobfile_path}", "Create Robocopy job file")) {
+    # Create job file
+    _writeHeader -jobfile_path "${jobfile_path}" -computername "${computername}" -current_job_num $current_job_num -dirlist_entry "${dirlist_entry}"
 
-  # Add paths
-  _addSourceAndTarget -jobfile_path "${jobfile_path}" -source_dir "${source_dir}" -target_dir "${target_dir}"
+    # Add paths
+    _addSourceAndTarget -jobfile_path "${jobfile_path}" -source_dir "${source_dir}" -target_dir "${target_dir}"
 
-  # Add next section for user-dependent settings
-  _addJobConfig -jobfile_path "${jobfile_path}" -logfile_path "${logfile_path}"
+    # Add next section for user-dependent settings
+    _addJobConfig -jobfile_path "${jobfile_path}" -logfile_path "${logfile_path}"
 
-  # Add included/excluded files/directories (and additional options).
-  _finalizeJob -jobfile_path "${jobfile_path}" -included_files $included_files -excluded_dirs $excluded_dirs -excluded_files $excluded_files -copy_single_file $copy_single_file
+    # Add included/excluded files/directories (and additional options).
+    _finalizeJob -jobfile_path "${jobfile_path}" -included_files $included_files -excluded_dirs $excluded_dirs -excluded_files $excluded_files -copy_single_file $copy_single_file
+  }
 
 }
 
