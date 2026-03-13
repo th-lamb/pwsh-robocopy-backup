@@ -52,9 +52,9 @@ param()
 
 #region Constant values
 
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.1.00
-Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
-Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.1.00 -WhatIf:$false
+Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\") -WhatIf:$false
+Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%")) -WhatIf:$false
 
 #endregion Constant values #####################################################
 
@@ -84,7 +84,7 @@ $startTime = (Get-Date)
 #region Change working dir to script location
 
 try {
-  Set-Location "${SCRIPT_DIR}"
+  Set-Location "${SCRIPT_DIR}" -WhatIf:$false
 } catch {
   [Console]::ForegroundColor = 'red'
   [Console]::Error.WriteLine("Failed to change working directory to [${SCRIPT_DIR}]!")

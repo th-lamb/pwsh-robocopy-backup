@@ -96,11 +96,11 @@ function Read-SettingsFile {
       # Interpret numeric values as Int32; others as String.
       if (Test-IsNumeric $var_value) {
         [Int32]$int_value = $var_value
-        Set-Variable -Name "${var_name}" -Value $int_value -Scope script
+        Set-Variable -Name "${var_name}" -Value $int_value -Scope script -WhatIf:$false
 
       } elseif ( ${var_value} -is [String] ) {
         $expanded = Get-ExpandedPath "${var_value}"
-        Set-Variable -Name "${var_name}" -Value "${expanded}" -Scope script
+        Set-Variable -Name "${var_name}" -Value "${expanded}" -Scope script -WhatIf:$false
 
       }
 
