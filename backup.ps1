@@ -52,9 +52,16 @@ param()
 
 #region Constant values
 
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value 0.1.00 -WhatIf:$false
-Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\") -WhatIf:$false
-Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%")) -WhatIf:$false
+# Temporarily disable -WhatIf for internal setup (PowerShell 5.1 workaround).
+$oldWhatIfPreference = $WhatIfPreference
+$WhatIfPreference = $false
+
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.1.00"
+Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
+Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
+
+# Restore the original -WhatIf preference.
+$WhatIfPreference = $oldWhatIfPreference
 
 #endregion Constant values #####################################################
 
@@ -84,7 +91,8 @@ $startTime = (Get-Date)
 #region Change working dir to script location
 
 try {
-  Set-Location "${SCRIPT_DIR}" -WhatIf:$false
+  # We use the .NET method because it is immune to -WhatIf interception in PS 5.1.
+  [System.IO.Directory]::SetCurrentDirectory("${SCRIPT_DIR}")
 } catch {
   [Console]::ForegroundColor = 'red'
   [Console]::Error.WriteLine("Failed to change working directory to [${SCRIPT_DIR}]!")
@@ -92,6 +100,9 @@ try {
 
   exit 2
 }
+
+# Restore the original -WhatIf preference.
+$WhatIfPreference = $oldWhatIfPreference
 
 #endregion Change working dir to script location ###############################
 

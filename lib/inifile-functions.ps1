@@ -79,6 +79,10 @@ function Read-SettingsFile {
 
   $ini_file_content = Get-Content "${ini_file}"
 
+  # Temporarily disable -WhatIf to ensure the configuration is loaded into the script scope (PowerShell 5.1 workaround).
+  $oldWhatIfPreference = $WhatIfPreference
+  $WhatIfPreference = $false
+
   ForEach($line in $ini_file_content) {
     if (
       ($line -ne "") -and               # Empty line
@@ -96,17 +100,19 @@ function Read-SettingsFile {
       # Interpret numeric values as Int32; others as String.
       if (Test-IsNumeric $var_value) {
         [Int32]$int_value = $var_value
-        Set-Variable -Name "${var_name}" -Value $int_value -Scope script -WhatIf:$false
+        Set-Variable -Name "${var_name}" -Value $int_value -Scope script
 
       } elseif ( ${var_value} -is [String] ) {
         $expanded = Get-ExpandedPath "${var_value}"
-        Set-Variable -Name "${var_name}" -Value "${expanded}" -Scope script -WhatIf:$false
+        Set-Variable -Name "${var_name}" -Value "${expanded}" -Scope script
 
       }
 
     }
 
   }
+
+  $WhatIfPreference = $oldWhatIfPreference
 
   if ($var_names.Count -gt 0) {
     Write-FormattedValueList $var_names $var_values
