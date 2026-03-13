@@ -136,6 +136,8 @@ $iniFile = $PSCommandPath -replace ".ps1", ".ini"
 Read-SettingsFile ("${iniFile}")
 
 Add-EmptyLineToLogfile "${BACKUP_LOGFILE}"
+#TODO: Add a log entry for script name, version, etc?
+#LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Backup Script version ${SCRIPT_VERSION} started."
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
 
 #endregion Read settings file ##################################################
