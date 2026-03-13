@@ -17,6 +17,27 @@ $zipPath = "$distDir\$zipName"
 $CurrentScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location "$CurrentScriptDir\.."
 
+# --- Version Check ---
+# Get the last Git tag (e.g., v0.1.00)
+$lastTag = (git describe --tags --abbrev=0 2>$null)
+if ($lastTag) {
+    # Extract the version from backup.ps1
+    # We look for: $SCRIPT_VERSION = "0.1.00"
+    $versionLine = Get-Content "backup.ps1" | Select-String "\$SCRIPT_VERSION\s*=\s*`"([0-9\.]+)`""
+    if ($versionLine -match "([0-9\.]+)") {
+        $actualVersion = $Matches[1]
+        $expectedTag = "v$actualVersion"
+
+        if ($lastTag -eq $expectedTag) {
+            Write-Host "WARNING: The version in 'backup.ps1' ($actualVersion) is the same as the last Git tag ($lastTag)." -ForegroundColor Yellow
+            Write-Host "         Have you forgotten to bump the version for the next release?" -ForegroundColor Yellow
+        } else {
+            Write-Host "Version check: Script version ($actualVersion) is different from last tag ($lastTag)." -ForegroundColor Cyan
+        }
+    }
+}
+# ---------------------
+
 # Create the dist folder if it doesn't exist
 if (!(Test-Path $distDir)) {
     New-Item -ItemType Directory -Path $distDir | Out-Null
