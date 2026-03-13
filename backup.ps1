@@ -50,6 +50,55 @@
 [CmdletBinding(SupportsShouldProcess=$true)]
 param()
 
+
+
+#region Bootstrap Logging
+
+# Message buffer for early events occurring before the logging library is loaded.
+$Script:earlyMsgBuffer = [System.Collections.Generic.List[PSObject]]::new()
+
+function Write-EarlyMsg {
+  <# Local helper for logging before libraries are sourced.
+    Writes to console immediately and saves to buffer for later log file flushing.
+  #>
+  param(
+    [Parameter(Mandatory=$true)]
+    [ValidateSet('EMERG', 'ALERT', 'CRIT', 'ERR', 'WARNING', 'NOTICE', 'INFO', 'DEBUG')]
+    [String]$severity,
+    [Parameter(Mandatory=$true)]
+    [String]$message
+  )
+
+  # Store the message for later.
+  $timestamp = Get-Date -Format s
+  $Script:earlyMsgBuffer.Add([PSCustomObject]@{
+    Timestamp = $timestamp
+    Severity  = $severity
+    Message   = $message
+  })
+
+  # Format the severity label similar to Format-SeverityLabel. Example: INFO = [INFO   ]
+  $sb = [System.Text.StringBuilder]::new("$severity")
+  while ($sb.Length -lt 7) {
+    [void]$sb.Append(" ")
+  }
+  $severityLabel = "[$sb]"
+
+  # Write the message to the console.
+  $color = switch ($severity) {
+    {$_ -in "EMERG", "ALERT", "CRIT", "ERR"} { "Red" }
+    "WARNING" { "Yellow" }
+    Default   { "White" }
+  }
+
+  Write-Host "${severityLabel} ${message}" -ForegroundColor $color
+
+}
+
+#endregion Bootstrap Logging ###################################################
+
+
+
 #region Constant values
 
 # Temporarily disable -WhatIf for internal setup (PowerShell 5.1 workaround).
@@ -84,6 +133,7 @@ else {
 
 
 
+Write-EarlyMsg INFO "Backup Script version ${SCRIPT_VERSION} started."
 $startTime = (Get-Date)
 
 
@@ -94,15 +144,12 @@ try {
   # We use the .NET method because it is immune to -WhatIf interception in PS 5.1.
   [System.IO.Directory]::SetCurrentDirectory("${SCRIPT_DIR}")
 } catch {
+  # Log to native stderr (often captured by logs).
   [Console]::ForegroundColor = 'red'
-  [Console]::Error.WriteLine("Failed to change working directory to [${SCRIPT_DIR}]!")
+  [Console]::Error.WriteLine("Failed to change working directory to [${SCRIPT_DIR}]! Error: $_")
   [Console]::ResetColor()
-
   exit 2
 }
-
-# Restore the original -WhatIf preference.
-$WhatIfPreference = $oldWhatIfPreference
 
 #endregion Change working dir to script location ###############################
 
@@ -113,14 +160,20 @@ $WhatIfPreference = $oldWhatIfPreference
 #TODO: Hard-coded for now, later an import function for different library folders might be better.
 #TODO: Search order: current directory, parallel folder "lib" or standard directory
 
-. lib\message-functions.ps1       # No dependencies
-. lib\logging-functions.ps1       # Depends on message-functions.
-. lib\filesystem-functions.ps1    # Depends on logging-functions, message-functions.
-. lib\job-functions.ps1           # Depends on message-functions.
-. lib\job-archive-functions.ps1   # Depends on logging-functions, message-functions.
-. lib\inifile-functions.ps1       # Depends on message-functions.
-. lib\robocopy-functions.ps1      # Depends on logging-functions.
-. lib\job-type-functions.ps1      # Depends on logging-functions, message-functions.
+try {
+  . lib\message-functions.ps1       # No dependencies
+  . lib\logging-functions.ps1       # Depends on message-functions.
+  . lib\filesystem-functions.ps1    # Depends on logging-functions, message-functions.
+  . lib\job-functions.ps1           # Depends on message-functions.
+  . lib\job-archive-functions.ps1   # Depends on logging-functions, message-functions.
+  . lib\inifile-functions.ps1       # Depends on message-functions.
+  . lib\robocopy-functions.ps1      # Depends on logging-functions.
+  . lib\job-type-functions.ps1      # Depends on logging-functions, message-functions.
+} catch {
+  Write-EarlyMsg ERR ("Failed to import function libraries from lib\ subfolder! " + `
+      "Ensure the folder exists in the script directory. Error: $_")
+  exit 2
+}
 
 #endregion Import function libraries ###########################################
 
@@ -128,16 +181,27 @@ $WhatIfPreference = $oldWhatIfPreference
 
 #region Read settings file
 
-# No info message here, because $__VERBOSE is not defined before reading the settings file.
-#TODO: Maybe use cmdline parameters if provided? (Maybe too much effort to just get some more info messages.)
-#LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Reading the settings file..."
+Write-EarlyMsg INFO "Reading the settings file..."
 
 $iniFile = $PSCommandPath -replace ".ps1", ".ini"
-Read-SettingsFile ("${iniFile}")
+try {
+  Read-SettingsFile ("${iniFile}")
+} catch {
+  Write-EarlyMsg ERR "Failed to read settings file [${iniFile}]! Error: $_"
+  exit 1
+}
 
-Add-EmptyLineToLogfile "${BACKUP_LOGFILE}"
-#TODO: Add a log entry for script name, version, etc?
-#LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Backup Script version ${SCRIPT_VERSION} started."
+Add-EmptyLineToLogfile "${BACKUP_LOGFILE}"  # One empty line between the previous and this backup.
+
+# Flushes early bootstrap messages to the real log file now that $BACKUP_LOGFILE is known.
+if ($null -ne $BACKUP_LOGFILE) {
+  foreach ($msg in $Script:earlyMsgBuffer) {
+    # Using direct Add-LogMessage (ignoring __VERBOSE for early mandatory info).
+    Add-LogMessage -logfile $BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
+  }
+  $Script:earlyMsgBuffer.Clear()
+}
+
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
 
 #endregion Read settings file ##################################################
@@ -178,7 +242,7 @@ Write-DebugMsg "BackupBaseDir type: ${dir_type}"
 
 switch ("${dir_type}") {
   "directory" {
-    New-NecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
+    [void](New-NecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}")
   }
   {$_ -in "drive letter", "network share"} {
     Test-NecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
@@ -186,7 +250,7 @@ switch ("${dir_type}") {
   "relative path" {
     # Interpret as path below script dir, current drive or ...?
     $absolute_base_dir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
-    New-NecessaryDirectory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}"
+    [void](New-NecessaryDirectory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}")
   }
   "network computer" {
     Write-CritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
@@ -201,9 +265,9 @@ switch ("${dir_type}") {
 #TODO: Report creation of these dirs (as INFO).
 #TODO: And store a variable to prepend this info when the logging starts? (Until now the log-file starts with "Dir-list created from template.")
 #     -> Maybe add all log messages to a list before the log-file exists, and add all of them when it exists?
-New-NecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}"
-New-NecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}"
-New-NecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}"
+[void](New-NecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}")
+[void](New-NecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}")
+[void](New-NecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}")
 
 # Make sure that robocopy has been found if only "robocopy" is defined in the ini file!
 $robocopy_exe = Get-ExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"

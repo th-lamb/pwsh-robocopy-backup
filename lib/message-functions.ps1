@@ -162,6 +162,11 @@ TODO:
     #[Console]::Error.WriteLine("${message}") 2>> .\error.log     # no output to the logfile
     #[Console]::Error.WriteLine("${message}") >> .\error.log      # no output to the logfile
 
+    # Note:
+    # [Console]::Error.WriteLine(): bypasses PowerShell's stream system entirely and writes 
+    # directly to the process's Standard Error (stderr) file descriptor at the .NET level.
+    # This is a "raw" way to communicate with the operating system's output handles.
+
     #[Console]::ResetColor()
 
     Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}" # 6>> .\error.log
