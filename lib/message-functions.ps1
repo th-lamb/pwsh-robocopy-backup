@@ -163,7 +163,7 @@ TODO:
     #[Console]::Error.WriteLine("${message}") >> .\error.log      # no output to the logfile
 
     # Note:
-    # [Console]::Error.WriteLine(): bypasses PowerShell's stream system entirely and writes 
+    # [Console]::Error.WriteLine(): bypasses PowerShell's stream system entirely and writes
     # directly to the process's Standard Error (stderr) file descriptor at the .NET level.
     # This is a "raw" way to communicate with the operating system's output handles.
 
