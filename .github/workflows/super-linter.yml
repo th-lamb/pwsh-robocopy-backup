@@ -32,5 +32,6 @@ jobs:
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_POWERSHELL: true
+          POWERSHELL_CONFIG_FILE: powershell-psscriptanalyzer.psd1
           ENABLE_GITHUB_ACTIONS_GROUP_LOGS: false
           LOG_LEVEL: INFO
