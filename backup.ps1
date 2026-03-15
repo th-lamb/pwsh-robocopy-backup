@@ -162,6 +162,7 @@ try {
 
 try {
   . lib\message-functions.ps1       # No dependencies
+  . lib\network-functions.ps1       # No dependencies
   . lib\logging-functions.ps1       # Depends on message-functions.
   . lib\filesystem-functions.ps1    # Depends on logging-functions, message-functions.
   . lib\job-functions.ps1           # Depends on message-functions.
