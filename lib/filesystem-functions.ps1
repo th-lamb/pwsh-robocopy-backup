@@ -19,10 +19,20 @@ function Get-RealFsObjectType {
     between directory and network share.
   #>
 
-  #TODO: This doesn't test if a share really exists or is available!
+  # UNC path (with check if share exists or is available)
   switch ("${specified_type}") {
-    "network share" { return "${specified_type}" }
-    "network computer" { return "${specified_type}" }
+    "network share" {
+      if (Test-Path -Path "${path_spec}" -PathType Container) {
+        return "network share"
+      }
+      return $false
+    }
+    "network computer" {
+      if (Test-ServerIsAvailable "${path_spec}") {
+        return "network computer"
+      }
+      return $false
+    }
   }
 
   # Existing directory/file
