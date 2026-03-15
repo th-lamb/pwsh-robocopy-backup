@@ -47,9 +47,13 @@ Describe 'Get-RealFsObjectType' {
       "${object_type}" | Should -Be "${expected}"
     }
 
-    #TODO: recognizes hidden files with patterns
-    # -> "C:\Users\*.ini"
-    # -> Currently not working: https://github.com/PowerShell/PowerShell/issues/6473
+    It 'recognizes hidden file with placeholders            e.g. C:\Users\*.ini' {
+      $path_spec = "${workingFolder}Users/*.ini"
+      $expected = "file"
+
+      $object_type = Get-RealFsObjectType "${path_spec}"
+      "${object_type}" | Should -Be "${expected}"
+    }
   }
 
   Context 'non-existent directories/files' {

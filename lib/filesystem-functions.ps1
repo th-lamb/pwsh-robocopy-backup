@@ -55,8 +55,24 @@ function Get-RealFsObjectType {
     return "file"
   }
 
+  <# Fallback for hidden files/folders with patterns.
+    Reason: Test-Path doesn't find hidden items with wildcards.
+    GitHub issue: https://github.com/PowerShell/PowerShell/issues/6473
+  #>
+  if ("${path_spec}".Contains("*")) {
+    $item = Get-ChildItem -Path "${path_spec}" -Force -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -ne $item) {
+      if ($item.PSIsContainer) {
+        return "directory"
+      }
+      else {
+        return "file"
+      }
+    }
+  }
+
   # In case the type is not known yet (e.g. Test-Path found no matching file).
-  Test-Path -Path "${path_spec}" -PathType Any  # False for non-existent directory/file
+  return $false
 
 }
 
