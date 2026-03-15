@@ -351,7 +351,7 @@ function Write-DebugMsg {
 
 #region ... with additional exit codes
 
-function Stop-WithEmergMessage {
+function Exit-WithEmergMessage {
   <# Writes a message for severity level 0 (emerg) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
@@ -372,7 +372,7 @@ function Stop-WithEmergMessage {
 
 }
 
-function Stop-WithAlertMessage {
+function Exit-WithAlertMessage {
   <# Writes a message for severity level 1 (alert) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
@@ -393,7 +393,7 @@ function Stop-WithAlertMessage {
 
 }
 
-function Stop-WithCritMessage {
+function Exit-WithCritMessage {
   <# Writes a message for severity level 2 (crit) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
@@ -414,7 +414,7 @@ function Stop-WithCritMessage {
 
 }
 
-function Stop-WithErrMessage {
+function Exit-WithErrMessage {
   <# Writes a message for severity level 3 (err) and exit with specified exit code.
     Notice: No verbose level check, always written.
 
