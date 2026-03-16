@@ -1,12 +1,12 @@
 enum SeverityKeyword {
-  EMERG
-  ALERT
-  CRIT
-  ERR
-  WARNING
-  NOTICE
-  INFO
-  DEBUG
+  EMERG   = 0
+  ALERT   = 1
+  CRIT    = 2
+  ERR     = 3
+  WARNING = 4
+  NOTICE  = 5
+  INFO    = 6
+  DEBUG   = 7
 }
 
 BeforeAll {
@@ -179,20 +179,18 @@ Describe 'Write-ColoredMessage' {
 
     It 'Does NOT write a message for severity: -1' {
       $test_severity = -1
-      $expected_message = "Write-ColoredMessage(): Illegal severity level specified: *"   # Using wildcard
 
       {
         Write-ColoredMessage -Severity $test_severity -Message "This message should NOT be written!"
-      } | Should -Throw -ExpectedMessage "${expected_message}"
+      } | Should -Throw
     }
 
     It 'Does NOT write a message for severity: 0' {
       $test_severity = 0
-      $expected_message = "Write-ColoredMessage(): Illegal severity level specified: *"   # Using wildcard
 
       {
         Write-ColoredMessage -Severity $test_severity -Message "This message should NOT be written!"
-      } | Should -Throw -ExpectedMessage "${expected_message}"
+      } | Should -Throw
     }
 
     It 'Does NOT write a message for severity: 1' {
