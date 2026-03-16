@@ -99,11 +99,10 @@ TODO:
     $1   Severity level: emerg|alert|crit|err|warning|notice|info|debug
     $2   The message
   #>
-  #TODO: Use the enum in logging-functions for $severity.
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [String]$severity,
+    [SeverityKeyword]$severity,
     [Parameter(Mandatory=$true)]
     [String]$message
   )
@@ -111,48 +110,48 @@ TODO:
   $is_err = $false
 
   switch ($severity) {
-    "emerg" {
+    ([SeverityKeyword]::EMERG) {
       $is_err = $true
       $background_color = "Red"
       $foreground_color = "White"
     }
-    "alert" {
+    ([SeverityKeyword]::ALERT) {
       $is_err = $true
       $background_color = "Red"
       $foreground_color = "Black"
     }
-    "crit" {
+    ([SeverityKeyword]::CRIT) {
       $is_err = $true
       $background_color = "Yellow"
       $foreground_color = "Black"
     }
-    "err" {
+    ([SeverityKeyword]::ERR) {
       $is_err = $true
       $background_color = "White"
       $foreground_color = "Red"
     }
-    "warning" {
+    ([SeverityKeyword]::WARNING) {
       $background_color = "White"
       $foreground_color = "Black"
     }
-    "notice" {
+    ([SeverityKeyword]::NOTICE) {
       $background_color = "Blue"
       $foreground_color = "White"
     }
-    "info" {
+    ([SeverityKeyword]::INFO) {
       $background_color = "Black"
       $foreground_color = "White"
     }
-    "debug" {
+    ([SeverityKeyword]::DEBUG) {
       $background_color = "Black"
       $foreground_color = "DarkGray"
     }
-    Default {
-      # Illegal severity level!
-      $err_message = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
-      Write-ColoredMessage "err" "${err_message}"
-      Throw "${err_message}"
-    }
+    # Default {
+    #   # Illegal severity level!
+    #   $err_message = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
+    #   Write-ColoredMessage ([SeverityKeyword]::ERR) "${err_message}"
+    #   Throw "${err_message}"
+    # }
   }
 
   #TODO: Finish the remaining section!
@@ -228,7 +227,7 @@ function Write-EmergMsg {
     [String]$message
   )
 
-  Write-ColoredMessage "emerg" "[EMERG  ] ${message}"
+  Write-ColoredMessage ([SeverityKeyword]::EMERG) "[EMERG  ] ${message}"
 
 }
 
@@ -242,7 +241,7 @@ function Write-AlertMsg {
     [String]$message
   )
 
-  Write-ColoredMessage "alert" "[ALERT  ] ${message}"
+  Write-ColoredMessage ([SeverityKeyword]::ALERT) "[ALERT  ] ${message}"
 
 }
 
@@ -256,7 +255,7 @@ function Write-CritMsg {
     [String]$message
   )
 
-  Write-ColoredMessage "crit" "[CRIT   ] ${message}"
+  Write-ColoredMessage ([SeverityKeyword]::CRIT) "[CRIT   ] ${message}"
 
 }
 
@@ -270,7 +269,7 @@ function Write-ErrMsg {
     [String]$message
   )
 
-  Write-ColoredMessage "err" "[ERR    ] ${message}"
+  Write-ColoredMessage ([SeverityKeyword]::ERR) "[ERR    ] ${message}"
 
 }
 
@@ -290,7 +289,7 @@ function Write-WarningMsg {
 
   # Write message if ${__VERBOSE} >= 4 (warning).
   if ("$__VERBOSE" -ge 4) {
-    Write-ColoredMessage "warning" "[WARNING] ${message}"
+    Write-ColoredMessage ([SeverityKeyword]::WARNING) "[WARNING] ${message}"
   }
 
 }
@@ -311,7 +310,7 @@ function Write-NoticeMsg {
 
   # Write message if ${__VERBOSE} >= 5 (notice).
   if ("$__VERBOSE" -ge 5) {
-    Write-ColoredMessage "notice" "[NOTICE ] ${message}"
+    Write-ColoredMessage ([SeverityKeyword]::NOTICE) "[NOTICE ] ${message}"
   }
 
 }
@@ -332,7 +331,7 @@ function Write-InfoMsg {
 
   # Write message if ${__VERBOSE} >= 6 (info).
   if ("$__VERBOSE" -ge 6) {
-    Write-ColoredMessage "info" "[INFO   ] ${message}"
+    Write-ColoredMessage ([SeverityKeyword]::INFO) "[INFO   ] ${message}"
   }
 
 }
@@ -353,7 +352,7 @@ function Write-DebugMsg {
 
   # Write message if ${__VERBOSE} >= 7 (debug).
   if ("$__VERBOSE" -ge 7) {
-    Write-ColoredMessage "debug" "[DEBUG  ] ${message}"
+    Write-ColoredMessage ([SeverityKeyword]::DEBUG) "[DEBUG  ] ${message}"
   }
 
 }
