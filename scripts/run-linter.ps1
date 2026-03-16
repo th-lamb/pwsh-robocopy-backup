@@ -75,13 +75,13 @@ foreach ($file in $FilesToAnalyze) {
 
 if ($results) {
     $resultsToSelect = $results | Select-Object Severity, RuleName, @{Name='File'; Expression={ $_.ScriptPath.Replace($ProjectRoot.Path + "\", "") }}, Line, Message
-    
+
     # Save to file with a fixed wide width to avoid truncation
     $resultsToSelect | Format-Table -AutoSize -Wrap | Out-String -Width 300 | Out-File -FilePath $OutputFile -Encoding utf8
-    
+
     # Show in console (will still adapt to window size)
     $resultsToSelect | Format-Table -AutoSize -Wrap | Out-Host
-    
+
     $count = ($results | Measure-Object).Count
     Write-Host "`nLinter found $count issues. Please fix them. (Full results saved to $OutputFile)" -ForegroundColor Yellow
     exit 1
