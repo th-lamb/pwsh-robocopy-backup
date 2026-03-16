@@ -173,7 +173,6 @@ Describe 'Get-RealFsObjectType' {
       # Portability: allow the test to run on other computers in any network.
       # Mock behavior: for directories/shares, return $true unless explicitly asking for a 'Leaf' (file).
       Mock Test-Path {
-        param($Path, $PathType)
         if ($PathType -eq "Leaf") { return $false }
         return $true
       } -ParameterFilter {
@@ -184,7 +183,6 @@ Describe 'Get-RealFsObjectType' {
 
       # Mock behavior: for files, return $true unless explicitly asking for a 'Container' (folder).
       Mock Test-Path {
-        param($Path, $PathType)
         if ($PathType -eq "Container") { return $false }
         return $true
       } -ParameterFilter { $Path -eq "\\Server\Backup\file.txt" }
