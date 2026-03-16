@@ -71,6 +71,8 @@ BeforeAll {
   }
 
   function Remove-TestFiles {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+    param()
     $testFiles = Get-TestFileNames
 
     for ($i = 0; $i -lt $testFiles.Count; $i++) {
