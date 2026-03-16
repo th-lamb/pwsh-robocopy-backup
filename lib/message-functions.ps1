@@ -69,6 +69,19 @@
 
 
 
+enum SeverityKeyword {
+  EMERG
+  ALERT
+  CRIT
+  ERR
+  WARNING
+  NOTICE
+  INFO
+  DEBUG
+}
+
+
+
 #region Helper functions - Colored message (without and with timestamp)
 
 function Write-ColoredMessage {

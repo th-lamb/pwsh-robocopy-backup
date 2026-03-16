@@ -1,18 +1,5 @@
 #TODO: Check directory before showing "Cannot write to logfile" error?
 
-
-
-enum SeverityKeyword {
-  EMERG
-  ALERT
-  CRIT
-  ERR
-  WARNING
-  NOTICE
-  INFO
-  DEBUG
-}
-
 #region Helper functions
 
 function Format-SeverityLabel {
