@@ -76,7 +76,7 @@ Describe 'SeverityKeyword Enum' {
 
 
 
-<# Test Write-ColoredMessage with integer values: Function accepts 
+<# Test Write-ColoredMessage with integer values: Function accepts
   integers (which PowerShell casts to the enum) and actually triggers
   the correct behavio, for example 0 -> EMERG?
 #>
