@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
   $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
   . "${ProjectRoot}lib/filesystem-functions.ps1"
 }
