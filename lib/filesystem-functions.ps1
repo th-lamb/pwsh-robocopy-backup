@@ -4,6 +4,13 @@ function Get-RealFsObjectType {
   <# Returns the type of the real filesystem object, specified by the path; or
     $false for non-existent directory/file.
   #>
+  #TODO: Variant 1: Declare 2 output types? -> [OutputType([System.String], [System.Boolean])]
+  <# TODO: Variant 2: Return a custom object? Example:
+    return [PSCustomObject]@{
+      Exists = $true
+      Type = "network computer"
+    }
+  #>
   [OutputType([System.String])]
   [CmdletBinding()]
   param (
@@ -25,13 +32,17 @@ function Get-RealFsObjectType {
       if (Test-Path -Path "${path_spec}" -PathType Container) {
         return "network share"
       }
-      return $false
+      #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
+      # return $false
+      return "false"
     }
     "network computer" {
       if (Test-ServerIsAvailable "${path_spec}") {
         return "network computer"
       }
-      return $false
+      #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
+      # return $false
+      return "false"
     }
   }
 
@@ -72,7 +83,9 @@ function Get-RealFsObjectType {
   }
 
   # In case the type is not known yet (e.g. Test-Path found no matching file).
-  return $false
+  #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
+  # return $false
+  return "false"
 
 }
 

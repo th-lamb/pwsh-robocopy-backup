@@ -86,7 +86,7 @@ if ($results) {
     Write-Host "`nLinter found $count issues. Please fix them. (Full results saved to $OutputFile)" -ForegroundColor Yellow
     exit 1
 } else {
-    "No issues found!" | Out-File -FilePath $OutputFile -Encoding utf8
-    Write-Host "No issues found!" -ForegroundColor Green
+    "No issues found." | Out-File -FilePath $OutputFile -Encoding utf8
+    Write-Host "No issues found." -ForegroundColor Green
     exit 0
 }

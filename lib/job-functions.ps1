@@ -28,6 +28,7 @@ function Test-FsObjectTypeMismatch {
     Possible real types:
     - directory
     - file
+    #TODO: Maybe this should be "false" because Get-RealFsObjectType has OutputType([System.String])
     - $false (non-existent)
 
     Expected combinations:
