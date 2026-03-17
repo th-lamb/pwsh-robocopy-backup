@@ -78,7 +78,7 @@ function Get-UserSelectedJobType {
     [String]$logfile
   )
 
-  Add-LogMessage "${logfile}" INFO "Asking the user for the job-type..."
+  Add-LogMessage -logfile "${logfile}" -severity INFO -message "Asking the user for the job-type..."
 
   [Int32]$max_wait_time_ms = ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} * 1000
   [Int32]$check_interval_ms = 100
@@ -122,52 +122,52 @@ function Get-UserSelectedJobType {
   switch($keyInfo.Key) {
     'i' {
       $result = "Incremental"
-      Add-LogMessage "${logfile}" INFO "Incremental selected."
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Incremental selected."
     }
 
     'f' {
       $result = "Full"
-      Add-LogMessage "${logfile}" INFO "Full selected."
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Full selected."
     }
 
     'p' {
       $result = "Purge"
-      Add-LogMessage "${logfile}" INFO "Purge selected."
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Purge selected."
     }
 
     'a' {
       $result = "Archive"
-      Add-LogMessage "${logfile}" INFO "Archive selected."
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Archive selected."
     }
 
     's' {
       $result = "${default_job_type}"
-      Add-LogMessage "${logfile}" INFO "Start selected. Using the default: ${default_job_type}"
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Start selected. Using the default: ${default_job_type}"
     }
 
     'Escape' {
       $result = "Cancel"
-      Add-LogMessage "${logfile}" INFO "User pressed ESCAPE. Cancel."
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User pressed ESCAPE. Cancel."
     }
 
     'Enter' {
       Write-Host "Using the default."
       $result = "${default_job_type}"
-      Add-LogMessage "${logfile}" INFO "User just pressed ENTER. Using the default: ${default_job_type}"
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User just pressed ENTER. Using the default: ${default_job_type}"
     }
 
     '' {
       # User didn't press any key.
       Write-Host "Using the default."
       $result = "${default_job_type}"
-      Add-LogMessage "${logfile}" INFO "User didn't select a job-type. Using the default: ${default_job_type}"
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User didn't select a job-type. Using the default: ${default_job_type}"
     }
 
     Default {
       # Illegal choice
       LogAndShowMessage "${logfile}" WARN "Illegal choice. Cancel."
       $result = "Cancel"
-      Add-LogMessage "${logfile}" DEBUG "User clicked: $($keyInfo.Key)"
+      Add-LogMessage -logfile "${logfile}" -severity DEBUG -message "User clicked: $($keyInfo.Key)"
     }
 
   }

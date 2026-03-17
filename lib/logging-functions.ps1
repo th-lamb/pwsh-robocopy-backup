@@ -96,7 +96,7 @@ function LogAndShowMessage {
   )
 
   # Log the message.
-  Add-LogMessage "${logfile}" $severity "${message}"
+  Add-LogMessage -logfile "${logfile}" -severity $severity -message "${message}"
 
   # Write the message to the console.
   switch ($severity) {
