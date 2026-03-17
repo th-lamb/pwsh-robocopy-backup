@@ -25,12 +25,14 @@ function Get-RealFsObjectType {
       if (Test-Path -Path "${path_spec}" -PathType Container) {
         return "network share"
       }
+      #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
       return $false
     }
     "network computer" {
       if (Test-ServerIsAvailable "${path_spec}") {
         return "network computer"
       }
+      #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
       return $false
     }
   }
@@ -72,6 +74,7 @@ function Get-RealFsObjectType {
   }
 
   # In case the type is not known yet (e.g. Test-Path found no matching file).
+  #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
   return $false
 
 }

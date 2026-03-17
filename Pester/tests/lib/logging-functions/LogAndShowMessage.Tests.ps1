@@ -1,3 +1,4 @@
+#TODO: Remove this enum (read from actual library file)?
 enum SeverityKeyword {
   EMERG
   ALERT
