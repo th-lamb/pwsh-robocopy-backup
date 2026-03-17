@@ -16,7 +16,7 @@ BeforeAll {
   $Script:MAX_ARCHIVES_COUNT = 3
 
   # Mocking functions (https://github.com/pester/Pester/issues/1589#issuecomment-637409980)
-  function Get-TestFileNames {
+  function Get-TestFilenameSet {
     $jobFile1 = "${JOB_FILE_NAME_SCHEME}".Replace("*", 1)
     $jobFile2 = "${JOB_FILE_NAME_SCHEME}".Replace("*", 2)
     $jobFile3 = "${JOB_FILE_NAME_SCHEME}".Replace("*", 3)
@@ -38,7 +38,7 @@ BeforeAll {
     $testFiles.ToArray()
   }
 
-  function Get-TestArchiveNames {
+  function Get-TestArchiveNameSet {
     $archive1 = "${ARCHIVE_NAME_SCHEME}".Replace("*", "2000-01-01T000000")
     $archive2 = "${ARCHIVE_NAME_SCHEME}".Replace("*", "2000-01-02T000000")
     $archive3 = "${ARCHIVE_NAME_SCHEME}".Replace("*", "2000-01-03T000000")
@@ -52,8 +52,8 @@ BeforeAll {
     $testArchives.ToArray()
   }
 
-  function Add-TestFiles {
-    $testFiles = Get-TestFileNames
+  function Add-TestFileSet {
+    $testFiles = Get-TestFilenameSet
 
     for ($i = 0; $i -lt $testFiles.Count; $i++) {
       $nextFile = $testFiles[$i]
@@ -61,8 +61,8 @@ BeforeAll {
     }
   }
 
-  function Add-TestArchives {
-    $testArchives = Get-TestArchiveNames
+  function Add-TestArchiveSet {
+    $testArchives = Get-TestArchiveNameSet
 
     for ($i = 0; $i -lt $testArchives.Count; $i++) {
       $nextArchive = $testArchives[$i]
@@ -70,10 +70,10 @@ BeforeAll {
     }
   }
 
-  function Remove-TestFiles {
+  function Remove-TestFileSet {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param()
-    $testFiles = Get-TestFileNames
+    $testFiles = Get-TestFilenameSet
 
     for ($i = 0; $i -lt $testFiles.Count; $i++) {
       $nextFile = $testFiles[$i]
@@ -87,13 +87,13 @@ BeforeAll {
 Describe 'Export-PreviousJob' {
   Context 'Correctly used' {
     BeforeEach {
-      Remove-TestFiles
+      Remove-TestFileSet
       Remove-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}"
     }
 
     It 'Archives old jobfiles to a zip file.' {
       # Create test files.
-      Add-TestFiles
+      Add-TestFileSet
 
       # Get the expected timestamp from the actual files created
       $testFiles = Get-ChildItem -Path "${workingFolder}*" -Include "${JOB_FILE_NAME_SCHEME}" -File
@@ -113,10 +113,10 @@ Describe 'Export-PreviousJob' {
 
     It 'Deletes the old jobfiles after archiving.' {
       # Create test files.
-      Add-TestFiles
+      Add-TestFileSet
 
       # Check if the test files exist.
-      $testFiles = Get-TestFileNames
+      $testFiles = Get-TestFilenameSet
       for ($i = 0; $i -lt $testFiles.Count; $i++) {
         $nextFile = $testFiles[$i]
         Test-Path -Path "${workingFolder}${nextFile}" -PathType Leaf | Should -Be $true
@@ -136,8 +136,8 @@ Describe 'Export-PreviousJob' {
     }
 
     It 'Keeps the specified amount of old archives.' {
-      Add-TestFiles
-      Add-TestArchives
+      Add-TestFileSet
+      Add-TestArchiveSet
 
       # Store the amount of test archives.
       $old_number_of_archives = $( Get-Item -Path "${workingFolder}${ARCHIVE_NAME_SCHEME}" ).Length
@@ -161,7 +161,7 @@ Describe 'Export-PreviousJob' {
 
     AfterAll {
       # Cleanup
-      Remove-TestFiles
+      Remove-TestFileSet
       Remove-Item -Path "${workingFolder}*.zip" -ErrorAction SilentlyContinue
     }
   }
@@ -216,6 +216,6 @@ Describe 'Export-PreviousJob' {
 
 AfterAll {
   # Cleanup
-  Remove-TestFiles
+  Remove-TestFileSet
   Remove-Item -Path "${workingFolder}*.zip" -ErrorAction SilentlyContinue
 }
