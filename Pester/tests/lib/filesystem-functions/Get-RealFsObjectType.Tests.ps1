@@ -20,7 +20,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes existing directory with placeholder (*)  e.g. C:\Users\...\Mu*ic\' {
@@ -28,7 +28,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes existing file                            e.g. C:\Users\...\Music\title1.mp3' {
@@ -36,7 +36,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes existing file with placeholders          e.g. C:\Users\...\Music\title*.mp3' {
@@ -44,7 +44,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes hidden file with placeholders            e.g. C:\Users\*.ini' {
@@ -52,41 +52,41 @@ Describe 'Get-RealFsObjectType' {
       $expected = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
   }
 
   Context 'non-existent directories/files' {
     It 'recognizes non-existent directory                   e.g. C:\Users\...\Music2\' {
       $path_spec = "${workingFolder}Music2/"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
 
     It 'recognizes non-existent directory with placeholder  e.g. C:\Users\...\Mu*ic2\' {
       $path_spec = "${workingFolder}Mu*ic2/"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Music\title0.mp3' {
       $path_spec = "${workingFolder}Music/title0.mp3"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
 
     It 'recognizes non-existent file with placeholder       e.g. C:\Users\...\Music\title0*.mp3' {
       $path_spec = "${workingFolder}Music/title0*.mp3"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
   }
 
@@ -96,23 +96,23 @@ Describe 'Get-RealFsObjectType' {
       $expected = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent directory                   e.g. C:\Users\...\Mu*ic2\title1*.mp3' {
       $path_spec = "${workingFolder}Mu*ic2/title1*.mp3"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
 
     It 'recognizes non-existent file                        e.g. C:\Users\...\Mu*ic\title0*.mp3' {
       $path_spec = "${workingFolder}Mu*ic/title0*.mp3"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
   }
 
@@ -122,7 +122,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes file defined as folder (trailing \)      e.g. C:\Users\...\Music\title1.mp3\' {
@@ -130,7 +130,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
   }
 
@@ -140,7 +140,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "drive letter"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes existing drive letter with \             e.g. C:\' {
@@ -148,23 +148,23 @@ Describe 'Get-RealFsObjectType' {
       $expected = "drive letter"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent drive letter without \      e.g. Z:' {
       $path_spec = "Z:"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
 
     It 'recognizes non-existent drive letter with \         e.g. Z:\' {
       $path_spec = "Z:\"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
   }
 
@@ -196,7 +196,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "network share"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes network share without trailing backslash' {
@@ -204,16 +204,15 @@ Describe 'Get-RealFsObjectType' {
       $expected = "network share"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent network share' {
       $path_spec = "\\NonExistent\Share"
-      #TODO: Get-RealFsObjectType has OutputType([System.String])
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
 
     It 'recognizes subfolder of a network share' {
@@ -221,7 +220,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "directory"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes file on a network share' {
@@ -229,7 +228,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "file"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
   }
 
@@ -244,7 +243,7 @@ Describe 'Get-RealFsObjectType' {
       $expected = "network computer"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes network computer without trailing backslash' {
@@ -252,15 +251,15 @@ Describe 'Get-RealFsObjectType' {
       $expected = "network computer"
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Type | Should -Be "${expected}"
     }
 
     It 'recognizes non-existent network computer' {
       $path_spec = "\\NonExistentServer"
-      $expected = $false
+      $expectedExists = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
-      "${object_type}" | Should -Be "${expected}"
+      ${object_type}.Exists | Should -Be "${expectedExists}"
     }
   }
 
