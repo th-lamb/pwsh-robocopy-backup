@@ -1,18 +1,16 @@
 #region Object types
 
+class FsObjectTypeResult {
+  [bool]$Exists
+  [String]$Type
+  [String]$Path
+}
+
 function Get-RealFsObjectType {
-  <# Returns the type of the real filesystem object, specified by the path; or
-    $false for non-existent directory/file.
+  <# Returns an object of class FsObjectTypeResult. This reports whether
+    the specified filesystem object exists, and its real type.
   #>
-  #TODO: Variant 1: Declare 2 output types? -> [OutputType([System.String], [System.Boolean])]
-  <# TODO: Variant 2: Return a custom object? Example:
-    return [PSCustomObject]@{
-      Exists = $true        # or $false
-      Type   = "directory"  # or "file", "network computer", ... or $null
-      Path   = $path_spec
-    }
-  #>
-  [OutputType([System.String])]
+  [OutputType([FsObjectTypeResult])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -31,17 +29,37 @@ function Get-RealFsObjectType {
   switch ("${specified_type}") {
     "network share" {
       if (Test-Path -Path "${path_spec}" -PathType Container) {
-        return "network share"
+        return [FsObjectTypeResult]@{
+          Exists = $true
+          Type   = "network share"
+          Path   = $path_spec
+        }
       }
-      #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
-      return $false
+      else {
+        #TODO: Return "network share" and $path_spec even though the object wasn't found? Or $null?
+        return [FsObjectTypeResult]@{
+          Exists = $false
+          Type   = "network share"
+          Path   = $path_spec
+        }
+      }
     }
     "network computer" {
       if (Test-ServerIsAvailable "${path_spec}") {
-        return "network computer"
+        return [FsObjectTypeResult]@{
+          Exists = $true
+          Type   = "network computer"
+          Path   = $path_spec
+        }
       }
-      #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
-      return $false
+      else {
+        #TODO: Return "network computer" and $path_spec even though the object wasn't found? Or $null?
+        return [FsObjectTypeResult]@{
+          Exists = $false
+          Type   = "network computer"
+          Path   = $path_spec
+        }
+      }
     }
   }
 
@@ -55,37 +73,66 @@ function Get-RealFsObjectType {
   #>
   if (Test-Path -Path "${path_spec}" -PathType Container) {
     if ("${specified_type}" -eq "drive letter") {
-      return "drive letter"
+      return [FsObjectTypeResult]@{
+        Exists = $true
+        Type   = "drive letter"
+        Path   = $path_spec
+      }
     }
     else {
-      return "directory"
+      return [FsObjectTypeResult]@{
+        Exists = $true
+        Type   = "directory"
+        Path   = $path_spec
+      }
     }
   }
   elseif (Test-Path -Path "${path_spec}" -PathType Leaf) {
-    return "file"
+    return [FsObjectTypeResult]@{
+      Exists = $true
+      Type   = "file"
+      Path   = $path_spec
+    }
   }
 
   <# Fallback for hidden files/folders with patterns.
     Reason: Test-Path doesn't find hidden items with wildcards.
     GitHub issue: https://github.com/PowerShell/PowerShell/issues/6473
   #>
-  #TODO: The planned custom object could return $item.FullName instead of $path_spec
   if ("${path_spec}".Contains("*")) {
-    #TODO: Is it currently possible that we find 2 or more objects (and return only 1)?
+    <# Note: Even if we find 2 or more objects, we return only 1!
+      Reasoning:
+      - Goal of this function is to answer the question: "Does this dir-list entry actually
+        point to something that exists?" To answer that, we only need one example.
+      - Robocopy will handle the "multi-file" logic. This script is just the "orchestrator"
+        that prepares the .RCJ job files.
+    #>
     $item = Get-ChildItem -Path "${path_spec}" -Force -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($null -ne $item) {
       if ($item.PSIsContainer) {
-        return "directory"
+        return [FsObjectTypeResult]@{
+          Exists = $true
+          Type   = "directory"
+          Path   = $item.FullName # Not $path_spec with the wildcard(s)
+        }
       }
       else {
-        return "file"
+        return [FsObjectTypeResult]@{
+          Exists = $true
+          Type   = "file"
+          Path   = $item.FullName # Not $path_spec with the wildcard(s)
+        }
       }
     }
   }
 
   # In case the type is not known yet (e.g. Test-Path found no matching file).
-  #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
-  return $false
+  #TODO: Return Type = $null? Pester test needed?
+  return [FsObjectTypeResult]@{
+    Exists = $false
+    Type   = $null
+    Path   = $path_spec
+  }
 
 }
 
