@@ -1,9 +1,9 @@
 #region Object types
 
 class FsObjectTypeResult {
-  [bool]$Exists
-  [String]$Type
-  [String]$Path
+  [bool]$Exists   # $true or $false
+  [String]$Type   # "directory", "file", ..., or $null if unknown
+  [String]$Path   # The actual path of the found filesystem object
 }
 
 function Get-RealFsObjectType {

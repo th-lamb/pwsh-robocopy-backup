@@ -24,18 +24,24 @@ function Test-FsObjectTypeMismatch {
     - directory pattern
     - file
     - file pattern
+    - drive letter
+    - network computer
+    - network share
 
     Possible real types:
     - directory
     - file
-    #TODO: Maybe this should be "false" because Get-RealFsObjectType has OutputType([System.String])
-    - $false (non-existent)
+    - drive letter
+    - network computer
+    - network share
+    - $null (non-existent)
 
     Expected combinations:
-    - directory         : directory or $false
-    - file              : file or $false
-    - directory pattern : directory or $false
-    - file pattern      : file or $false
+    - directory         : directory or $null
+    - directory pattern : directory or $null
+    - file              : file or $null
+    - file pattern      : file or $null
+    #TODO: More expected combinations?
   #>
   [OutputType([System.String])]
   [CmdletBinding()]
@@ -47,7 +53,10 @@ function Test-FsObjectTypeMismatch {
   )
 
   # non-existent objects
-  if ("${existing_type}" -eq $false) {
+  #TODO: This change made it worse: 16 failed tests instead of 12 failed tests
+  # if ("${existing_type}" -eq $false) {
+  Write-Host "${existing_type}" -ForegroundColor Yellow
+  if ($null -eq "${existing_type}") {
     return "missing"
   }
 
@@ -74,6 +83,8 @@ function Test-FsObjectTypeMismatch {
   ) {
     return "type mismatch"
   }
+
+  #TODO: More checks for more combinations?
 
   return "error"
 
@@ -121,7 +132,7 @@ function Get-DirlistLineType {
       "directory entry" { return "invalid: directory entry (for current or parent folder)" }
     }
 
-    $existing_type = Get-RealFsObjectType "${entry}"
+    $existing_type = (Get-RealFsObjectType "${entry}").Type
     $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
 
     switch ("${result}") {
