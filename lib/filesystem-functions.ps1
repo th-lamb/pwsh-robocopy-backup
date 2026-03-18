@@ -7,8 +7,9 @@ function Get-RealFsObjectType {
   #TODO: Variant 1: Declare 2 output types? -> [OutputType([System.String], [System.Boolean])]
   <# TODO: Variant 2: Return a custom object? Example:
     return [PSCustomObject]@{
-      Exists = $true
-      Type = "network computer"
+      Exists = $true        # or $false
+      Type   = "directory"  # or "file", "network computer", ... or $null
+      Path   = $path_spec
     }
   #>
   [OutputType([System.String])]
@@ -33,16 +34,14 @@ function Get-RealFsObjectType {
         return "network share"
       }
       #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
-      # return $false
-      return "false"
+      return $false
     }
     "network computer" {
       if (Test-ServerIsAvailable "${path_spec}") {
         return "network computer"
       }
       #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
-      # return $false
-      return "false"
+      return $false
     }
   }
 
@@ -70,7 +69,9 @@ function Get-RealFsObjectType {
     Reason: Test-Path doesn't find hidden items with wildcards.
     GitHub issue: https://github.com/PowerShell/PowerShell/issues/6473
   #>
+  #TODO: The planned custom object could return $item.FullName instead of $path_spec
   if ("${path_spec}".Contains("*")) {
+    #TODO: Is it currently possible that we find 2 or more objects (and return only 1)?
     $item = Get-ChildItem -Path "${path_spec}" -Force -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($null -ne $item) {
       if ($item.PSIsContainer) {
@@ -84,8 +85,7 @@ function Get-RealFsObjectType {
 
   # In case the type is not known yet (e.g. Test-Path found no matching file).
   #TODO: Returns object of type 'System.Boolean' but this type is not declared in the OutputType attribute.
-  # return $false
-  return "false"
+  return $false
 
 }
 

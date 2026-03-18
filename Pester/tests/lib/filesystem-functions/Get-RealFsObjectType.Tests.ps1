@@ -209,9 +209,8 @@ Describe 'Get-RealFsObjectType' {
 
     It 'recognizes non-existent network share' {
       $path_spec = "\\NonExistent\Share"
-      #TODO: Maybe this should be "false" because Get-RealFsObjectType has OutputType([System.String])
-      # $expected = $false
-      $expected = "false"
+      #TODO: Get-RealFsObjectType has OutputType([System.String])
+      $expected = $false
 
       $object_type = Get-RealFsObjectType "${path_spec}"
       "${object_type}" | Should -Be "${expected}"
