@@ -48,7 +48,8 @@ function Test-FsObjectTypeMismatch {
   param (
     [Parameter(Mandatory = $true)]
     [String]$specified_type,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
+    [AllowNull()]
     [String]$existing_type
   )
 
@@ -56,7 +57,8 @@ function Test-FsObjectTypeMismatch {
   #TODO: This change made it worse: 16 failed tests instead of 12 failed tests
   # if ("${existing_type}" -eq $false) {
   Write-Host "${existing_type}" -ForegroundColor Yellow
-  if ($null -eq "${existing_type}") {
+  # Check for $null or empty string
+  if ([String]::IsNullOrEmpty($existing_type)) {
     return "missing"
   }
 
@@ -132,16 +134,19 @@ function Get-DirlistLineType {
       "directory entry" { return "invalid: directory entry (for current or parent folder)" }
     }
 
+    # Ignore unavailable filesystem objects.
     $existing_type = (Get-RealFsObjectType "${entry}").Type
+    if ([String]::IsNullOrEmpty($existing_type)) {
+      LogAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
+      return "error: not found"
+    }
+
+    # Check for differences.
     $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
 
     switch ("${result}") {
       "match" {
         $object_type = "${specified_type}"
-      }
-      "missing" {
-        LogAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
-        $object_type = "missing"
       }
       "type mismatch" {
         LogAndShowMessage "${logfile}" NOTICE "Type mismatch: ${entry}"
@@ -159,7 +164,6 @@ function Get-DirlistLineType {
       "directory" { return "source-dir" }
       "file" { return "source-file" }
       "file pattern" { return "source-file-pattern" }
-      "missing" { return "error: not found" }
     }
 
   }
@@ -196,7 +200,7 @@ function Get-DirlistLineType {
 
   }
 
-  return "error: unknown entry type for: %{entry}"
+  return "error: unknown entry type for: {entry}"
 
 }
 
