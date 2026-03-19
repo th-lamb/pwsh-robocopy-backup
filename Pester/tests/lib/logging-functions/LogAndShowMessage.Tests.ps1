@@ -1,24 +1,13 @@
-#TODO: Remove this enum (read from actual library file)?
-enum SeverityKeyword {
-  EMERG
-  ALERT
-  CRIT
-  ERR
-  WARNING
-  NOTICE
-  INFO
-  DEBUG
-}
+$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\message-functions.ps1"
 
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/logging-functions.ps1"
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\logging-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/logging-functions/"
+  $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\logging-functions\"
   $Script:logfile = "${workingFolder}LogAndShowMessage.Tests.log"
-
-  . "${ProjectRoot}lib/message-functions.ps1"
-  #$Script:__VERBOSE = 6
 }
 
 
