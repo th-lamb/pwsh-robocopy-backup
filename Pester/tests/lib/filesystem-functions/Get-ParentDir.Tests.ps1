@@ -159,6 +159,14 @@ Describe 'Get-ParentDir' {
     }
 
     It 'returns an empty value for a too short path and ..' {
+      $pattern  = "C:\.."
+      $expected = ""
+
+      $parent_dir = Get-ParentDir "${pattern}"
+      "${parent_dir}" | Should -Be "${expected}"
+    }
+
+    It 'returns an empty value for a too short path and ..' {
       $pattern  = "C:\test\.."
       $expected = ""
 

@@ -744,6 +744,10 @@ function Get-ParentDir {
 
   Write-DebugMsg "Get-ParentDir(): dots evaluated: ${dots_evaluated}"
 
+  # Avoid ParameterBindingValidationException with "" for example when file_spec is "C:\..".
+  if ([String]::IsNullOrEmpty($dots_evaluated)) {
+    return ""
+  }
   $parent_dir = Split-Path -Path "${dots_evaluated}"
   Write-DebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
 
