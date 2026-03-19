@@ -53,7 +53,7 @@ Describe 'Test-FsObjectTypeMismatch' {
   Context 'Non-existent objects' {
     It 'Non-existent directory = missing' {
       $specified_type = "directory"
-      $existing_type = $false
+      $existing_type = $null
       $expected = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
@@ -62,7 +62,7 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'Non-existent directory pattern = missing' {
       $specified_type = "directory pattern"
-      $existing_type = $false
+      $existing_type = $null
       $expected = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
@@ -71,7 +71,7 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'Non-existent file = missing' {
       $specified_type = "file"
-      $existing_type = $false
+      $existing_type = $null
       $expected = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
@@ -80,7 +80,7 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'Non-existent file pattern = missing' {
       $specified_type = "file pattern"
-      $existing_type = $false
+      $existing_type = $null
       $expected = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
