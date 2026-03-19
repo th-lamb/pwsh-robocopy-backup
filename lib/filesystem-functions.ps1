@@ -36,7 +36,7 @@ function Get-RealFsObjectType {
         }
       }
       else {
-        #TODO: Return "network share" and $path_spec even though the object wasn't found? Or $null?
+        # We assume a runtime error (a network resource that is defined but unreachable).
         return [FsObjectTypeResult]@{
           Exists = $false
           Type   = "network share"
@@ -53,7 +53,7 @@ function Get-RealFsObjectType {
         }
       }
       else {
-        #TODO: Return "network computer" and $path_spec even though the object wasn't found? Or $null?
+        # We assume a runtime error (a network resource that is defined but unreachable).
         return [FsObjectTypeResult]@{
           Exists = $false
           Type   = "network computer"
@@ -126,7 +126,10 @@ function Get-RealFsObjectType {
     }
   }
 
-  # In case the type is not known yet (e.g. Test-Path found no matching file).
+  <# In case the type is still not known.
+    -> e.g. Test-Path found no matching file.
+    -> We assume a configuration error (wildcard pattern that matches nothing).
+  #>
   #TODO: Return Type = $null? Pester test needed?
   return [FsObjectTypeResult]@{
     Exists = $false

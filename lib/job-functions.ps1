@@ -54,9 +54,6 @@ function Test-FsObjectTypeMismatch {
   )
 
   # non-existent objects
-  #TODO: This change made it worse: 16 failed tests instead of 12 failed tests
-  # if ("${existing_type}" -eq $false) {
-  Write-Host "${existing_type}" -ForegroundColor Yellow
   # Check for $null or empty string
   if ([String]::IsNullOrEmpty($existing_type)) {
     return "missing"
@@ -135,9 +132,16 @@ function Get-DirlistLineType {
     }
 
     # Ignore unavailable filesystem objects.
-    $existing_type = (Get-RealFsObjectType "${entry}").Type
-    if ([String]::IsNullOrEmpty($existing_type)) {
-      LogAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
+    $fs_object = Get-RealFsObjectType "${entry}"
+    $existing_type = $fs_object.Type
+
+    if (! $fs_object.Exists) {
+      if ($existing_type -eq "network share" -or $existing_type -eq "network computer") {
+        LogAndShowMessage "${logfile}" WARNING "Network resource offline: ${entry}"
+      }
+      else {
+        LogAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
+      }
       return "error: not found"
     }
 

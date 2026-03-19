@@ -132,7 +132,12 @@ Describe 'Get-DirlistLineType' {
       $result | Should -Be "${expected}"
     }
 
-    #TODO: More errors?
+    <#TODO: More errors? Examples:
+      - Directory/file with wildcards (C:\Users\*.ini) which does not exist? -> Type = $null
+      - Missing network share? -> Exists = $false (not Type = $null)
+      - Missing network computer? -> same as for network share
+    #>
+
   }
 }
 
