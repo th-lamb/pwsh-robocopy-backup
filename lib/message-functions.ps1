@@ -70,14 +70,14 @@
 
 
 enum SeverityKeyword {
-  EMERG   = 0
-  ALERT   = 1
-  CRIT    = 2
-  ERR     = 3
+  EMERG = 0
+  ALERT = 1
+  CRIT = 2
+  ERR = 3
   WARNING = 4
-  NOTICE  = 5
-  INFO    = 6
-  DEBUG   = 7
+  NOTICE = 5
+  INFO = 6
+  DEBUG = 7
 }
 
 
@@ -101,9 +101,9 @@ TODO:
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [SeverityKeyword]$severity,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -183,7 +183,8 @@ TODO:
 
     Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}" # 6>> .\error.log
 
-  } else {
+  }
+  else {
     #TODO: remove the redirection after testing
     Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}" # 6>> .\success.log
   }
@@ -201,13 +202,17 @@ function Test-VerbosityIsDefined {
     if ${__VERBOSE} is not between 0..7.
   #>
 
-  $MIN=0
-  $MAX=7
+  $MIN = 0
+  $MAX = 7
 
-  (
-    "${__VERBOSE}" -ge "${MIN}") -and
-    ("${__VERBOSE}" -le "${MAX}"
-  )
+  # Handles undefined, null, "", and " ".
+  if ([string]::IsNullOrWhiteSpace($__VERBOSE)) {
+    return $false
+  }
+
+  # Try to convert to an integer and check if it's within 0..7.
+  $val = $__VERBOSE -as [int]
+  return ($null -ne $val -and $val -ge $MIN -and $val -le $MAX)
 
 }
 
@@ -223,7 +228,7 @@ function Write-EmergMsg {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -237,7 +242,7 @@ function Write-AlertMsg {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -251,7 +256,7 @@ function Write-CritMsg {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -265,7 +270,7 @@ function Write-ErrMsg {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -277,7 +282,7 @@ function Write-WarningMsg {
   # Write-ColoredMessage() for severity level 4 (warning).
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -298,7 +303,7 @@ function Write-NoticeMsg {
   # Write-ColoredMessage() for severity level 5 (notice).
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -319,7 +324,7 @@ function Write-InfoMsg {
   # Write-ColoredMessage() for severity level 6 (info).
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -340,7 +345,7 @@ function Write-DebugMsg {
   # Write-ColoredMessage() for severity level 7 (debug).
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -373,9 +378,9 @@ function Exit-WithEmergMessage {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [Int32]$exit_code,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -394,9 +399,9 @@ function Exit-WithAlertMessage {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [Int32]$exit_code,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -415,9 +420,9 @@ function Exit-WithCritMessage {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [Int32]$exit_code,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -436,9 +441,9 @@ function Exit-WithErrMessage {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [Int32]$exit_code,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -459,7 +464,7 @@ function Write-QuietMessage {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -477,7 +482,7 @@ function Write-NormalMessage {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
@@ -500,7 +505,7 @@ function Write-VerboseMessage {
   #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
