@@ -130,10 +130,9 @@ function Get-RealFsObjectType {
     -> e.g. Test-Path found no matching file.
     -> We assume a configuration error (wildcard pattern that matches nothing).
   #>
-  #TODO: Return Type = $null? Pester test needed?
   return [FsObjectTypeResult]@{
     Exists = $false
-    Type   = $null
+    # Type   = $null      # Must be omitted to prevent PowerShell from converting it to ""!
     Path   = $path_spec
   }
 

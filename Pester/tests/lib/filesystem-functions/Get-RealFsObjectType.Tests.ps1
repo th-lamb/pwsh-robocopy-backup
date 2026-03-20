@@ -88,6 +88,22 @@ Describe 'Get-RealFsObjectType' {
       $object_type = Get-RealFsObjectType "${path_spec}"
       ${object_type}.Exists | Should -Be "${expectedExists}"
     }
+
+    It 'explicitly returns Type = $null for a non-existent file (no wildcard)' {
+      $path_spec = "C:\ThisPathDefinitelyDoesNotExist.txt"
+      $result = Get-RealFsObjectType "${path_spec}"
+
+      $result.Exists | Should -Be $false
+      $result.Type | Should -Be $null
+    }
+
+    It 'explicitly returns Type = $null for a non-existent pattern (with wildcard)' {
+      $path_spec = "${workingFolder}NoMatch*.xyz"
+      $result = Get-RealFsObjectType "${path_spec}"
+
+      $result.Exists | Should -Be $false
+      $result.Type | Should -Be $null
+    }
   }
 
   Context 'Placeholders in both, directory and filename' {
