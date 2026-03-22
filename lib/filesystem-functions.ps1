@@ -1,16 +1,16 @@
 #region Object types
 
-class FsObjectTypeResult {
+class FsObjectResult {
   [bool]$Exists   # $true or $false
   [String]$Type   # "directory", "file", ..., or $null if unknown
   [String]$Path   # The actual path of the found filesystem object
 }
 
 function Get-RealFsObjectType {
-  <# Returns an object of class FsObjectTypeResult. This reports whether
+  <# Returns an object of class FsObjectResult. This reports whether
     the specified filesystem object exists, and its real type.
   #>
-  [OutputType([FsObjectTypeResult])]
+  [OutputType([FsObjectResult])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -29,7 +29,7 @@ function Get-RealFsObjectType {
   switch ("${specified_type}") {
     "network share" {
       if (Test-Path -Path "${path_spec}" -PathType Container) {
-        return [FsObjectTypeResult]@{
+        return [FsObjectResult]@{
           Exists = $true
           Type   = "network share"
           Path   = $path_spec
@@ -37,7 +37,7 @@ function Get-RealFsObjectType {
       }
       else {
         # We assume a runtime error (a network resource that is defined but unreachable).
-        return [FsObjectTypeResult]@{
+        return [FsObjectResult]@{
           Exists = $false
           Type   = "network share"
           Path   = $path_spec
@@ -46,7 +46,7 @@ function Get-RealFsObjectType {
     }
     "network computer" {
       if (Test-ServerIsAvailable "${path_spec}") {
-        return [FsObjectTypeResult]@{
+        return [FsObjectResult]@{
           Exists = $true
           Type   = "network computer"
           Path   = $path_spec
@@ -54,7 +54,7 @@ function Get-RealFsObjectType {
       }
       else {
         # We assume a runtime error (a network resource that is defined but unreachable).
-        return [FsObjectTypeResult]@{
+        return [FsObjectResult]@{
           Exists = $false
           Type   = "network computer"
           Path   = $path_spec
@@ -73,14 +73,14 @@ function Get-RealFsObjectType {
   #>
   if (Test-Path -Path "${path_spec}" -PathType Container) {
     if ("${specified_type}" -eq "drive letter") {
-      return [FsObjectTypeResult]@{
+      return [FsObjectResult]@{
         Exists = $true
         Type   = "drive letter"
         Path   = $path_spec
       }
     }
     else {
-      return [FsObjectTypeResult]@{
+      return [FsObjectResult]@{
         Exists = $true
         Type   = "directory"
         Path   = $path_spec
@@ -88,7 +88,7 @@ function Get-RealFsObjectType {
     }
   }
   elseif (Test-Path -Path "${path_spec}" -PathType Leaf) {
-    return [FsObjectTypeResult]@{
+    return [FsObjectResult]@{
       Exists = $true
       Type   = "file"
       Path   = $path_spec
@@ -110,14 +110,14 @@ function Get-RealFsObjectType {
     $item = Get-ChildItem -Path "${path_spec}" -Force -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($null -ne $item) {
       if ($item.PSIsContainer) {
-        return [FsObjectTypeResult]@{
+        return [FsObjectResult]@{
           Exists = $true
           Type   = "directory"
           Path   = $item.FullName # Not $path_spec with the wildcard(s)
         }
       }
       else {
-        return [FsObjectTypeResult]@{
+        return [FsObjectResult]@{
           Exists = $true
           Type   = "file"
           Path   = $item.FullName # Not $path_spec with the wildcard(s)
@@ -130,7 +130,7 @@ function Get-RealFsObjectType {
     -> e.g. Test-Path found no matching file.
     -> We assume a configuration error (wildcard pattern that matches nothing).
   #>
-  return [FsObjectTypeResult]@{
+  return [FsObjectResult]@{
     Exists = $false
     # Type   = $null      # Must be omitted to prevent PowerShell from converting it to ""!
     Path   = $path_spec
@@ -715,9 +715,10 @@ function Get-ExpandedPath {
 }
 
 function Get-ParentDir {
-  # Returns the parent directory of the specified file (pattern).
-  #TODO: Return type also an object of class FsObjectTypeResult as in Get-RealFsObjectType?
-  [OutputType([System.String])]
+  <# Returns an object of class FsObjectResult. This reports the
+    parent directory of the specified file (pattern).
+  #>
+  [OutputType([FsObjectResult])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -745,8 +746,11 @@ function Get-ParentDir {
 
   # Avoid ParameterBindingValidationException with "" for example when file_spec is "C:\..".
   if ([String]::IsNullOrEmpty($dots_evaluated)) {
-    #TODO: -> Return type FsObjectTypeResult (Exists=false, Type=null)?
-    return ""
+    return [FsObjectResult]@{
+      Exists = $false
+      # Type   = $null      # Must be omitted to prevent PowerShell from converting it to ""!
+      Path   = $dots_evaluated
+    }
   }
   $parent_dir = Split-Path -Path "${dots_evaluated}"
   Write-DebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
@@ -770,8 +774,11 @@ function Get-ParentDir {
     }
   }
 
-  #TODO: -> Return type FsObjectTypeResult?
-  return "${parent_dir}"
+  return [FsObjectResult]@{
+    Exists = $true
+    Type   = "directory"
+    Path   = ${parent_dir}
+  }
 
 }
 

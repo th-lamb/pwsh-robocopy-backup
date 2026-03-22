@@ -522,8 +522,9 @@ function _processDirectoryList {
       switch -Wildcard ("${Script:current_source_type}") {
         "source-dir" { $Script:source_dir = "${expanded}" }
         "source-file*" {                                      # <--- pattern!
-          #TODO: -> New return type FsObjectTypeResult?
-          $Script:source_dir = Get-ParentDir "${expanded}"
+          #TODO: A good automated test for the main script is really needed!!!
+          $FSobject = Get-ParentDir "${expanded}"
+          $Script:source_dir = $FSobject.Path
 
           # Add the filename (pattern) to $included_files because we must NOT use *.* later!
           $source_filename = Split-Path -Leaf "${expanded}"

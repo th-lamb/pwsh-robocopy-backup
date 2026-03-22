@@ -16,32 +16,32 @@ Describe 'Get-ParentDir' {
       $path_spec  = "${workingFolder}Test1\test.ini"
       $expected   = "${workingFolder}Test1\"
 
-      $parent_dir = Get-ParentDir "${path_spec}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${path_spec}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns parent folder for non-existent file' {
       $pattern  = "${workingFolder}Test1\test.xml"
       $expected = "${workingFolder}Test1\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns the drive for a short path' {
       $pattern  = "C:\test\"
       $expected = "C:\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns an empty value for a too short path' {
       $pattern  = "C:\"
       $expected = ""
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
   }
 
@@ -50,24 +50,24 @@ Describe 'Get-ParentDir' {
       $pattern  = "${workingFolder}Test1\test*.ini"
       $expected = "${workingFolder}Test1\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns parent folder for pattern with 2 or more matching files' {
       $pattern  = "${workingFolder}Test1\test*.txt"
       $expected = "${workingFolder}Test1\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns parent folder for pattern with no matching file' {
       $pattern  = "${workingFolder}Test1\test*.xml"
       $expected = "${workingFolder}Test1\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
   }
 
@@ -80,24 +80,24 @@ Describe 'Get-ParentDir' {
       $pattern  = "${workingFolder}Tes*1\test.ini"
       $expected = "${workingFolder}Tes*1\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern with 2 or more matching *directories*' {
       $pattern  = "${workingFolder}Test*\test.ini"
       $expected = "${workingFolder}Test*\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir and file pattern with matching files in different directories' {
       $pattern  = "${workingFolder}Test*\test*.ini"
       $expected = "${workingFolder}Test*\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
   }
 
@@ -106,72 +106,72 @@ Describe 'Get-ParentDir' {
       $pattern  = "${workingFolder}Test1\."
       $expected = "${workingFolder}"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns the parents parent path for .. (link to the parent dir)' {
       $pattern  = "${workingFolder}Test1\.."
       $expected = "${ProjectRoot}Pester\resources\lib\"   # Parent of $workingFolder
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern and .' {
       $pattern  = "${workingFolder}Test*\."
       $expected = "${workingFolder}"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns path with placeholder for dir pattern and ..' {
       $pattern  = "${workingFolder}Test*\.."
       $expected = "${ProjectRoot}Pester\resources\lib\"   # Parent of $workingFolder
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns the drive for a short path and .' {
       $pattern  = "C:\test\."
       $expected = "C:\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns the drive for a short path and ..' {
       $pattern  = "C:\test1\test2\.."
       $expected = "C:\"
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns an empty value for a too short path and .' {
       $pattern  = "C:\."
       $expected = ""
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns an empty value for a too short path and ..' {
       $pattern  = "C:\.."
       $expected = ""
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns an empty value for a too short path and ..' {
       $pattern  = "C:\test\.."
       $expected = ""
 
-      $parent_dir = Get-ParentDir "${pattern}"
-      "${parent_dir}" | Should -Be "${expected}"
+      $FSobject = Get-ParentDir "${pattern}"
+      ${FSobject}.Path | Should -Be "${expected}"
     }
   }
 
