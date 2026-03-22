@@ -518,14 +518,11 @@ function _processDirectoryList {
       Write-DebugMsg "current_source_definition: ${Script:current_source_definition}"
       Write-DebugMsg "current_source_type : ${Script:current_source_type}"
 
-      #TODO: Check here whether source exists?
-      #TODO: Also determine whether the type is correct? (e.g. missing trailing "\" on a folder)
-      #Write-Host "expanded: ${expanded}" -ForegroundColor Yellow
-
       # Determine basic information for the job.
       switch -Wildcard ("${Script:current_source_type}") {
         "source-dir" { $Script:source_dir = "${expanded}" }
         "source-file*" {                                      # <--- pattern!
+          #TODO: -> New return type FsObjectTypeResult?
           $Script:source_dir = Get-ParentDir "${expanded}"
 
           # Add the filename (pattern) to $included_files because we must NOT use *.* later!

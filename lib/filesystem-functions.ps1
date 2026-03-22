@@ -716,7 +716,7 @@ function Get-ExpandedPath {
 
 function Get-ParentDir {
   # Returns the parent directory of the specified file (pattern).
-  #TODO: Additional parameter "check_file_exists" needed?
+  #TODO: Return type also an object of class FsObjectTypeResult as in Get-RealFsObjectType?
   [OutputType([System.String])]
   [CmdletBinding()]
   param (
@@ -745,6 +745,7 @@ function Get-ParentDir {
 
   # Avoid ParameterBindingValidationException with "" for example when file_spec is "C:\..".
   if ([String]::IsNullOrEmpty($dots_evaluated)) {
+    #TODO: -> Return type FsObjectTypeResult (Exists=false, Type=null)?
     return ""
   }
   $parent_dir = Split-Path -Path "${dots_evaluated}"
@@ -769,6 +770,7 @@ function Get-ParentDir {
     }
   }
 
+  #TODO: -> Return type FsObjectTypeResult?
   return "${parent_dir}"
 
 }
