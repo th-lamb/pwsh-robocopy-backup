@@ -523,6 +523,7 @@ function _processDirectoryList {
         "source-dir" { $Script:source_dir = "${expanded}" }
         "source-file*" {                                      # <--- pattern!
           #TODO: A good automated test for the main script is really needed!!!
+          #TODO: -> TODO\Pester\SmokeTestingConcept.md
           $FSobject = Get-ParentDir "${expanded}"
           $Script:source_dir = $FSobject.Path
 
