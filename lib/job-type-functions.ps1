@@ -82,7 +82,7 @@ function Get-UserSelectedJobType {
   )
 
   if ($NonInteractive) {
-    Add-LogMessage -logfile "${logfile}" -severity INFO -message "Non-interactive mode. Using the default: ${default_job_type}"
+    LogAndShowMessage -logfile "${logfile}" -severity INFO -message "Non-interactive mode. Using the default: ${default_job_type}"
     return "${default_job_type}"
   }
 
