@@ -51,7 +51,10 @@
 param(
   # Skip all interactive prompts and pauses (useful for automation/CI).
   [Parameter(Mandatory=$false)]
-  [switch]$NonInteractive
+  [switch]$NonInteractive,
+  # Create job files but do not actually run Robocopy (useful for testing/validation).
+  [Parameter(Mandatory=$false)]
+  [switch]$SkipExecution
 )
 
 
@@ -630,52 +633,57 @@ if ($jobfiles_count -eq 0) {
 } else {
   LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
 
-  for ($i = 0; $i -lt $jobfiles_count; $i++) {
-    $user_defined_job = $jobfiles[$i]
-    Write-InfoMsg "Job: ${user_defined_job}..."
+  if ($SkipExecution) {
+    LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Skipping execution as requested (-SkipExecution)."
+  } else {
+    for ($i = 0; $i -lt $jobfiles_count; $i++) {
+      $user_defined_job = $jobfiles[$i]
+      Write-InfoMsg "Job: ${user_defined_job}..."
 
-    #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
-    [Int32]$robocopy_exit_code = 0
-    if ($PSCmdlet.ShouldProcess("${user_defined_job}", "Run Robocopy job")) {
-      $process = Start-Process -Wait -PassThru -NoNewWindow `
-        -FilePath "${robocopy_exe}" `
-        -ArgumentList "/job:""${robocopy_job_type_template}""", `
-                      "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
-                      "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
-                      "/job:""${user_defined_job}"""
+      #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
+      [Int32]$robocopy_exit_code = 0
+      if ($PSCmdlet.ShouldProcess("${user_defined_job}", "Run Robocopy job")) {
+        $process = Start-Process -Wait -PassThru -NoNewWindow `
+          -FilePath "${robocopy_exe}" `
+          -ArgumentList "/job:""${robocopy_job_type_template}""", `
+                        "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
+                        "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
+                        "/job:""${user_defined_job}"""
 
-      $robocopy_exit_code = $process.ExitCode
+        $robocopy_exit_code = $process.ExitCode
 
-    } else {
-      # In -WhatIf mode, we simulate a successful (no changes) exit code.
-      $robocopy_exit_code = 0
+      } else {
+        # In -WhatIf mode, we simulate a successful (no changes) exit code.
+        $robocopy_exit_code = 0
+      }
+
+      Write-DebugMsg "Robocopy exit code: $robocopy_exit_code"
+
+      # Log errors. Use the jobname (Job1..n) from the filename.
+      [Int32]$job_name_pos = ("${user_defined_job}".LastIndexOf("-") + 1)
+      [Int32]$job_name_length = ("${user_defined_job}".LastIndexOf(".") - $job_name_pos)
+      [String]$job_name = "${user_defined_job}".Substring($job_name_pos, $job_name_length)
+
+      LogAndShowRobocopyError "${BACKUP_LOGFILE}" "${job_name}" $robocopy_exit_code
+
+      # Update counters.
+      switch ($robocopy_exit_code) {
+        {$_ -in 0..7} {
+          $job_result_ok_count = ($job_result_ok_count + 1)
+        }
+        {$_ -in 8..15} {
+          $job_result_warning_count = ($job_result_warning_count + 1)
+        }
+        16 {
+          $job_result_error_count = ($job_result_error_count + 1)
+        }
+      }
+
     }
 
-    Write-DebugMsg "Robocopy exit code: $robocopy_exit_code"
-
-    # Log errors. Use the jobname (Job1..n) from the filename.
-    [Int32]$job_name_pos = ("${user_defined_job}".LastIndexOf("-") + 1)
-    [Int32]$job_name_length = ("${user_defined_job}".LastIndexOf(".") - $job_name_pos)
-    [String]$job_name = "${user_defined_job}".Substring($job_name_pos, $job_name_length)
-
-    LogAndShowRobocopyError "${BACKUP_LOGFILE}" "${job_name}" $robocopy_exit_code
-
-    # Update counters.
-    switch ($robocopy_exit_code) {
-      {$_ -in 0..7} {
-        $job_result_ok_count = ($job_result_ok_count + 1)
-      }
-      {$_ -in 8..15} {
-        $job_result_warning_count = ($job_result_warning_count + 1)
-      }
-      16 {
-        $job_result_error_count = ($job_result_error_count + 1)
-      }
-    }
+    LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$job_result_ok_count jobs finished successfully, $job_result_warning_count with warnings, $job_result_error_count with errors."
 
   }
-
-  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$job_result_ok_count jobs finished successfully, $job_result_warning_count with warnings, $job_result_error_count with errors."
 
 }
 
