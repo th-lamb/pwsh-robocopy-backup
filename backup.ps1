@@ -114,7 +114,8 @@ $WhatIfPreference = $false
 
 Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.1.00"
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
-Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
+#TODO: Check if "-Scope script" is needed for the smoke-test.
+Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%")) -Scope script
 
 # Restore the original -WhatIf preference.
 $WhatIfPreference = $oldWhatIfPreference
@@ -199,26 +200,13 @@ try {
   exit 1
 }
 
-Add-EmptyLineToLogfile "${BACKUP_LOGFILE}"  # One empty line between the previous and this backup.
-
-# Flushes early bootstrap messages to the real log file now that $BACKUP_LOGFILE is known.
-if ($null -ne $BACKUP_LOGFILE) {
-  foreach ($msg in $Script:earlyMsgBuffer) {
-    # Using direct Add-LogMessage (ignoring __VERBOSE for early mandatory info).
-    Add-LogMessage -logfile $BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
-  }
-  $Script:earlyMsgBuffer.Clear()
-}
-
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
-
 #endregion Read settings file ##################################################
 
 
 
 #region Check necessary directories and files
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Checking necessary directories and files..."
+Write-EarlyMsg INFO "Checking necessary directories and files..."
 
 <# Some folders/files are mandatory. The rest can be created automatically.
   - Mandatory:
@@ -244,7 +232,7 @@ Test-NecessaryFile 'ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE' "${ROBOCOPY_JOB_TYPE_TEM
 Test-NecessaryFile 'ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS' "${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" "${BACKUP_LOGFILE}"
 Test-NecessaryFile 'ROBOCOPY_JOB_TEMPLATE_LOGGING' "${ROBOCOPY_JOB_TEMPLATE_LOGGING}" "${BACKUP_LOGFILE}"
 
-# Different cases for $BACKUP_BASE_DIR (some cannot be created)!
+# Note: Different cases for $BACKUP_BASE_DIR (some cannot be created)!
 $dir_type = Get-SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
 Write-DebugMsg "BackupBaseDir type: ${dir_type}"
 
@@ -270,9 +258,9 @@ switch ("${dir_type}") {
   }
 }
 
+#TODO: Depending on $BACKUP_LOGFILE location, we may need to create new folders - which might fail!
+
 #TODO: Report creation of these dirs (as INFO).
-#TODO: And store a variable to prepend this info when the logging starts? (Until now the log-file starts with "Dir-list created from template.")
-#     -> Maybe add all log messages to a list before the log-file exists, and add all of them when it exists?
 [void](New-NecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}")
 [void](New-NecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}")
 [void](New-NecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}")
@@ -291,9 +279,28 @@ if ($dirlist_created -and -not $NonInteractive) {
 #Test-NecessaryFile 'BACKUP_LOGFILE' "${BACKUP_LOGFILE}" "${BACKUP_LOGFILE}"
 #Test-NecessaryFile 'ERROR_LOGFILE' "${ERROR_LOGFILE}" "${ERROR_LOGFILE}"
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files checked."
+Write-EarlyMsg INFO "Necessary directories and files checked."
 
 #endregion Check necessary directories and files ###############################
+
+
+
+#region Start logging to actual logfile
+
+Add-EmptyLineToLogfile "${BACKUP_LOGFILE}"  # One empty line between the previous and this backup.
+
+# Flushes early bootstrap messages to the real log file now that $BACKUP_LOGFILE is available.
+if ($null -ne $BACKUP_LOGFILE) {
+  foreach ($msg in $Script:earlyMsgBuffer) {
+    # Using direct Add-LogMessage (ignoring __VERBOSE for early mandatory info).
+    Add-LogMessage -logfile $BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
+  }
+  $Script:earlyMsgBuffer.Clear()
+}
+
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
+
+#endregion Start logging to actual logfile #####################################
 
 
 
