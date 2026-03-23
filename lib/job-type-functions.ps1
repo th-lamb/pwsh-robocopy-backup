@@ -75,8 +75,16 @@ function Get-UserSelectedJobType {
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
     [String]$default_job_type,
     [Parameter(Mandatory = $true)]
-    [String]$logfile
+    [String]$logfile,
+    # Skip all interactive prompts and pauses (useful for automation/CI).
+    [Parameter(Mandatory = $false)]
+    [switch]$NonInteractive
   )
+
+  if ($NonInteractive) {
+    Add-LogMessage -logfile "${logfile}" -severity INFO -message "Non-interactive mode. Using the default: ${default_job_type}"
+    return "${default_job_type}"
+  }
 
   Add-LogMessage -logfile "${logfile}" -severity INFO -message "Asking the user for the job-type..."
 

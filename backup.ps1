@@ -48,7 +48,11 @@
 
 
 [CmdletBinding(SupportsShouldProcess=$true)]
-param()
+param(
+  # Skip all interactive prompts and pauses (useful for automation/CI).
+  [Parameter(Mandatory=$false)]
+  [switch]$NonInteractive
+)
 
 
 
@@ -276,7 +280,7 @@ $robocopy_exe = Get-ExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 # Create the dir-list from the template if necessary.
 $dirlist_created = New-NecessaryFile 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
 
-if ($dirlist_created) {
+if ($dirlist_created -and -not $NonInteractive) {
   Write-InfoMsg "Opening the dir-list in Editor and wait..."
   Notepad.exe "${BACKUP_DIRLIST}" | Out-Null
 }
@@ -292,7 +296,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Necessary directories and files chec
 
 #region Ask for job type
 
-$selected_job_type = Get-UserSelectedJobType "${DEFAULT_JOB_TYPE}" "${BACKUP_LOGFILE}"
+$selected_job_type = Get-UserSelectedJobType -default_job_type "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -NonInteractive:$NonInteractive
 
 switch ($selected_job_type) {
   "Incremental" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }
@@ -687,8 +691,9 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "${message}"
 
 
 
-# Pause if started via right-click.
-if ($CalledViaRightclick) {
+# Only pause for user input if the script was started via Windows Explorer (Right-click)
+# and we are not in non-interactive mode.
+if ($CalledViaRightclick -and -not $NonInteractive) {
   Write-Host -NoNewLine "Press any key to quit..."
   [void][System.Console]::ReadKey($true)
 }
