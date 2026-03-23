@@ -184,7 +184,7 @@ try {
 
 Write-EarlyMsg INFO "Reading the settings file..."
 
-$iniFile = $PSCommandPath -replace ".ps1", ".ini"
+$iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
 try {
   Read-SettingsFile ("${iniFile}")
 } catch {
