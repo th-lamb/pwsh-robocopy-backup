@@ -393,7 +393,7 @@ function Get-ExecutablePath {
 
 #region Object creation
 
-function New-NecessaryDirectory {
+function New-Directory {
   # Creates the specified directory and all parent folders if necessary.
   # Returns $true if the directory has been created; otherwise $false.
   [OutputType([System.Boolean])]

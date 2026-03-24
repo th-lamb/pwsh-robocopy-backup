@@ -238,7 +238,7 @@ Write-DebugMsg "BackupBaseDir type: ${dir_type}"
 
 switch ("${dir_type}") {
   "directory" {
-    [void](New-NecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}")
+    [void](New-Directory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}")
   }
   {$_ -in "drive letter", "network share"} {
     Test-NecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
@@ -246,7 +246,7 @@ switch ("${dir_type}") {
   "relative path" {
     # Interpret as path below script dir, current drive or ...?
     $absolute_base_dir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
-    [void](New-NecessaryDirectory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}")
+    [void](New-Directory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}")
   }
   "network computer" {
     Write-CritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
@@ -258,18 +258,19 @@ switch ("${dir_type}") {
   }
 }
 
-#TODO: Depending on $BACKUP_LOGFILE location, we may need to create new folders - which might fail!
+#FIXME: Depending on $BACKUP_LOGFILE location, we may need to create new folders - which might fail!
+#TODO: Call "Get-ParentDir $BACKUP_LOGFILE" and then "New-Directory $parent"?
 
 #TODO: Report creation of these dirs (as INFO).
-[void](New-NecessaryDirectory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}")
-[void](New-NecessaryDirectory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}")
-[void](New-NecessaryDirectory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}")
+[void](New-Directory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}")
+[void](New-Directory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}")
+[void](New-Directory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}")
 
 # Make sure that robocopy has been found if only "robocopy" is defined in the ini file!
 $robocopy_exe = Get-ExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 
 # Create the dir-list from the template if necessary.
-$dirlist_created = New-NecessaryFile 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
+$dirlist_created = New-FileFromTemplate 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
 
 if ($dirlist_created -and -not $NonInteractive) {
   Write-InfoMsg "Opening the dir-list in Editor and wait..."

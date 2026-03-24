@@ -10,18 +10,18 @@ BeforeAll {
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $Script:logfile = "${workingFolder}New-NecessaryDirectory.Tests.log"
+  $Script:logfile = "${workingFolder}New-Directory.Tests.log"
 }
 
 
 
-Describe 'New-NecessaryDirectory' {
+Describe 'New-Directory' {
   Context 'Expected situations' {
     It 'Successfully creates a new directory' {
       $dir_to_create  = "${workingFolder}dir_to_create"
 
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
-      New-NecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
+      New-Directory 'Test' "${dir_to_create}" "${logfile}"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
 
@@ -31,7 +31,7 @@ Describe 'New-NecessaryDirectory' {
     It 'Does nothing if the directory already exists' {
       $dir_to_create  = "${workingFolder}existing_dir"
 
-      New-NecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
+      New-Directory 'Test' "${dir_to_create}" "${logfile}"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
 
       $exists | Should -Be $true
@@ -46,7 +46,7 @@ Describe 'New-NecessaryDirectory' {
       Mock LogAndShowMessage {}
 
       {
-        New-NecessaryDirectory 'Test' "${dir_to_create}" "${logfile}"
+        New-Directory 'Test' "${dir_to_create}" "${logfile}"
       } | Should -Throw -ExpectedMessage "${expected_message}"
 
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
@@ -57,13 +57,13 @@ Describe 'New-NecessaryDirectory' {
   Context 'Wrong Usage' {
     It 'Throws an exception when called with an empty definition_name.' {
       {
-        New-NecessaryDirectory ""
+        New-Directory ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an empty path.' {
       {
-        New-NecessaryDirectory 'Test' ""
+        New-Directory 'Test' ""
       } | Should -Throw
     }
 
@@ -71,7 +71,7 @@ Describe 'New-NecessaryDirectory' {
       $dir_to_create  = "${workingFolder}existing_dir"
 
       {
-        New-NecessaryDirectory 'Test' "${dir_to_create}" ""
+        New-Directory 'Test' "${dir_to_create}" ""
       } | Should -Throw
     }
   }
