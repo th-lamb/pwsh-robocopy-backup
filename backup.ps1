@@ -112,10 +112,10 @@ function Write-EarlyMsg {
 $oldWhatIfPreference = $WhatIfPreference
 $WhatIfPreference = $false
 
+#TODO: Make versioning "generic" - using commands like "git tag v0.1.00" and %%SCRIPT_VERSION%% here?
 Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.1.00"
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
-#TODO: Check if "-Scope script" is needed for the smoke-test.
-Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%")) -Scope script
+Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
 
 # Restore the original -WhatIf preference.
 $WhatIfPreference = $oldWhatIfPreference
