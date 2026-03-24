@@ -494,7 +494,7 @@ function Write-NormalMessage {
 
   # Write message if ${__VERBOSE} >= 5 (notice).
   if ("$__VERBOSE" -ge 5) {
-    Write-ColoredMessage "info" "[INFO   ] ${message}"
+    Write-ColoredMessage INFO "[INFO   ] ${message}"
   }
 
 }
@@ -517,7 +517,7 @@ function Write-VerboseMessage {
 
   # Write message if ${__VERBOSE} = 7 (debug).
   if ("$__VERBOSE" -eq 7) {
-    Write-ColoredMessage "info" "[INFO   ] ${message}"
+    Write-ColoredMessage INFO "[INFO   ] ${message}"
   }
 
 }
