@@ -47,13 +47,13 @@
 
 
 
-[CmdletBinding(SupportsShouldProcess=$true)]
+[CmdletBinding(SupportsShouldProcess = $true)]
 param(
   # Skip all interactive prompts and pauses (useful for automation/CI).
-  [Parameter(Mandatory=$false)]
+  [Parameter(Mandatory = $false)]
   [switch]$NonInteractive,
   # Create job files but do not actually run Robocopy (useful for testing/validation).
-  [Parameter(Mandatory=$false)]
+  [Parameter(Mandatory = $false)]
   [switch]$SkipExecution
 )
 
@@ -69,20 +69,20 @@ function Write-EarlyMsg {
     Writes to console immediately and saves to buffer for later log file flushing.
   #>
   param(
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [ValidateSet('EMERG', 'ALERT', 'CRIT', 'ERR', 'WARNING', 'NOTICE', 'INFO', 'DEBUG')]
     [String]$severity,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$message
   )
 
   # Store the message for later.
   $timestamp = Get-Date -Format s
   $Script:earlyMsgBuffer.Add([PSCustomObject]@{
-    Timestamp = $timestamp
-    Severity  = $severity
-    Message   = $message
-  })
+      Timestamp = $timestamp
+      Severity  = $severity
+      Message   = $message
+    })
 
   # Format the severity label similar to Format-SeverityLabel. Example: INFO = [INFO   ]
   $sb = [System.Text.StringBuilder]::new("$severity")
@@ -93,9 +93,9 @@ function Write-EarlyMsg {
 
   # Write the message to the console.
   $color = switch ($severity) {
-    {$_ -in "EMERG", "ALERT", "CRIT", "ERR"} { "Red" }
+    { $_ -in "EMERG", "ALERT", "CRIT", "ERR" } { "Red" }
     "WARNING" { "Yellow" }
-    Default   { "White" }
+    Default { "White" }
   }
 
   Write-Host "${severityLabel} ${message}" -ForegroundColor $color
@@ -126,15 +126,15 @@ $WhatIfPreference = $oldWhatIfPreference
 
 #region Helpers
 
-[Boolean]$CalledViaRightclick=$false
+[Boolean]$CalledViaRightclick = $false
 
 if ($MyInvocation.InvocationName.Equals("&")) {
   # Windows PowerShell
-  if ( (Get-ExecutionPolicy -Scope Process) -eq 'Bypass') { $CalledViaRightclick=$true }
+  if ( (Get-ExecutionPolicy -Scope Process) -eq 'Bypass') { $CalledViaRightclick = $true }
 }
 else {
   # PowerShell 7
-  if ($MyInvocation.Line -eq "") { $CalledViaRightclick=$true }
+  if ($MyInvocation.Line -eq "") { $CalledViaRightclick = $true }
 }
 
 #endregion Helpers
@@ -151,7 +151,8 @@ $startTime = (Get-Date)
 try {
   # We use the .NET method because it is immune to -WhatIf interception in PS 5.1.
   [System.IO.Directory]::SetCurrentDirectory("${SCRIPT_DIR}")
-} catch {
+}
+catch {
   # Log to native stderr (often captured by logs).
   [Console]::ForegroundColor = 'red'
   [Console]::Error.WriteLine("Failed to change working directory to [${SCRIPT_DIR}]! Error: $_")
@@ -178,7 +179,8 @@ try {
   . lib\inifile-functions.ps1       # Depends on message-functions.
   . lib\robocopy-functions.ps1      # Depends on logging-functions.
   . lib\job-type-functions.ps1      # Depends on logging-functions, message-functions.
-} catch {
+}
+catch {
   Write-EarlyMsg ERR ("Failed to import function libraries from lib\ subfolder! " + `
       "Ensure the folder exists in the script directory. Error: $_")
   exit 2
@@ -195,10 +197,13 @@ Write-EarlyMsg INFO "Reading the settings file..."
 $iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
 try {
   Read-SettingsFile ("${iniFile}")
-} catch {
+}
+catch {
   Write-EarlyMsg ERR "Failed to read settings file [${iniFile}]! Error: $_"
   exit 1
 }
+
+Write-EarlyMsg INFO "Settings file read."
 
 #endregion Read settings file ##################################################
 
@@ -207,6 +212,14 @@ try {
 #region Check necessary directories and files
 
 Write-EarlyMsg INFO "Checking necessary directories and files..."
+
+# Create logfile folder if necessary. (May be different from $BACKUP_DIR.)
+$FSobject = Get-ParentDir "${BACKUP_LOGFILE}"
+if (! ${FSobject}.Exists) {
+  Write-EarlyMsg INFO "Creating logfile directory..."
+  [void](New-Directory 'LOGFILE_DIR' $(${FSobject}.Path) "${BACKUP_LOGFILE}")
+  Write-EarlyMsg INFO "Logfile directory created."
+}
 
 <# Some folders/files are mandatory. The rest can be created automatically.
   - Mandatory:
@@ -240,7 +253,7 @@ switch ("${dir_type}") {
   "directory" {
     [void](New-Directory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}")
   }
-  {$_ -in "drive letter", "network share"} {
+  { $_ -in "drive letter", "network share" } {
     Test-NecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
   }
   "relative path" {
@@ -257,9 +270,6 @@ switch ("${dir_type}") {
     exit 1
   }
 }
-
-#FIXME: Depending on $BACKUP_LOGFILE location, we may need to create new folders - which might fail!
-#TODO: Call "Get-ParentDir $BACKUP_LOGFILE" and then "New-Directory $parent"?
 
 #TODO: Report creation of these dirs (as INFO).
 [void](New-Directory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}")
@@ -299,8 +309,6 @@ if ($null -ne $BACKUP_LOGFILE) {
   $Script:earlyMsgBuffer.Clear()
 }
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Settings file read."
-
 #endregion Start logging to actual logfile #####################################
 
 
@@ -311,10 +319,10 @@ $selected_job_type = Get-UserSelectedJobType -default_job_type "${DEFAULT_JOB_TY
 
 switch ($selected_job_type) {
   "Incremental" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }
-  "Full"        { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_FULL }
-  "Purge"       { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE }
-  "Archive"     { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE }
-  "Cancel"      { exit 0 }
+  "Full" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_FULL }
+  "Purge" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE }
+  "Archive" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE }
+  "Cancel" { exit 0 }
   Default {
     # Illegal choice
     #TODO: Maybe a different exit code? (1 was for syntax errors, 2 for missing files, more?)
@@ -375,16 +383,16 @@ function Invoke-AddJobFile {
   Write-DebugMsg "Invoke-AddJobFile()"
 
   Add-JobFile `
-      "${BACKUP_JOB_DIR}" `
-      "${COMPUTERNAME}" `
-      $Script:current_job_num `
-      "${Script:current_source_definition}" `
-      "${Script:source_dir}" `
-      "${Script:target_dir}" `
-      $Script:included_files `
-      $Script:excluded_dirs `
-      $Script:excluded_files `
-      $Script:single_file_job
+    "${BACKUP_JOB_DIR}" `
+    "${COMPUTERNAME}" `
+    $Script:current_job_num `
+    "${Script:current_source_definition}" `
+    "${Script:source_dir}" `
+    "${Script:target_dir}" `
+    $Script:included_files `
+    $Script:excluded_dirs `
+    $Script:excluded_files `
+    $Script:single_file_job
 
   $Script:jobs_created_count = ($Script:jobs_created_count + 1)
   Write-DebugMsg "jobs_created_count: $Script:jobs_created_count"
@@ -424,7 +432,7 @@ function Initialize-LineRelatedInfo {
 function _processDirectoryList {
   $dir_list_content = Get-Content "${BACKUP_DIRLIST}"
 
-  ForEach($line in $dir_list_content) {
+  ForEach ($line in $dir_list_content) {
     Write-DebugMsg "Next line: ${line}"
 
     # Expand all entries first to avoid interpreting environment variables etc. as filenames.
@@ -536,7 +544,8 @@ function _processDirectoryList {
       # Determine basic information for the job.
       switch -Wildcard ("${Script:current_source_type}") {
         "source-dir" { $Script:source_dir = "${expanded}" }
-        "source-file*" {                                      # <--- pattern!
+        "source-file*" {
+          # <--- pattern!
           #TODO: A good automated test for the main script is really needed!!!
           #TODO: -> TODO\Pester\SmokeTestingConcept.md
           $FSobject = Get-ParentDir "${expanded}"
@@ -554,7 +563,8 @@ function _processDirectoryList {
       if ("${Script:source_dir}" -eq "") {
         LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
         Initialize-JobRelatedInfo
-      } else {
+      }
+      else {
         $Script:target_dir = Get-TargetDir "${BACKUP_DIR}" "${Script:source_dir}"
         Write-DebugMsg "target_dir        : ${Script:target_dir}"
       }
@@ -575,9 +585,9 @@ function _processDirectoryList {
       Write-DebugMsg "entry               : ${entry}"
 
       switch ("${line_type}") {
-        "incl-files-pattern"  {$Script:included_files.Add("${entry}") > $null}
-        "excl-files-pattern"  {$Script:excluded_files.Add("${entry}") > $null}
-        "excl-dirs-pattern"   {$Script:excluded_dirs.Add("${entry}") > $null}
+        "incl-files-pattern" { $Script:included_files.Add("${entry}") > $null }
+        "excl-files-pattern" { $Script:excluded_files.Add("${entry}") > $null }
+        "excl-dirs-pattern" { $Script:excluded_dirs.Add("${entry}") > $null }
       }
 
       Write-DebugMsg ("included_files.Count: " + $Script:included_files.Count)
@@ -633,17 +643,19 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:jobs_created_count job file(
 
 $jobfiles = New-Object System.Collections.ArrayList
 $jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File |
-            Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) }
+Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) }
 $jobfiles_count = $jobfiles.Count
 
 if ($jobfiles_count -eq 0) {
   LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
-} else {
+}
+else {
   LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
 
   if ($SkipExecution) {
     LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Skipping execution as requested (-SkipExecution)."
-  } else {
+  }
+  else {
     for ($i = 0; $i -lt $jobfiles_count; $i++) {
       $user_defined_job = $jobfiles[$i]
       Write-InfoMsg "Job: ${user_defined_job}..."
@@ -654,13 +666,14 @@ if ($jobfiles_count -eq 0) {
         $process = Start-Process -Wait -PassThru -NoNewWindow `
           -FilePath "${robocopy_exe}" `
           -ArgumentList "/job:""${robocopy_job_type_template}""", `
-                        "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
-                        "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
-                        "/job:""${user_defined_job}"""
+          "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
+          "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
+          "/job:""${user_defined_job}"""
 
         $robocopy_exit_code = $process.ExitCode
 
-      } else {
+      }
+      else {
         # In -WhatIf mode, we simulate a successful (no changes) exit code.
         $robocopy_exit_code = 0
       }
@@ -676,10 +689,10 @@ if ($jobfiles_count -eq 0) {
 
       # Update counters.
       switch ($robocopy_exit_code) {
-        {$_ -in 0..7} {
+        { $_ -in 0..7 } {
           $job_result_ok_count = ($job_result_ok_count + 1)
         }
-        {$_ -in 8..15} {
+        { $_ -in 8..15 } {
           $job_result_warning_count = ($job_result_warning_count + 1)
         }
         16 {
@@ -701,7 +714,7 @@ if ($jobfiles_count -eq 0) {
 
 # Finished
 $endTime = (Get-Date)
-$elapsedTime = $endTime-$startTime
+$elapsedTime = $endTime - $startTime
 $message = "Script finished in {0:hh} h {0:mm} min {0:ss} sec." -f $elapsedTime
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "${message}"
 
