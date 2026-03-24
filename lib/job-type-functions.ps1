@@ -173,7 +173,7 @@ function Get-UserSelectedJobType {
 
     Default {
       # Illegal choice
-      LogAndShowMessage "${logfile}" WARN "Illegal choice. Cancel."
+      LogAndShowMessage "${logfile}" WARNING "Illegal choice. Cancel."
       $result = "Cancel"
       Add-LogMessage -logfile "${logfile}" -severity DEBUG -message "User clicked: $($keyInfo.Key)"
     }
