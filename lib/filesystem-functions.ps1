@@ -414,6 +414,7 @@ function New-NecessaryDirectory {
   #>
 
   if (Test-FolderExists "${dir_spec}") {
+    #TODO: Should we really return false, or just $true if the folder already exists?
     return $false
   }
 
@@ -432,7 +433,7 @@ function New-NecessaryDirectory {
 
 }
 
-function New-NecessaryFile {
+function New-FileFromTemplate {
   <# Creates the specified file from the specified template.
     Returns $true if the file has been copied; otherwise $false.
   #>
@@ -450,6 +451,7 @@ function New-NecessaryFile {
   )
 
   if (Test-FileExists "${file_spec}") {
+    #TODO: Should we really return false, or just $true if the file already exists?
     return $false
   }
 

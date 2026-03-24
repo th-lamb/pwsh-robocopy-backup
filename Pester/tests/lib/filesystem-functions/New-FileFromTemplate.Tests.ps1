@@ -6,16 +6,16 @@ BeforeAll {
 
   # For messages in tested functions
   . "${ProjectRoot}lib/message-functions.ps1"
-  $Script:__VERBOSE = 5  # Reduced to 5 because New-NecessaryFile writes an INFO message.
+  $Script:__VERBOSE = 5  # Reduced to 5 because New-FileFromTemplate writes an INFO message.
 
   # For logging in tested functions
   . "${ProjectRoot}lib/logging-functions.ps1"
-  $Script:logfile = "${workingFolder}New-NecessaryFile.Tests.log"
+  $Script:logfile = "${workingFolder}New-FileFromTemplate.Tests.log"
 }
 
 
 
-Describe 'New-NecessaryFile' {
+Describe 'New-FileFromTemplate' {
   Context 'Expected situations' {
     It 'Successfully creates a copy of the specified file' {
       $file_to_be_created = "${workingFolder}file_to_be_created.txt"
@@ -24,7 +24,7 @@ Describe 'New-NecessaryFile' {
       Mock LogAndShowMessage {}
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
-      New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
 
@@ -38,7 +38,7 @@ Describe 'New-NecessaryFile' {
       Mock LogAndShowMessage {}
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
-      $return_value = New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      $return_value = New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
 
       $return_value | Should -Be $true
@@ -48,7 +48,7 @@ Describe 'New-NecessaryFile' {
       $file_to_be_created = "${workingFolder}existing_file"
       $template_file      = "${workingFolder}template_file.txt"
 
-      $return_value = New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      $return_value = New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
 
       $return_value | Should -Be $false
     }
@@ -62,7 +62,7 @@ Describe 'New-NecessaryFile' {
       Mock LogAndShowMessage {}
 
       {
-        New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+        New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
       } | Should -Throw
 
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
@@ -73,13 +73,13 @@ Describe 'New-NecessaryFile' {
   Context 'Wrong Usage' {
     It 'Throws an exception when called with an empty definition_name.' {
       {
-        New-NecessaryFile ""
+        New-FileFromTemplate ""
       } | Should -Throw
     }
 
     It 'Throws an exception when called with an empty path.' {
       {
-        New-NecessaryFile 'Test' ""
+        New-FileFromTemplate 'Test' ""
       } | Should -Throw
     }
 
@@ -87,7 +87,7 @@ Describe 'New-NecessaryFile' {
       $file_to_be_created = "${workingFolder}file_to_be_created.txt"
 
       {
-        New-NecessaryFile 'Test' "${file_to_be_created}" ""
+        New-FileFromTemplate 'Test' "${file_to_be_created}" ""
       } | Should -Throw
     }
 
@@ -96,7 +96,7 @@ Describe 'New-NecessaryFile' {
       $template_file      = "${workingFolder}template_file.txt"
 
       {
-        New-NecessaryFile 'Test' "${file_to_be_created}" "${template_file}" ""
+        New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" ""
       } | Should -Throw
     }
   }
