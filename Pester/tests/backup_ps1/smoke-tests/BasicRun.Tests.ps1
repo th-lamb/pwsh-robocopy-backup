@@ -19,8 +19,6 @@ Describe "backup.ps1 Smoke Test" {
             }
         }
 
-        Write-Host "Project Root: $ProjectRoot"
-
         if (-not $ProjectRoot) {
             throw "Could not find ProjectRoot (searching for backup.ps1 upwards from $PSScriptRoot)"
         }
