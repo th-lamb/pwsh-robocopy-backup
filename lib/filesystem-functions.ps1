@@ -757,27 +757,33 @@ function Get-ParentDir {
   $parent_dir = Split-Path -Path "${dots_evaluated}"
   Write-DebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
 
-  # Append trailing backslash if the parent is (or matches) a directory.
-  if (! "${parent_dir}".EndsWith("\") ) {
-    $is_directory = $false
-    if (Test-Path "${parent_dir}" -PathType Container) {
-      $is_directory = $true
+  if ([String]::IsNullOrEmpty($parent_dir)) {
+    return [FsObjectResult]@{
+      Exists = $false
+      # Type   = $null      # Must be omitted to prevent PowerShell from converting it to ""!
+      Path   = ""
     }
-    elseif ("${parent_dir}".Contains("*")) {
-      # Fallback for wildcards matching mixed files and directories (GitHub issue 6473)
-      if (Get-ChildItem -Path "${parent_dir}" -Directory -Force -ErrorAction SilentlyContinue | Select-Object -First 1) {
-        $is_directory = $true
-      }
-    }
+  }
 
-    if ($is_directory) {
-      $parent_dir = "${parent_dir}\"
-      Write-DebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
+  if (! "${parent_dir}".EndsWith("\") ) {
+    $parent_dir = "${parent_dir}\"
+    Write-DebugMsg "Get-ParentDir(): parent_dir    : ${parent_dir}"
+  }
+
+  # Check existence.
+  $exists = $false
+  if (Test-Path -Path "${parent_dir}" -PathType Container) {
+    $exists = $true
+  }
+  elseif ("${parent_dir}".Contains("*")) {
+    # Fallback for wildcards matching mixed files and directories (GitHub issue 6473)
+    if (Get-ChildItem -Path "${parent_dir}" -Directory -Force -ErrorAction SilentlyContinue | Select-Object -First 1) {
+      $exists = $true
     }
   }
 
   return [FsObjectResult]@{
-    Exists = $true
+    Exists = $exists
     Type   = "directory"
     Path   = ${parent_dir}
   }
