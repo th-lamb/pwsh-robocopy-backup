@@ -204,7 +204,7 @@ function Get-DirlistLineType {
 
   }
 
-  return "error: unknown entry type for: {entry}"
+  return "error: unknown entry type for: ${entry}"
 
 }
 
