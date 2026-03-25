@@ -4,9 +4,8 @@
         {
             "label": "Watch Smoke Test (Auto)",
             "type": "shell",
-            "command": "powershell.exe",
+            "command": "pwsh.exe",
             "args": [
-                "-NoProfile",
                 "-ExecutionPolicy",
                 "Bypass",
                 "-File",
