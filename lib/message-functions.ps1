@@ -146,12 +146,12 @@ TODO:
       $background_color = "Black"
       $foreground_color = "DarkGray"
     }
-    # Default {
-    #   # Illegal severity level!
-    #   $err_message = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
-    #   Write-ColoredMessage ([SeverityKeyword]::ERR) "${err_message}"
-    #   Throw "${err_message}"
-    # }
+    Default {
+      # Illegal severity level!
+      $err_message = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
+      Write-ColoredMessage ([SeverityKeyword]::ERR) "${err_message}"
+      Throw "${err_message}"
+    }
   }
 
   #TODO: Finish the remaining section!

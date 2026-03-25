@@ -233,6 +233,7 @@ if (! ${FSobject}.Exists) {
     - BACKUP_JOB_DIR
     - BACKUP_DIRLIST (copy of the template)
     - BACKUP_LOGFILE
+    #TODO: Check if we use $ERROR_LOGFILE anywhere, we might not need it at all.
     - ERROR_LOGFILE
 #>
 
@@ -286,9 +287,6 @@ if ($dirlist_created -and -not $NonInteractive) {
   Write-InfoMsg "Opening the dir-list in Editor and wait..."
   Notepad.exe "${BACKUP_DIRLIST}" | Out-Null
 }
-
-#Test-NecessaryFile 'BACKUP_LOGFILE' "${BACKUP_LOGFILE}" "${BACKUP_LOGFILE}"
-#Test-NecessaryFile 'ERROR_LOGFILE' "${ERROR_LOGFILE}" "${ERROR_LOGFILE}"
 
 Write-EarlyMsg INFO "Necessary directories and files checked."
 
@@ -620,16 +618,16 @@ if ($finish_last_job) {
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:jobs_created_count job file(s) created."
 
-#Write-Host "----- Results ------------------------------------------------------------------" -ForegroundColor DarkCyan
-#Write-Host "source_defs_count   : $Script:source_defs_count" -ForegroundColor DarkCyan
-#Write-Host "start_new_job       : $Script:start_new_job" -ForegroundColor DarkCyan
-#Write-Host "continue_curr_job   : $Script:continue_curr_job" -ForegroundColor DarkCyan
-#Write-Host "finish_previous_job : $Script:finish_previous_job" -ForegroundColor DarkCyan
-#Write-Host "included_files.Count:" $Script:included_files.Count -ForegroundColor DarkCyan
-#Write-Host "excluded_dirs.Count :" $Script:excluded_dirs.Count -ForegroundColor DarkCyan
-#Write-Host "excluded_files.Count:" $Script:excluded_files.Count -ForegroundColor DarkCyan
-#Write-Host "jobs_created_count  : $Script:jobs_created_count" -ForegroundColor DarkCyan
-#Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkCyan
+Write-DebugMsg "----- Results ------------------------------------------------------------------"
+Write-DebugMsg "source_defs_count   : $Script:source_defs_count"
+Write-DebugMsg "start_new_job       : $Script:start_new_job"
+Write-DebugMsg "continue_curr_job   : $Script:continue_curr_job"
+Write-DebugMsg "finish_previous_job : $Script:finish_previous_job"
+Write-DebugMsg "included_files.Count:" $Script:included_files.Count
+Write-DebugMsg "excluded_dirs.Count :" $Script:excluded_dirs.Count
+Write-DebugMsg "excluded_files.Count:" $Script:excluded_files.Count
+Write-DebugMsg "jobs_created_count  : $Script:jobs_created_count"
+Write-DebugMsg "--------------------------------------------------------------------------------"
 
 #endregion Create job files ####################################################
 
