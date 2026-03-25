@@ -37,13 +37,13 @@ function Test-ServerIsAvailable {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [String]$server_path_spec
+    [String]$ServerPathSpec
   )
 
   # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
   # Test-Connection -BufferSize 32 -Count 1 -ComputerName 192.168.0.41 -Quiet
 
-  $server_name = Get-ComputernameFromUncPath "${server_path_spec}"
+  $server_name = Get-ComputernameFromUncPath "${ServerPathSpec}"
 
   try {
     $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet -ErrorAction Stop

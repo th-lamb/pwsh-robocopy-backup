@@ -14,10 +14,10 @@ function Get-RealFsObjectType {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$path_spec
+    [String]$PathSpec
   )
 
-  $specified_type = Get-SpecifiedFsObjectType "${path_spec}"
+  $specified_type = Get-SpecifiedFsObjectType "${PathSpec}"
 
   <# We have to "manually" check for a UNC path first because Test-Path recognizes
     network shares like "\\fileserver\backup\" as directory.
@@ -28,11 +28,11 @@ function Get-RealFsObjectType {
   # UNC path (with check if share exists or is available)
   switch ("${specified_type}") {
     "network share" {
-      if (Test-Path -Path "${path_spec}" -PathType Container) {
+      if (Test-Path -Path "${PathSpec}" -PathType Container) {
         return [FsObjectResult]@{
           Exists = $true
           Type   = "network share"
-          Path   = $path_spec
+          Path   = $PathSpec
         }
       }
       else {
@@ -40,16 +40,16 @@ function Get-RealFsObjectType {
         return [FsObjectResult]@{
           Exists = $false
           Type   = "network share"
-          Path   = $path_spec
+          Path   = $PathSpec
         }
       }
     }
     "network computer" {
-      if (Test-ServerIsAvailable "${path_spec}") {
+      if (Test-ServerIsAvailable "${PathSpec}") {
         return [FsObjectResult]@{
           Exists = $true
           Type   = "network computer"
-          Path   = $path_spec
+          Path   = $PathSpec
         }
       }
       else {
@@ -57,7 +57,7 @@ function Get-RealFsObjectType {
         return [FsObjectResult]@{
           Exists = $false
           Type   = "network computer"
-          Path   = $path_spec
+          Path   = $PathSpec
         }
       }
     }
@@ -71,27 +71,27 @@ function Get-RealFsObjectType {
         Test-Path, Convert-Path, Resolve-Path, Split-Path -Resolve, Join-Path -Resolve, Invoke-Item
     [...]
   #>
-  if (Test-Path -Path "${path_spec}" -PathType Container) {
+  if (Test-Path -Path "${PathSpec}" -PathType Container) {
     if ("${specified_type}" -eq "drive letter") {
       return [FsObjectResult]@{
         Exists = $true
         Type   = "drive letter"
-        Path   = $path_spec
+        Path   = $PathSpec
       }
     }
     else {
       return [FsObjectResult]@{
         Exists = $true
         Type   = "directory"
-        Path   = $path_spec
+        Path   = $PathSpec
       }
     }
   }
-  elseif (Test-Path -Path "${path_spec}" -PathType Leaf) {
+  elseif (Test-Path -Path "${PathSpec}" -PathType Leaf) {
     return [FsObjectResult]@{
       Exists = $true
       Type   = "file"
-      Path   = $path_spec
+      Path   = $PathSpec
     }
   }
 
@@ -99,7 +99,7 @@ function Get-RealFsObjectType {
     Reason: Test-Path doesn't find hidden items with wildcards.
     GitHub issue: https://github.com/PowerShell/PowerShell/issues/6473
   #>
-  if ("${path_spec}".Contains("*")) {
+  if ("${PathSpec}".Contains("*")) {
     <# Note: Even if we find 2 or more objects, we return only 1!
       Reasoning:
       - Goal of this function is to answer the question: "Does this dir-list entry actually
@@ -107,20 +107,20 @@ function Get-RealFsObjectType {
       - Robocopy will handle the "multi-file" logic. This script is just the "orchestrator"
         that prepares the .RCJ job files.
     #>
-    $item = Get-ChildItem -Path "${path_spec}" -Force -ErrorAction SilentlyContinue | Select-Object -First 1
+    $item = Get-ChildItem -Path "${PathSpec}" -Force -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($null -ne $item) {
       if ($item.PSIsContainer) {
         return [FsObjectResult]@{
           Exists = $true
           Type   = "directory"
-          Path   = $item.FullName # Not $path_spec with the wildcard(s)
+          Path   = $item.FullName # Not $PathSpec with the wildcard(s)
         }
       }
       else {
         return [FsObjectResult]@{
           Exists = $true
           Type   = "file"
-          Path   = $item.FullName # Not $path_spec with the wildcard(s)
+          Path   = $item.FullName # Not $PathSpec with the wildcard(s)
         }
       }
     }
@@ -133,7 +133,7 @@ function Get-RealFsObjectType {
   return [FsObjectResult]@{
     Exists = $false
     # Type   = $null      # Must be omitted to prevent PowerShell from converting it to ""!
-    Path   = $path_spec
+    Path   = $PathSpec
   }
 
 }
@@ -146,17 +146,17 @@ function Get-SpecifiedFsObjectType {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$path_spec
+    [String]$PathSpec
   )
 
   # Test 1: drive letter
-  $test_driveletter = "${path_spec}" | Select-String -Pattern '^[A-Z]:\\{0,1}$'
-  if ("${path_spec}" -eq "${test_driveletter}") {
+  $TestMatchDriveletter = "${PathSpec}" | Select-String -Pattern '^[A-Z]:\\{0,1}$'
+  if ("${PathSpec}" -eq "${TestMatchDriveletter}") {
     return "drive letter"
   }
 
   # Test 2: network share or network computer.
-  $is_unc_path = [bool]([System.Uri]"${path_spec}").IsUnc
+  $is_unc_path = [bool]([System.Uri]"${PathSpec}").IsUnc
   if ($is_unc_path) {
     <# Path elements:
       Top-level element : server
@@ -164,10 +164,10 @@ function Get-SpecifiedFsObjectType {
       Further elements  : directories/files (that we might be able to create)
     #>
 
-    $test_dir = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.+\\'
-    $test_file = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+\\.{1}'
-    $test_share = "${path_spec}" | Select-String -Pattern '\\\\.+\\.+[\\]?'
-    $test_computer = "${path_spec}" | Select-String -Pattern '\\\\.+[\\]?'
+    $test_dir = "${PathSpec}" | Select-String -Pattern '\\\\.+\\.+\\.+\\'
+    $test_file = "${PathSpec}" | Select-String -Pattern '\\\\.+\\.+\\.{1}'
+    $test_share = "${PathSpec}" | Select-String -Pattern '\\\\.+\\.+[\\]?'
+    $test_computer = "${PathSpec}" | Select-String -Pattern '\\\\.+[\\]?'
 
     if ("${test_dir}" -ne "") {
       # A directory
@@ -193,18 +193,18 @@ function Get-SpecifiedFsObjectType {
   $result = ""
 
   # conditions
-  if ("${path_spec}".Contains("*")) {
+  if ("${PathSpec}".Contains("*")) {
     $is_pattern = $true
   }
 
-  if ("${path_spec}".EndsWith("\")) {
+  if ("${PathSpec}".EndsWith("\")) {
     $is_directory = $true
   }
   else {
     $is_file = $true
   }
 
-  if ("${path_spec}".EndsWith("\.") -or "${path_spec}".EndsWith("\..")) {
+  if ("${PathSpec}".EndsWith("\.") -or "${PathSpec}".EndsWith("\..")) {
     $is_directory_entry = $true
   }
 
@@ -221,10 +221,10 @@ function Get-SpecifiedFsObjectType {
   elseif ($is_pattern) {
     # Directory pattern or file pattern
 
-    # We cannot just use (Split-Path -Path "${path_spec}").Contains("*") because
-    # it would give us the parent directory if $path_spec itself is a directory!
-    $first_placeholder_pos = "${path_spec}".IndexOf('*')            # -1 if not found
-    $last_path_separator_pos = "${path_spec}".LastIndexOf("\")      # -1 if not found
+    # We cannot just use (Split-Path -Path "${PathSpec}").Contains("*") because
+    # it would give us the parent directory if $PathSpec itself is a directory!
+    $first_placeholder_pos = "${PathSpec}".IndexOf('*')            # -1 if not found
+    $last_path_separator_pos = "${PathSpec}".LastIndexOf("\")      # -1 if not found
 
     if ( ($first_placeholder_pos -lt $last_path_separator_pos) ) {
       $result = "directory pattern"
@@ -250,18 +250,18 @@ function Get-SpecifiedBackupBaseDirType {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$path_spec
+    [String]$PathSpec
   )
 
-  $specified_type = Get-SpecifiedFsObjectType "${path_spec}"
+  $specified_type = Get-SpecifiedFsObjectType "${PathSpec}"
 
   switch ("${specified_type}") {
     "directory" {
-      if ("${path_spec}".StartsWith("\\")) {
+      if ("${PathSpec}".StartsWith("\\")) {
         return "directory"
       }
       else {
-        if ("${path_spec}".Contains(":")) {
+        if ("${PathSpec}".Contains(":")) {
           return "directory"
         }
         else {
@@ -287,10 +287,10 @@ function Test-FileExists {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$file_spec
+    [String]$FileSpec
   )
 
-  if (Test-Path -Path "${file_spec}" -PathType Leaf) {
+  if (Test-Path -Path "${FileSpec}" -PathType Leaf) {
     return $true
   }
 
@@ -342,13 +342,13 @@ function Test-NecessaryFile {
     [Parameter(Mandatory = $true)]
     [String]$definition_name,
     [Parameter(Mandatory = $true)]
-    [String]$file_spec,
+    [String]$FileSpec,
     [Parameter(Mandatory = $true)]
     [String]$logfile
   )
 
-  if (! (Test-FileExists "${file_spec}") ) {
-    LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
+  if (! (Test-FileExists "${FileSpec}") ) {
+    LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${FileSpec}"
     Throw
   }
 
@@ -365,23 +365,23 @@ function Get-ExecutablePath {
     [Parameter(Mandatory = $true)]
     [String]$definition_name,
     [Parameter(Mandatory = $true)]
-    [String]$file_spec,
+    [String]$FileSpec,
     [Parameter(Mandatory = $true)]
     [String]$logfile
   )
 
-  if (Test-FileExists "${file_spec}") {
-    return "${file_spec}"
+  if (Test-FileExists "${FileSpec}") {
+    return "${FileSpec}"
   }
 
-  $file_in_path = (Get-Command "${file_spec}" -ErrorAction SilentlyContinue ).Path
+  $file_in_path = (Get-Command "${FileSpec}" -ErrorAction SilentlyContinue ).Path
 
   if ("${file_in_path}" -ne "") {
     Write-DebugMsg "'${definition_name}' found via Windows PATH environment variable: ${file_in_path}"
     return "${file_in_path}"
   }
   else {
-    LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${file_spec}"
+    LogAndShowMessage "${logfile}" ERR "The file '${definition_name}' has been moved or deleted:`n${FileSpec}"
     Throw
   }
 
@@ -443,31 +443,31 @@ function New-FileFromTemplate {
     [Parameter(Mandatory = $true)]
     [String]$definition_name,
     [Parameter(Mandatory = $true)]
-    [String]$file_spec,
+    [String]$FileSpec,
     [Parameter(Mandatory = $true)]
     [String]$template,
     [Parameter(Mandatory = $true)]
     [String]$logfile
   )
 
-  if (Test-FileExists "${file_spec}") {
+  if (Test-FileExists "${FileSpec}") {
     #TODO: Should we really return false, or just $true if the file already exists?
     return $false
   }
 
-  if (Test-FolderExists "${file_spec}") {
-    LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${file_spec} because a folder with the same name already exists!"
+  if (Test-FolderExists "${FileSpec}") {
+    LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${FileSpec} because a folder with the same name already exists!"
     Throw
   }
 
-  if ($PSCmdlet.ShouldProcess("${file_spec}", "Create file from template")) {
+  if ($PSCmdlet.ShouldProcess("${FileSpec}", "Create file from template")) {
     try {
-      Copy-Item -Path "${template}" -Destination "${file_spec}" -Confirm:$false
+      Copy-Item -Path "${template}" -Destination "${FileSpec}" -Confirm:$false
       LogAndShowMessage "${logfile}" INFO "File created from template."
       return $true
     }
     catch {
-      LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${file_spec}. Error: $_"
+      LogAndShowMessage "${logfile}" ERR "Cannot create '${definition_name}' ${FileSpec}. Error: $_"
       Throw
     }
   }
@@ -668,11 +668,11 @@ function Get-ExpandedPath {
   param (
     [Parameter(Mandatory = $true)]
     [AllowEmptyString()]
-    [String]$path_spec
+    [String]$PathSpec
   )
 
   # Expand script variables.
-  $expanded = $ExecutionContext.InvokeCommand.ExpandString("${path_spec}")
+  $expanded = $ExecutionContext.InvokeCommand.ExpandString("${PathSpec}")
 
   # Expand environment variables of the host.
   $expanded = ([System.Environment]::ExpandEnvironmentVariables("${expanded}"))
@@ -724,29 +724,29 @@ function Get-ParentDir {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$file_spec
+    [String]$FileSpec
   )
 
-  Write-DebugMsg "Get-ParentDir(): file_spec     : ${file_spec}"
+  Write-DebugMsg "Get-ParentDir(): FileSpec     : ${FileSpec}"
 
   # Handle "dot" files.
   # -> Resolve-Path -Path returns an array of all matching directories!
-  if ( "${file_spec}".EndsWith("\.") ) {
-    $dots_evaluated = "${file_spec}".TrimEnd('.')
+  if ( "${FileSpec}".EndsWith("\.") ) {
+    $dots_evaluated = "${FileSpec}".TrimEnd('.')
   }
-  elseif ( "${file_spec}".EndsWith("\..") ) {
-    $dots_evaluated = "${file_spec}".TrimEnd('.')
+  elseif ( "${FileSpec}".EndsWith("\..") ) {
+    $dots_evaluated = "${FileSpec}".TrimEnd('.')
     $dots_evaluated = "${dots_evaluated}".TrimEnd('\')
     $pos = "${dots_evaluated}".LastIndexOf("\")
     $dots_evaluated = "${dots_evaluated}".Substring(0, $pos + 1)
   }
   else {
-    $dots_evaluated = "${file_spec}"
+    $dots_evaluated = "${FileSpec}"
   }
 
   Write-DebugMsg "Get-ParentDir(): dots evaluated: ${dots_evaluated}"
 
-  # Avoid ParameterBindingValidationException with "" for example when file_spec is "C:\..".
+  # Avoid ParameterBindingValidationException with "" for example when FileSpec is "C:\..".
   if ([String]::IsNullOrEmpty($dots_evaluated)) {
     return [FsObjectResult]@{
       Exists = $false

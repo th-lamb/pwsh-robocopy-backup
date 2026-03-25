@@ -247,10 +247,10 @@ Test-NecessaryFile 'ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS' "${ROBOCOPY_JOB_TEM
 Test-NecessaryFile 'ROBOCOPY_JOB_TEMPLATE_LOGGING' "${ROBOCOPY_JOB_TEMPLATE_LOGGING}" "${BACKUP_LOGFILE}"
 
 # Note: Different cases for $BACKUP_BASE_DIR (some cannot be created)!
-$dir_type = Get-SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
-Write-DebugMsg "BackupBaseDir type: ${dir_type}"
+$DirType = Get-SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
+Write-DebugMsg "BackupBaseDir type: ${DirType}"
 
-switch ("${dir_type}") {
+switch ("${DirType}") {
   "directory" {
     [void](New-Directory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}")
   }
@@ -259,15 +259,15 @@ switch ("${dir_type}") {
   }
   "relative path" {
     # Interpret as path below script dir, current drive or ...?
-    $absolute_base_dir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
-    [void](New-Directory 'BACKUP_BASE_DIR (absolute path)' "${absolute_base_dir}" "${BACKUP_LOGFILE}")
+    $AbsoluteBaseDir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
+    [void](New-Directory 'BACKUP_BASE_DIR (absolute path)' "${AbsoluteBaseDir}" "${BACKUP_LOGFILE}")
   }
   "network computer" {
     Write-CritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
     exit 1
   }
   Default {
-    Write-CritMsg "Unexpected BackupBaseDir type: ${dir_type}"
+    Write-CritMsg "Unexpected BackupBaseDir type: ${DirType}"
     exit 1
   }
 }
@@ -278,12 +278,12 @@ switch ("${dir_type}") {
 [void](New-Directory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}")
 
 # Make sure that robocopy has been found if only "robocopy" is defined in the ini file!
-$robocopy_exe = Get-ExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
+$RobocopyExecutable = Get-ExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 
 # Create the dir-list from the template if necessary.
-$dirlist_created = New-FileFromTemplate 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
+$IsDirlistCreated = New-FileFromTemplate 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
 
-if ($dirlist_created -and -not $NonInteractive) {
+if ($IsDirlistCreated -and -not $NonInteractive) {
   Write-InfoMsg "Opening the dir-list in Editor and wait..."
   Notepad.exe "${BACKUP_DIRLIST}" | Out-Null
 }
@@ -313,13 +313,13 @@ if ($null -ne $BACKUP_LOGFILE) {
 
 #region Ask for job type
 
-$selected_job_type = Get-UserSelectedJobType -default_job_type "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -NonInteractive:$NonInteractive
+$SelectedJobType = Get-UserSelectedJobType -default_job_type "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -NonInteractive:$NonInteractive
 
-switch ($selected_job_type) {
-  "Incremental" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }
-  "Full" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_FULL }
-  "Purge" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE }
-  "Archive" { $robocopy_job_type_template = $ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE }
+switch ($SelectedJobType) {
+  "Incremental" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }
+  "Full" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_FULL }
+  "Purge" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE }
+  "Archive" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE }
   "Cancel" { exit 0 }
   Default {
     # Illegal choice
@@ -356,25 +356,25 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
 #>
 
 # Local variables
-[Int32]$source_defs_count = 0
+[Int32]$SourceDefinitionsCount = 0
 
-[System.Boolean]$start_new_job = $false
-[Int32]$current_job_num = 0
-[String]$current_source_definition = ""  # Last source definition, in case entries consist of more than one line.
-[String]$current_source_type = ""
+[System.Boolean]$StartNewJob = $false
+[Int32]$CurrentJobNum = 0
+[String]$CurrentSourceDefinition = ""  # Last source definition, in case entries consist of more than one line.
+[String]$CurrentSourceType = ""
 
-[System.Boolean]$finish_previous_job = $false
-[System.Boolean]$continue_curr_job = $false
-[System.Boolean]$single_file_definition = $false
-[System.Boolean]$single_file_job = $false
+[System.Boolean]$FinishPreviousJob = $false
+[System.Boolean]$ContinueCurrentJob = $false
+[System.Boolean]$SingleFileDefinition = $false
+[System.Boolean]$SingleFileJob = $false
 
-[String]$source_dir = ""
-[String]$target_dir = ""
-[System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
-[System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
-[System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+[String]$SourceDir = ""
+[String]$TargetDir = ""
+[System.Collections.ArrayList]$IncludedFiles = New-Object System.Collections.ArrayList
+[System.Collections.ArrayList]$ExcludedDirs = New-Object System.Collections.ArrayList
+[System.Collections.ArrayList]$ExcludedFiles = New-Object System.Collections.ArrayList
 
-[Int32]$jobs_created_count = 0
+[Int32]$JobsCreatedCount = 0
 
 function Invoke-AddJobFile {
   # Creates the current job using all values collected from the dir-list.
@@ -383,17 +383,17 @@ function Invoke-AddJobFile {
   Add-JobFile `
     "${BACKUP_JOB_DIR}" `
     "${COMPUTERNAME}" `
-    $Script:current_job_num `
-    "${Script:current_source_definition}" `
-    "${Script:source_dir}" `
-    "${Script:target_dir}" `
-    $Script:included_files `
-    $Script:excluded_dirs `
-    $Script:excluded_files `
-    $Script:single_file_job
+    $Script:CurrentJobNum `
+    "${Script:CurrentSourceDefinition}" `
+    "${Script:SourceDir}" `
+    "${Script:TargetDir}" `
+    $Script:IncludedFiles `
+    $Script:ExcludedDirs `
+    $Script:ExcludedFiles `
+    $Script:SingleFileJob
 
-  $Script:jobs_created_count = ($Script:jobs_created_count + 1)
-  Write-DebugMsg "jobs_created_count: $Script:jobs_created_count"
+  $Script:JobsCreatedCount = ($Script:JobsCreatedCount + 1)
+  Write-DebugMsg "JobsCreatedCount  : $Script:JobsCreatedCount"
 
   Initialize-JobRelatedInfo
 
@@ -404,33 +404,33 @@ function Initialize-JobRelatedInfo {
   # Resets all values that apply for a whole job definition, possibly
   # consisting of multiple lines in the dir-list.
   Write-DebugMsg "Initialize-JobRelatedInfo()"
-  $Script:current_job_num = 0
-  $Script:current_source_definition = ""
-  $Script:current_source_type = ""
-  $Script:source_dir = ""
-  $Script:target_dir = ""
-  $Script:included_files.Clear()
-  $Script:excluded_dirs.Clear()
-  $Script:excluded_files.Clear()
-  $Script:single_file_job = $false
+  $Script:CurrentJobNum = 0
+  $Script:CurrentSourceDefinition = ""
+  $Script:CurrentSourceType = ""
+  $Script:SourceDir = ""
+  $Script:TargetDir = ""
+  $Script:IncludedFiles.Clear()
+  $Script:ExcludedDirs.Clear()
+  $Script:ExcludedFiles.Clear()
+  $Script:SingleFileJob = $false
 }
 
 function Initialize-LineRelatedInfo {
   # Resets all values that apply only for the current line in the dir-list.
   Write-DebugMsg "Initialize-LineRelatedInfo()"
-  $Script:start_new_job = $false
-  $Script:finish_previous_job = $false
-  $Script:continue_curr_job = $false
-  $Script:single_file_definition = $false
+  $Script:StartNewJob = $false
+  $Script:FinishPreviousJob = $false
+  $Script:ContinueCurrentJob = $false
+  $Script:SingleFileDefinition = $false
   $Script:line_type = ""
 }
 
 # Process the dir-list.
 
 function _processDirectoryList {
-  $dir_list_content = Get-Content "${BACKUP_DIRLIST}"
+  $DirListContent = Get-Content "${BACKUP_DIRLIST}"
 
-  ForEach ($line in $dir_list_content) {
+  ForEach ($line in $DirListContent) {
     Write-DebugMsg "Next line: ${line}"
 
     # Expand all entries first to avoid interpreting environment variables etc. as filenames.
@@ -452,36 +452,36 @@ function _processDirectoryList {
         # The fallback value of function Get-DirlistLineType
         # No message: function Get-DirlistLineType reports the error/warning.
         #LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
-        $Script:finish_previous_job = $true
+        $Script:FinishPreviousJob = $true
       }
       "invalid: *" {
         LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "Invalid entry in dir-list: ${line}"
-        $Script:finish_previous_job = $true
+        $Script:FinishPreviousJob = $true
       }
       "ignore" {
-        $Script:finish_previous_job = $true
+        $Script:FinishPreviousJob = $true
       }
       "source-file" {
-        $Script:start_new_job = $true
-        $Script:finish_previous_job = $true
-        $Script:single_file_definition = $true  # Current line is a single-file definition - the job for it will be a single-file job.
+        $Script:StartNewJob = $true
+        $Script:FinishPreviousJob = $true
+        $Script:SingleFileDefinition = $true  # Current line is a single-file definition - the job for it will be a single-file job.
 
         # https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#multiple-matches
         continue
       }
       "source-*" {
         # Only source-dir or source-file-pattern
-        $Script:start_new_job = $true
-        $Script:finish_previous_job = $true
+        $Script:StartNewJob = $true
+        $Script:FinishPreviousJob = $true
       }
       "incl-files-pattern" {
-        $Script:continue_curr_job = $true
+        $Script:ContinueCurrentJob = $true
       }
       "excl-files-pattern" {
-        $Script:continue_curr_job = $true
+        $Script:ContinueCurrentJob = $true
       }
       "excl-dirs-pattern" {
-        $Script:continue_curr_job = $true
+        $Script:ContinueCurrentJob = $true
       }
     }
 
@@ -489,15 +489,15 @@ function _processDirectoryList {
 
     #region Plausibility checks ------------------------------------------------
 
-    if ($Script:finish_previous_job) {
-      if ($Script:current_job_num -eq 0) {
-        $Script:finish_previous_job = $false
+    if ($Script:FinishPreviousJob) {
+      if ($Script:CurrentJobNum -eq 0) {
+        $Script:FinishPreviousJob = $false
       }
     }
 
-    if ($Script:continue_curr_job) {
-      if ($Script:current_job_num -eq 0) {
-        $Script:continue_curr_job = $false
+    if ($Script:ContinueCurrentJob) {
+      if ($Script:CurrentJobNum -eq 0) {
+        $Script:ContinueCurrentJob = $false
         LogAndShowMessage "${BACKUP_LOGFILE}" ERR "No folder/job defined for: ${line}"
       }
     }
@@ -505,12 +505,12 @@ function _processDirectoryList {
     #endregion Plausibility checks ---------------------------------------------
 
     # Show what we are going to do.
-    if ($Script:finish_previous_job -or $Script:start_new_job -or $Script:continue_curr_job -or $Script:single_file_job) {
+    if ($Script:FinishPreviousJob -or $Script:StartNewJob -or $Script:ContinueCurrentJob -or $Script:SingleFileJob) {
       $task_list = New-Object System.Collections.ArrayList
-      if ($Script:finish_previous_job) { $task_list.Add("Finish previous job") > $null }
-      if ($Script:start_new_job) { $task_list.Add("Start new job") > $null }
-      if ($Script:continue_curr_job) { $task_list.Add("Continue current job") > $null }
-      if ($Script:single_file_job) { $task_list.Add("Copy single file") > $null }
+      if ($Script:FinishPreviousJob) { $task_list.Add("Finish previous job") > $null }
+      if ($Script:StartNewJob) { $task_list.Add("Start new job") > $null }
+      if ($Script:ContinueCurrentJob) { $task_list.Add("Continue current job") > $null }
+      if ($Script:SingleFileJob) { $task_list.Add("Copy single file") > $null }
 
       $tasks = ($task_list -join ", ")
       Write-DebugMsg "Task(s): ${tasks}"
@@ -521,76 +521,76 @@ function _processDirectoryList {
 
     #region Actual job creation ------------------------------------------------
 
-    if ($Script:finish_previous_job) {
+    if ($Script:FinishPreviousJob) {
       Write-DebugMsg "----- Finishing the previous job: ------------------------------------"
       Invoke-AddJobFile
     }
 
-    if ($Script:start_new_job) {
+    if ($Script:StartNewJob) {
       Write-DebugMsg "----- Starting a new job: --------------------------------------------"
-      $Script:source_defs_count = ($Script:source_defs_count + 1)
-      $Script:current_job_num = $Script:source_defs_count
-      $Script:current_source_definition = "${line}"
-      $Script:current_source_type = "${line_type}"
-      $Script:single_file_job = $Script:single_file_definition
+      $Script:SourceDefinitionsCount = ($Script:SourceDefinitionsCount + 1)
+      $Script:CurrentJobNum = $Script:SourceDefinitionsCount
+      $Script:CurrentSourceDefinition = "${line}"
+      $Script:CurrentSourceType = "${line_type}"
+      $Script:SingleFileJob = $Script:SingleFileDefinition
 
-      Write-DebugMsg "source_defs_count : $Script:source_defs_count"
-      Write-DebugMsg "current_job_num   : $Script:current_job_num"
-      Write-DebugMsg "current_source_definition: ${Script:current_source_definition}"
-      Write-DebugMsg "current_source_type : ${Script:current_source_type}"
+      Write-DebugMsg "SourceDefinitionsCount    : $Script:SourceDefinitionsCount"
+      Write-DebugMsg "CurrentJobNum             : $Script:CurrentJobNum"
+      Write-DebugMsg "CurrentSourceDefinition   : ${Script:CurrentSourceDefinition}"
+      Write-DebugMsg "CurrentSourceType         : ${Script:CurrentSourceType}"
 
       # Determine basic information for the job.
-      switch -Wildcard ("${Script:current_source_type}") {
-        "source-dir" { $Script:source_dir = "${expanded}" }
+      switch -Wildcard ("${Script:CurrentSourceType}") {
+        "source-dir" { $Script:SourceDir = "${expanded}" }
         "source-file*" {
           # <--- pattern!
           #TODO: A good automated test for the main script is really needed!!!
           #TODO: -> TODO\Pester\SmokeTestingConcept.md
           $FSobject = Get-ParentDir "${expanded}"
-          $Script:source_dir = $FSobject.Path
+          $Script:SourceDir = $FSobject.Path
 
-          # Add the filename (pattern) to $included_files because we must NOT use *.* later!
+          # Add the filename (pattern) to $IncludedFiles because we must NOT use *.* later!
           $source_filename = Split-Path -Leaf "${expanded}"
           Write-DebugMsg "source_filename   : ${source_filename}"
-          $Script:included_files.Add("${source_filename}") > $null
+          $Script:IncludedFiles.Add("${source_filename}") > $null
           $source_filename = ""
         }
       }
-      Write-DebugMsg "source_dir        : ${Script:source_dir}"
+      Write-DebugMsg "SourceDir         : ${Script:SourceDir}"
 
-      if ("${Script:source_dir}" -eq "") {
+      if ("${Script:SourceDir}" -eq "") {
         LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
         Initialize-JobRelatedInfo
       }
       else {
-        $Script:target_dir = Get-TargetDir "${BACKUP_DIR}" "${Script:source_dir}"
-        Write-DebugMsg "target_dir        : ${Script:target_dir}"
+        $Script:TargetDir = Get-TargetDir "${BACKUP_DIR}" "${Script:SourceDir}"
+        Write-DebugMsg "TargetDir         : ${Script:TargetDir}"
       }
 
       Write-DebugMsg "----------------------------------------------------------------------"
     }
 
-    if ($Script:single_file_job) {
+    if ($Script:SingleFileJob) {
       Write-DebugMsg "----- Copying a single file: -----------------------------------------"
       Invoke-AddJobFile
     }
 
     # Add included/excluded files/directories to the job file (robocopy options /IF, /XF, /XD).
-    if ($Script:continue_curr_job) {
+    if ($Script:ContinueCurrentJob) {
       Write-DebugMsg "----- Continuing the job: --------------------------------------------"
       # Determine additional information for the job.
       $entry = "${expanded}".Substring(4)   # Remove the leading "  + " or "  - "
       Write-DebugMsg "entry               : ${entry}"
 
       switch ("${line_type}") {
-        "incl-files-pattern" { $Script:included_files.Add("${entry}") > $null }
-        "excl-files-pattern" { $Script:excluded_files.Add("${entry}") > $null }
-        "excl-dirs-pattern" { $Script:excluded_dirs.Add("${entry}") > $null }
+        "incl-files-pattern" { $Script:IncludedFiles.Add("${entry}") > $null }
+        "excl-files-pattern" { $Script:ExcludedFiles.Add("${entry}") > $null }
+        "excl-dirs-pattern" { $Script:ExcludedDirs.Add("${entry}") > $null }
       }
 
-      Write-DebugMsg ("included_files.Count: " + $Script:included_files.Count)
-      Write-DebugMsg ("excluded_files.Count: " + $Script:excluded_files.Count)
-      Write-DebugMsg ("excluded_dirs.Count : " + $Script:excluded_dirs.Count)
+      Write-DebugMsg "IncludedFiles.Count   : $($Script:IncludedFiles.Count)"
+      Write-DebugMsg "ExcludedFiles.Count   : $($Script:ExcludedFiles.Count)"
+      Write-DebugMsg "ExcludedDirs.Count    : $($Script:ExcludedDirs.Count)"
 
       Write-DebugMsg "----------------------------------------------------------------------"
     }
@@ -609,24 +609,24 @@ _processDirectoryList
 Write-DebugMsg "----- End of the dir-list --------------------------------------------"
 
 # Finish the last job?
-$finish_last_job = ($Script:current_job_num -ne 0)
+$finish_last_job = ($Script:CurrentJobNum -ne 0)
 
 if ($finish_last_job) {
   Write-DebugMsg "----- Finishing the last job: ----------------------------------------"
   Invoke-AddJobFile
 }
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:jobs_created_count job file(s) created."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:JobsCreatedCount job file(s) created."
 
 Write-DebugMsg "----- Results ------------------------------------------------------------------"
-Write-DebugMsg "source_defs_count   : $Script:source_defs_count"
-Write-DebugMsg "start_new_job       : $Script:start_new_job"
-Write-DebugMsg "continue_curr_job   : $Script:continue_curr_job"
-Write-DebugMsg "finish_previous_job : $Script:finish_previous_job"
-Write-DebugMsg "included_files.Count:" $Script:included_files.Count
-Write-DebugMsg "excluded_dirs.Count :" $Script:excluded_dirs.Count
-Write-DebugMsg "excluded_files.Count:" $Script:excluded_files.Count
-Write-DebugMsg "jobs_created_count  : $Script:jobs_created_count"
+Write-DebugMsg "SourceDefinitionsCount: $Script:SourceDefinitionsCount"
+Write-DebugMsg "StartNewJob           : $Script:StartNewJob"
+Write-DebugMsg "ContinueCurrentJob    : $Script:ContinueCurrentJob"
+Write-DebugMsg "FinishPreviousJob     : $Script:FinishPreviousJob"
+Write-DebugMsg "IncludedFiles.Count   : $($Script:IncludedFiles.Count)"
+Write-DebugMsg "ExcludedFiles.Count   : $($Script:ExcludedFiles.Count)"
+Write-DebugMsg "ExcludedDirs.Count    : $($Script:ExcludedDirs.Count)"
+Write-DebugMsg "JobsCreatedCount      : $Script:JobsCreatedCount"
 Write-DebugMsg "--------------------------------------------------------------------------------"
 
 #endregion Create job files ####################################################
@@ -662,8 +662,8 @@ else {
       [Int32]$robocopy_exit_code = 0
       if ($PSCmdlet.ShouldProcess("${user_defined_job}", "Run Robocopy job")) {
         $process = Start-Process -Wait -PassThru -NoNewWindow `
-          -FilePath "${robocopy_exe}" `
-          -ArgumentList "/job:""${robocopy_job_type_template}""", `
+          -FilePath "${RobocopyExecutable}" `
+          -ArgumentList "/job:""${RobocopyJobTypeTemplate}""", `
           "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
           "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
           "/job:""${user_defined_job}"""
