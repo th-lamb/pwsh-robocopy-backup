@@ -8,6 +8,7 @@ Describe "backup.ps1 Smoke Test" {
     $smokeTestIni = $null
     $smokeTestConf = $null
 
+    #TODO: Extract functions like "path-resolution" to be re-used by all smoke tests?
     BeforeAll {
         # --- ROBUST PATH RESOLUTION ---
         $current = $PSScriptRoot
@@ -120,6 +121,7 @@ Describe "backup.ps1 Smoke Test" {
 
         # Assert: Check for evidence of a successful (simulated) run
         #TODO: Can we check the correct order of messages?
+        #TODO: We can check a lot more messages because __VERBOSE is now set to 7 in the ini file.
         $stdout | Should -Match "INFO.*Backup Script version .* started."
         $stdout | Should -Match "INFO.*Reading the settings file."
         $stdout | Should -Match "INFO.*Settings file read."
