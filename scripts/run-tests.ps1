@@ -24,6 +24,15 @@ param (
 # We are raising the bar for what is considered "dangerous enough" to interrupt tests.
 $ConfirmPreference = 'High' # Only prompt if the command's danger rating is >= my preference.
 
+# Ensure Pester v5 is loaded
+try {
+  Import-Module Pester -MinimumVersion 5.0 -ErrorAction Stop
+}
+catch {
+  Write-Error "Pester v5.0+ is required but was not found. Please install it with: Install-Module Pester -MinimumVersion 5.0 -Force"
+  exit 1
+}
+
 try {
   # 1. Create a new configuration object
   $pesterConfig = New-PesterConfiguration
