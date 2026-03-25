@@ -13,8 +13,10 @@ The smoke test uses a **Safe Sandbox** strategy to avoid affecting the system or
     - Creates `smoke-test.ini` and `dir-list.conf` from templates.
     - Sets up a dummy `source/` folder with test files.
 3.  **Simulated Execution:** It runs the script using the PowerShell `-WhatIf` parameter. This allows the script to go through its entire logic (reading config, checking files, calculating paths, generating job files) but **prevents** it from actually creating folders, writing the real log, or executing Robocopy.
-#TODO: The "correct order" of the messages is not checked!
-4.  **Output Verification:** The test captures the script's console output (stdout) and uses Regular Expressions to verify that the expected "WhatIf" messages and log entries (INFO/WARNING) were generated.
+4.  **Output Validation**: The test captures the script's console output (stdout and stderr).
+    - **Standard Error Monitoring:** The test fails if anything is written to the error stream.
+    - **Strict Log Prefix Validation:** Every line must begin with `[NOTICE ]`, `[INFO   ]`, `[DEBUG  ]` or be empty; otherwise, the test fails.
+    - **Additional Output Verification:** Regular Expressions are used to verify that expected "WhatIf" messages and log entries (INFO/DEBUG) were generated.
 
 ### Dual-File Setup (test-backup.ini & smoke-test.ini)
 
