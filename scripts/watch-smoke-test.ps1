@@ -26,7 +26,7 @@ Write-Host "Press Ctrl+C to stop.`n"
 
 $lastWriteTimes = @{}
 
-function Get-WatchedFiles {
+function Get-WatchedFilesCollection {
     param($Patterns)
     $files = @()
     foreach ($p in $Patterns) {
@@ -36,12 +36,13 @@ function Get-WatchedFiles {
 }
 
 # Initialize state
-Get-WatchedFiles -Patterns $WatchPatterns | ForEach-Object {
+Get-WatchedFilesCollection -Patterns $WatchPatterns | ForEach-Object {
     $lastWriteTimes[$_.FullName] = $_.LastWriteTime
 }
 
 # Helper to run Pester v5 style
 function Start-SmokeTest {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param($Path)
     $config = New-PesterConfiguration
     $config.Run.Path = $Path
@@ -55,7 +56,7 @@ Start-SmokeTest -Path $TestFullPath.Path
 
 while ($true) {
     $changed = $false
-    $currentFiles = Get-WatchedFiles -Patterns $WatchPatterns
+    $currentFiles = Get-WatchedFilesCollection -Patterns $WatchPatterns
 
     foreach ($f in $currentFiles) {
         if (-not $lastWriteTimes.ContainsKey($f.FullName) -or $lastWriteTimes[$f.FullName] -ne $f.LastWriteTime) {
