@@ -108,18 +108,43 @@ Describe "backup.ps1 Smoke Test" {
     }
 
     It "Runs successfully with -SkipExecution and simulates the workflow" {
+        $stdoutFile = Join-Path $SandboxRoot "stdout.txt"
+        $stderrFile = Join-Path $SandboxRoot "stderr.txt"
+
         # Act: Run the script as a separate process and capture output
         # We use -SkipExecution instead of -WhatIf to allow the script to actually create job files in the sandbox.
+        # Note: The smoke test currently uses "powershell.exe" (Windows PowerShell 5.1) for execution,
+        # but the script is designed to be compatible with "pwsh.exe" (PowerShell 7+) as well.
         $process = Start-Process -FilePath "powershell.exe" `
             -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$smokeTestPs1`"", "-SkipExecution", "-NonInteractive" `
             -WorkingDirectory $SandboxRoot `
-            -Wait -PassThru -NoNewWindow -RedirectStandardOutput (Join-Path $SandboxRoot "stdout.txt")
-
-        $process.ExitCode | Should -Be 0
-
-        $stdout = Get-Content (Join-Path $SandboxRoot "stdout.txt") -Raw
+            -Wait -PassThru -NoNewWindow `
+            -RedirectStandardOutput $stdoutFile `
+            -RedirectStandardError $stderrFile
 
         # Assert: Check for evidence of a successful (simulated) run
+        $process.ExitCode | Should -Be 0
+
+        # Check for any errors in stderr (catches "abc" if redirected to stderr)
+        if (Test-Path $stderrFile) {
+            $stderr = Get-Content $stderrFile -Raw
+            $stderr | Should -BeNullOrEmpty -Because "Standard Error should be empty. Found unexpected output/errors: `n$stderr"
+        }
+
+        $stdoutLines = Get-Content $stdoutFile
+        $stdout = $stdoutLines -join "`n"
+
+        # Validate that every line is either a valid log message or an empty line (catches "111" or "abc").
+        # Note: We only allow INFO, DEBUG, and NOTICE for a clean smoke test run.
+        # Higher severity levels (WARNING, ERR, etc.) should not occur.
+        $validPrefixes = "\[(NOTICE |INFO   |DEBUG  )\]"
+        $validLineRegex = "^($validPrefixes.*|)$"
+
+        foreach ($line in $stdoutLines) {
+            $line | Should -Match $validLineRegex -Because "Every line in stdout must follow the [SEVERITY] log format or be empty. Found unexpected line: '$line'"
+        }
+
+        # Check for specific expected messages
         #TODO: Can we check the correct order of messages?
         #TODO: We can check a lot more messages because __VERBOSE is now set to 7 in the ini file.
         $stdout | Should -Match "INFO.*Backup Script version .* started."
