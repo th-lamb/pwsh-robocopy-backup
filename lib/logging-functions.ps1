@@ -50,15 +50,15 @@ function Add-LogMessage {
     [String]$message
   )
 
-  $date_time = (Get-Date -Format s)
-  $severity_header = Format-SeverityLabel $severity  # e.g. [INFO   ]
+  $Timestamp = (Get-Date -Format s)
+  $SeverityHeader = Format-SeverityLabel $severity  # e.g. [INFO   ]
 
   try {
-    "${date_time} ${severity_header} ${message}" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
+    "${Timestamp} ${SeverityHeader} ${message}" | Out-File -FilePath "${logfile}" -Encoding utf8 -Append
   }
   catch {
     # We use Write-Host with special colors because the output of Write-Error is quite difficult to read!
-    Write-Host "Add-LogMessage(): Cannot write to logfile ${logfile}. Message: ${severity_header} ${message}" -ForegroundColor White -BackgroundColor Red
+    Write-Host "Add-LogMessage(): Cannot write to logfile ${logfile}. Message: ${SeverityHeader} ${message}" -ForegroundColor White -BackgroundColor Red
   }
 
 }

@@ -5,16 +5,16 @@ function Get-ComputernameFromUncPath {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [String]$unc_path
+    [String]$UncPath
   )
 
   # Check if this really is a UNC path.
-  if ( ! ( [bool]([System.Uri]"${unc_path}").IsUnc ) ) {
-    Write-Error "Get-ComputernameFromUncPath(): Not a UNC path: ${unc_path}"
-    Throw "Not a UNC path: ${unc_path}"
+  if ( ! ( [bool]([System.Uri]"${UncPath}").IsUnc ) ) {
+    Write-Error "Get-ComputernameFromUncPath(): Not a UNC path: ${UncPath}"
+    Throw "Not a UNC path: ${UncPath}"
   }
 
-  $temp = "${unc_path}".Replace("\\", "")
+  $temp = "${UncPath}".Replace("\\", "")
   $pos = "${temp}".IndexOf("\")
 
   if ($pos -eq -1) {
@@ -43,10 +43,10 @@ function Test-ServerIsAvailable {
   # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
   # Test-Connection -BufferSize 32 -Count 1 -ComputerName 192.168.0.41 -Quiet
 
-  $server_name = Get-ComputernameFromUncPath "${ServerPathSpec}"
+  $ServerName = Get-ComputernameFromUncPath "${ServerPathSpec}"
 
   try {
-    $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${server_name}" -Quiet -ErrorAction Stop
+    $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${ServerName}" -Quiet -ErrorAction Stop
   } catch {
     $available = $false
   }

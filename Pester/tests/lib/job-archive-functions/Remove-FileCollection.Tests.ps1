@@ -100,7 +100,7 @@ Describe 'Remove-FileCollection' {
 
       {
         Remove-FileCollection ""
-      } | Should -Throw "Parameter files_to_delete equals an empty String!"
+      } | Should -Throw "Parameter FilesToDelete equals an empty String!"
     }
 
     #TODO: Throws an exception when called without parameter.

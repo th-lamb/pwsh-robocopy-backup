@@ -47,38 +47,38 @@ function Test-FsObjectTypeMismatch {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$specified_type,
+    [String]$SpecifiedType,
     [Parameter(Mandatory = $false)]
     [AllowNull()]
-    [String]$existing_type
+    [String]$ExistingType
   )
 
   # non-existent objects
   # Check for $null or empty string
-  if ([String]::IsNullOrEmpty($existing_type)) {
+  if ([String]::IsNullOrEmpty($ExistingType)) {
     return "missing"
   }
 
   # Matching object types
-  if ("${specified_type}" -eq "${existing_type}") {
+  if ("${SpecifiedType}" -eq "${ExistingType}") {
     return "match"
   }
 
-  if ("${specified_type}".Replace(" pattern", "") -eq "${existing_type}") {
+  if ("${SpecifiedType}".Replace(" pattern", "") -eq "${ExistingType}") {
     return "match"
   }
 
   # Type mismatch
   if (
-    ("${specified_type}".Replace(" pattern", "") -eq "directory") -and
-    ("${existing_type}" -eq "file")
+    ("${SpecifiedType}".Replace(" pattern", "") -eq "directory") -and
+    ("${ExistingType}" -eq "file")
   ) {
     return "type mismatch"
   }
 
   if (
-    ("${specified_type}".Replace(" pattern", "") -eq "file") -and
-    ("${existing_type}" -eq "directory")
+    ("${SpecifiedType}".Replace(" pattern", "") -eq "file") -and
+    ("${ExistingType}" -eq "directory")
   ) {
     return "type mismatch"
   }
@@ -123,20 +123,20 @@ function Get-DirlistLineType {
   # source-dir, source-file, or source-file-pattern
   if ( (! $entry.StartsWith(" ")) ) {
     # Check specified and real type, then compare and warn if necessary!
-    $specified_type = Get-SpecifiedFsObjectType "${entry}"
+    $SpecifiedType = Get-SpecifiedFsObjectType "${entry}"
 
     # Ignore invalid entries.
-    switch ("${specified_type}") {
+    switch ("${SpecifiedType}") {
       "directory pattern" { return "invalid: source directory pattern" }
       "directory entry" { return "invalid: directory entry (for current or parent folder)" }
     }
 
     # Ignore unavailable filesystem objects.
-    $fs_object = Get-RealFsObjectType "${entry}"
-    $existing_type = $fs_object.Type
+    $FsObject = Get-RealFsObjectType "${entry}"
+    $ExistingType = $FsObject.Type
 
-    if (! $fs_object.Exists) {
-      if ($existing_type -eq "network share" -or $existing_type -eq "network computer") {
+    if (! $FsObject.Exists) {
+      if ($ExistingType -eq "network share" -or $ExistingType -eq "network computer") {
         LogAndShowMessage "${logfile}" WARNING "Network resource offline: ${entry}"
       }
       else {
@@ -146,15 +146,15 @@ function Get-DirlistLineType {
     }
 
     # Check for differences.
-    $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
+    $result = Test-FsObjectTypeMismatch "${SpecifiedType}" "${ExistingType}"
 
     switch ("${result}") {
       "match" {
-        $object_type = "${specified_type}"
+        $ObjectType = "${SpecifiedType}"
       }
       "type mismatch" {
         LogAndShowMessage "${logfile}" NOTICE "Type mismatch: ${entry}"
-        $object_type = "${existing_type}"   # We use the real object type!
+        $ObjectType = "${ExistingType}"   # We use the real object type!
       }
       Default {
         Write-Error "Get-DirlistLineType(): Unknown result from Test-FsObjectTypeMismatch(): ${result}"
@@ -162,9 +162,9 @@ function Get-DirlistLineType {
       }
     }
 
-    Write-DebugMsg "Get-DirlistLineType(): object_type: ${object_type}"
+    Write-DebugMsg "Get-DirlistLineType(): ObjectType : ${ObjectType}"
 
-    switch ("${object_type}") {
+    switch ("${ObjectType}") {
       "directory" { return "source-dir" }
       "file" { return "source-file" }
       "file pattern" { return "source-file-pattern" }
@@ -178,9 +178,9 @@ function Get-DirlistLineType {
 
     # Type of the entry
     # -> An inclusion should always be a file (pattern)!
-    $object_type = Get-SpecifiedFsObjectType "${temp}"
+    $ObjectType = Get-SpecifiedFsObjectType "${temp}"
 
-    switch ("${object_type}") {
+    switch ("${ObjectType}") {
       "directory" { return "invalid: only file (patterns) can be included: ${entry}" }
       "file" { return "incl-files-pattern" }
       "directory pattern" { return "invalid: only file (patterns) can be included: ${entry}" }
@@ -193,9 +193,9 @@ function Get-DirlistLineType {
 
     # Type of the entry
     # -> An inclusion should always be a file (pattern)!
-    $object_type = Get-SpecifiedFsObjectType "${temp}"
+    $ObjectType = Get-SpecifiedFsObjectType "${temp}"
 
-    switch ("${object_type}") {
+    switch ("${ObjectType}") {
       "directory" { return "excl-dirs-pattern" }
       "file" { return "excl-files-pattern" }
       "directory pattern" { return "excl-dirs-pattern" }
@@ -220,13 +220,13 @@ function Get-TargetDir {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$base_dir,
+    [String]$BaseDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$folder_spec
+    [String]$FolderSpec
   )
 
   # Checks
-  if ("${folder_spec}" -eq "") {
+  if ("${FolderSpec}" -eq "") {
     LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Get-TargetDir(): No folder specified!"
     #TODO: If we show an *error* here, why do we return the base dir as target dir?
     #TODO: Can this even happen?
@@ -234,18 +234,18 @@ function Get-TargetDir {
   }
 
   # Corrections
-  if ( ! "${base_dir}".EndsWith("\") ) {
-    $base_dir = "${base_dir}\"
+  if ( ! "${BaseDirectory}".EndsWith("\") ) {
+    $BaseDirectory = "${BaseDirectory}\"
   }
-  if ( ! "${folder_spec}".EndsWith("\") ) {
-    $folder_spec = "${folder_spec}\"
+  if ( ! "${FolderSpec}".EndsWith("\") ) {
+    $FolderSpec = "${FolderSpec}\"
   }
 
   # Result
-  $sub_dir = ($folder_spec -replace ":", "")
-  $target_dir = ${base_dir} + "$sub_dir"
+  $SubDirectory = ($FolderSpec -replace ":", "")
+  $TargetDirectory = ${BaseDirectory} + "$SubDirectory"
 
-  return $target_dir
+  return $TargetDirectory
 
 }
 
@@ -260,19 +260,19 @@ function _writeToJobfile {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
+    [String]$JobfilePath,
     [Parameter(Mandatory = $true)]
     [AllowEmptyString()]
     [String]$line,
     [Parameter(Mandatory = $true)]
-    [System.Boolean]$create_new_file
+    [System.Boolean]$CreateNewFile
   )
 
-  if (${create_new_file}) {
-    "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding oem
+  if (${CreateNewFile}) {
+    "${line}" | Out-File -FilePath "${JobfilePath}" -Encoding oem
   }
   else {
-    "${line}" | Out-File -FilePath "${jobfile_path}" -Encoding oem -Append
+    "${line}" | Out-File -FilePath "${JobfilePath}" -Encoding oem -Append
   }
 
   # Robocopy job files (.RCJ) are expected to be in the OEM code page (e.g. CP850 on German systems).
@@ -291,21 +291,21 @@ function _writeHeader {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
+    [String]$JobfilePath,
     [Parameter(Mandatory = $true)]
     [String]$computername,
     [Parameter(Mandatory = $true)]
-    [Int32]$current_job_num,
+    [Int32]$CurrentJobNumber,
     [Parameter(Mandatory = $true)]
-    [String]$dirlist_entry
+    [String]$DirlistEntry
   )
 
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
   # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
   # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Robocopy Job ${computername}-Job${current_job_num}" -create_new_file $true
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: For dir-list entry: ${dirlist_entry}" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Robocopy Job ${computername}-Job${CurrentJobNumber}" -CreateNewFile $true
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: For dir-list entry: ${DirlistEntry}" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
 
 }
 
@@ -314,19 +314,19 @@ function _addSourceAndTarget {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
+    [String]$JobfilePath,
     [Parameter(Mandatory = $true)]
-    [String]$source_dir,
+    [String]$SourceDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$target_dir
+    [String]$TargetDirectory
   )
 
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Source Directory" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/SD:${source_dir}" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Destination Directory" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/DD:${target_dir}" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Source Directory" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/SD:${SourceDirectory}" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Destination Directory" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/DD:${TargetDirectory}" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
 
 }
 
@@ -335,17 +335,17 @@ function _addJobConfig {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
+    [String]$JobfilePath,
     [Parameter(Mandatory = $true)]
-    [String]$logfile_path
+    [String]$LogfilePath
   )
 
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: ----- User settings ---------------------------------------------------------" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Logging options" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/UNILOG:${logfile_path}" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line ":: Copy options" -create_new_file $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: ----- User settings ---------------------------------------------------------" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Logging options" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/UNILOG:${LogfilePath}" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Copy options" -CreateNewFile $false
 
 }
 
@@ -357,16 +357,16 @@ function _addIncludedFiles {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
-    [System.Collections.ArrayList]$included_files
+    [String]$JobfilePath,
+    [System.Collections.ArrayList]$IncludedFiles
   )
 
   # Append the Robocopy switch
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/IF :: Include the following Files." -create_new_file $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/IF :: Include the following Files." -CreateNewFile $false
 
   # Append all entries
-  foreach ($entry in $included_files) {
-    _writeToJobfile -jobfile_path "${jobfile_path}" -line "  ${entry}" -create_new_file $false
+  foreach ($entry in $IncludedFiles) {
+    _writeToJobfile -JobfilePath "${JobfilePath}" -line "  ${entry}" -CreateNewFile $false
   }
 
 }
@@ -379,16 +379,16 @@ function _addExcludedDirs {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
-    [System.Collections.ArrayList]$excluded_dirs
+    [String]$JobfilePath,
+    [System.Collections.ArrayList]$ExcludedDirs
   )
 
   # Append the Robocopy switch
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/XD :: eXclude Directories matching given names/paths." -create_new_file $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/XD :: eXclude Directories matching given names/paths." -CreateNewFile $false
 
   # Append all entries
-  foreach ($entry in $excluded_dirs) {
-    _writeToJobfile -jobfile_path "${jobfile_path}" -line "  ${entry}" -create_new_file $false
+  foreach ($entry in $ExcludedDirs) {
+    _writeToJobfile -JobfilePath "${JobfilePath}" -line "  ${entry}" -CreateNewFile $false
   }
 
 }
@@ -401,16 +401,16 @@ function _addExcludedFiles {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
-    [System.Collections.ArrayList]$excluded_files
+    [String]$JobfilePath,
+    [System.Collections.ArrayList]$ExcludedFiles
   )
 
   # Append the Robocopy switch
-  _writeToJobfile -jobfile_path "${jobfile_path}" -line "/XF :: eXclude Files matching given names/paths/wildcards." -create_new_file $false
+  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/XF :: eXclude Files matching given names/paths/wildcards." -CreateNewFile $false
 
   # Append all entries
-  foreach ($entry in $excluded_files) {
-    _writeToJobfile -jobfile_path "${jobfile_path}" -line "  ${entry}" -create_new_file $false
+  foreach ($entry in $ExcludedFiles) {
+    _writeToJobfile -JobfilePath "${JobfilePath}" -line "  ${entry}" -CreateNewFile $false
   }
 
 }
@@ -420,48 +420,48 @@ function _finalizeJob {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$jobfile_path,
-    [System.Collections.ArrayList]$included_files,
-    [System.Collections.ArrayList]$excluded_dirs,
-    [System.Collections.ArrayList]$excluded_files,
+    [String]$JobfilePath,
+    [System.Collections.ArrayList]$IncludedFiles,
+    [System.Collections.ArrayList]$ExcludedDirs,
+    [System.Collections.ArrayList]$ExcludedFiles,
     [Parameter(Mandatory = $true)]
-    [System.Boolean]$copy_single_file
+    [System.Boolean]$CopySingleFile
   )
 
-  $spacer_needed = $false
+  $SpacerNeeded = $false
 
-  # Always add included files. Use *.* if the list $included_files is empty.
-  if ($included_files.Count -eq 0) {
-    $included_files.Add("*.*") > $null
+  # Always add included files. Use *.* if the list $IncludedFiles is empty.
+  if ($IncludedFiles.Count -eq 0) {
+    $IncludedFiles.Add("*.*") > $null
   }
 
-  _addIncludedFiles "${jobfile_path}" $included_files
-  $spacer_needed = $true
+  _addIncludedFiles "${JobfilePath}" $IncludedFiles
+  $SpacerNeeded = $true
 
   # Add excluded dirs?
-  if (! ($excluded_dirs.Count -eq 0) ) {
-    if ($spacer_needed) {
-      _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
-      $spacer_needed = $false
+  if (! ($ExcludedDirs.Count -eq 0) ) {
+    if ($SpacerNeeded) {
+      _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+      $SpacerNeeded = $false
     }
 
-    _addExcludedDirs "${jobfile_path}" $excluded_dirs
-    $spacer_needed = $true
+    _addExcludedDirs "${JobfilePath}" $ExcludedDirs
+    $SpacerNeeded = $true
   }
 
-  if (! ($excluded_files.Count -eq 0) ) {
-    if ($spacer_needed) {
-      _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
-      $spacer_needed = $false
+  if (! ($ExcludedFiles.Count -eq 0) ) {
+    if ($SpacerNeeded) {
+      _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+      $SpacerNeeded = $false
     }
 
-    _addExcludedFiles "${jobfile_path}" $excluded_files
+    _addExcludedFiles "${JobfilePath}" $ExcludedFiles
   }
 
   # Add robocopy option /LEV:1 to copy only a single file?
-  if ($copy_single_file) {
-    _writeToJobfile -jobfile_path "${jobfile_path}" -line "" -create_new_file $false
-    _writeToJobfile -jobfile_path "${jobfile_path}" -line "/LEV:1 :: only copy the top n LEVels of the source directory tree." -create_new_file $false
+  if ($CopySingleFile) {
+    _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+    _writeToJobfile -JobfilePath "${JobfilePath}" -line "/LEV:1 :: only copy the top n LEVels of the source directory tree." -CreateNewFile $false
   }
 
 }
@@ -471,57 +471,57 @@ function Add-JobFile {
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$backup_job_dir,
+    [String]$BackupJobDirectory,
     [Parameter(Mandatory = $true)]
     [String]$computername,
     [Parameter(Mandatory = $true)]
-    [Int32]$current_job_num,
+    [Int32]$CurrentJobNumber,
     [Parameter(Mandatory = $true)]
-    [String]$dirlist_entry,
+    [String]$DirlistEntry,
     [Parameter(Mandatory = $true)]
-    [String]$source_dir,
+    [String]$SourceDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$target_dir,
-    [System.Collections.ArrayList]$included_files,
-    [System.Collections.ArrayList]$excluded_dirs,
-    [System.Collections.ArrayList]$excluded_files,
+    [String]$TargetDirectory,
+    [System.Collections.ArrayList]$IncludedFiles,
+    [System.Collections.ArrayList]$ExcludedDirs,
+    [System.Collections.ArrayList]$ExcludedFiles,
     [Parameter(Mandatory = $true)]
-    [System.Boolean]$copy_single_file
+    [System.Boolean]$CopySingleFile
   )
 
-  Write-DebugMsg "Add-JobFile(): backup_job_dir       : ${backup_job_dir}"
+  Write-DebugMsg "Add-JobFile(): BackupJobDirectory   : ${BackupJobDirectory}"
   Write-DebugMsg "Add-JobFile(): computername         : ${computername}"
-  Write-DebugMsg "Add-JobFile(): current_job_num      : $current_job_num"
-  Write-DebugMsg "Add-JobFile(): dirlist_entry        : ${dirlist_entry}"
-  Write-DebugMsg "Add-JobFile(): source_dir           : ${source_dir}"
-  Write-DebugMsg "Add-JobFile(): target_dir           : ${target_dir}"
-  Write-DebugMsg "Add-JobFile(): included_files.Count : $($included_files.Count)"
-  Write-DebugMsg "Add-JobFile(): excluded_dirs.Count  : $($excluded_dirs.Count)"
-  Write-DebugMsg "Add-JobFile(): excluded_files.Count : $($excluded_files.Count)"
-  Write-DebugMsg "Add-JobFile(): copy_single_file     : $copy_single_file"
+  Write-DebugMsg "Add-JobFile(): CurrentJobNumber     : $CurrentJobNumber"
+  Write-DebugMsg "Add-JobFile(): DirlistEntry         : ${DirlistEntry}"
+  Write-DebugMsg "Add-JobFile(): SourceDirectory      : ${SourceDirectory}"
+  Write-DebugMsg "Add-JobFile(): TargetDirectory      : ${TargetDirectory}"
+  Write-DebugMsg "Add-JobFile(): IncludedFiles.Count  : $($IncludedFiles.Count)"
+  Write-DebugMsg "Add-JobFile(): ExcludedDirs.Count   : $($ExcludedDirs.Count)"
+  Write-DebugMsg "Add-JobFile(): ExcludedFiles.Count  : $($ExcludedFiles.Count)"
+  Write-DebugMsg "Add-JobFile(): CopySingleFile       : $CopySingleFile"
 
   # Paths for the current job
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
   # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
   # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
-  $jobfile_path = "${backup_job_dir}${computername}-Job$current_job_num.RCJ"
-  $logfile_path = "${backup_job_dir}${computername}-Job$current_job_num.log"
+  $JobfilePath = "${BackupJobDirectory}${computername}-Job$CurrentJobNumber.RCJ"
+  $LogfilePath = "${BackupJobDirectory}${computername}-Job$CurrentJobNumber.log"
 
-  Write-DebugMsg "Add-JobFile(): jobfile_path         : ${jobfile_path}"
-  Write-DebugMsg "Add-JobFile(): logfile_path         : ${logfile_path}"
+  Write-DebugMsg "Add-JobFile(): JobfilePath          : ${JobfilePath}"
+  Write-DebugMsg "Add-JobFile(): LogfilePath          : ${LogfilePath}"
 
-  if ($PSCmdlet.ShouldProcess("${jobfile_path}", "Create Robocopy job file")) {
+  if ($PSCmdlet.ShouldProcess("${JobfilePath}", "Create Robocopy job file")) {
     # Create job file
-    _writeHeader -jobfile_path "${jobfile_path}" -computername "${computername}" -current_job_num $current_job_num -dirlist_entry "${dirlist_entry}"
+    _writeHeader -JobfilePath "${JobfilePath}" -computername "${computername}" -CurrentJobNumber $CurrentJobNumber -DirlistEntry "${DirlistEntry}"
 
     # Add paths
-    _addSourceAndTarget -jobfile_path "${jobfile_path}" -source_dir "${source_dir}" -target_dir "${target_dir}"
+    _addSourceAndTarget -JobfilePath "${JobfilePath}" -SourceDirectory "${SourceDirectory}" -TargetDirectory "${TargetDirectory}"
 
     # Add next section for user-dependent settings
-    _addJobConfig -jobfile_path "${jobfile_path}" -logfile_path "${logfile_path}"
+    _addJobConfig -JobfilePath "${JobfilePath}" -LogfilePath "${LogfilePath}"
 
     # Add included/excluded files/directories (and additional options).
-    _finalizeJob -jobfile_path "${jobfile_path}" -included_files $included_files -excluded_dirs $excluded_dirs -excluded_files $excluded_files -copy_single_file $copy_single_file
+    _finalizeJob -JobfilePath "${JobfilePath}" -IncludedFiles $IncludedFiles -ExcludedDirs $ExcludedDirs -ExcludedFiles $ExcludedFiles -CopySingleFile $CopySingleFile
   }
 
 }

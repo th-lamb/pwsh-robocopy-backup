@@ -28,37 +28,37 @@ function Remove-FileCollection {
   param (
     [Parameter(Mandatory = $true)]
     [AllowEmptyCollection()]
-    [System.Collections.ArrayList]$files_to_delete
+    [System.Collections.ArrayList]$FilesToDelete
   )
 
   #region Check parameters
-  if ( $files_to_delete.Count -eq 0 ) {
-    Write-WarningMsg "Remove-FileCollection(): Parameter files_to_delete is an empty collection!"
+  if ( $FilesToDelete.Count -eq 0 ) {
+    Write-WarningMsg "Remove-FileCollection(): Parameter FilesToDelete is an empty collection!"
     return 0
   }
 
-  if ( "" -eq $files_to_delete ) {
-    Write-Error "Remove-FileCollection(): Parameter files_to_delete equals an empty String!"
-    Throw "Parameter files_to_delete equals an empty String!"
+  if ( "" -eq $FilesToDelete ) {
+    Write-Error "Remove-FileCollection(): Parameter FilesToDelete equals an empty String!"
+    Throw "Parameter FilesToDelete equals an empty String!"
   }
   #endregion Check parameters
 
-  [Int32]$num_files_deleted = 0
+  [Int32]$DeletedFilesCount = 0
 
-  foreach ($file_to_delete in $files_to_delete) {
-    if ($PSCmdlet.ShouldProcess("${file_to_delete}", "Delete file")) {
-      Write-Host "${file_to_delete}" -ForegroundColor DarkRed
+  foreach ($FileToDelete in $FilesToDelete) {
+    if ($PSCmdlet.ShouldProcess("${FileToDelete}", "Delete file")) {
+      Write-Host "${FileToDelete}" -ForegroundColor DarkRed
       try {
-        Remove-Item "${file_to_delete}" -ErrorAction Stop -Confirm:$false
-        $num_files_deleted++
+        Remove-Item "${FileToDelete}" -ErrorAction Stop -Confirm:$false
+        $DeletedFilesCount++
       }
       catch {
-        Write-Error "Cannot delete file: ${file_to_delete}"
+        Write-Error "Cannot delete file: ${FileToDelete}"
       }
     }
   }
 
-  $num_files_deleted
+  $DeletedFilesCount
 
 }
 
@@ -70,17 +70,17 @@ function Get-LastDateTime {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [System.Collections.ArrayList]$file_list
+    [System.Collections.ArrayList]$FileList
   )
 
-  if ($file_list.Count -eq 0) {
+  if ($FileList.Count -eq 0) {
     return ""
   }
 
-  $last_file = ($file_list | Sort-Object -Descending -Property LastWriteTime)[0]
-  $last_datetime = $last_file.LastWriteTime.GetDateTimeFormats('s').Replace(":", "")
+  $LastFile = ($FileList | Sort-Object -Descending -Property LastWriteTime)[0]
+  $LastDatetime = $LastFile.LastWriteTime.GetDateTimeFormats('s').Replace(":", "")
 
-  $last_datetime
+  $LastDatetime
 
 }
 
@@ -89,67 +89,67 @@ function Export-PreviousJob {
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$backup_job_dir,
+    [String]$BackupJobDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$job_name_scheme,
+    [String]$JobNameScheme,
     [Parameter(Mandatory = $true)]
-    [String]$job_log_name_scheme,
+    [String]$JobLogNameScheme,
     [Parameter(Mandatory = $true)]
-    [String]$archive_name_scheme,
+    [String]$ArchiveNameScheme,
     [Parameter(Mandatory = $true)]
-    [System.Byte]$max_archives_count  # 0..255
+    [System.Byte]$MaxArchivesCount  # 0..255
   )
 
-  Write-DebugMsg "Export-PreviousJob(${backup_job_dir}, ${job_name_scheme}, ${job_log_name_scheme}, ${archive_name_scheme}, $max_archives_count)"
+  Write-DebugMsg "Export-PreviousJob(${BackupJobDirectory}, ${JobNameScheme}, ${JobLogNameScheme}, ${ArchiveNameScheme}, $MaxArchivesCount)"
 
   # Get all old job- and logfiles (null if nothing was found).
-  $old_jobfiles = New-Object System.Collections.ArrayList
-  $old_jobfiles = Get-ChildItem -Path "${backup_job_dir}*" -Include "${job_name_scheme}" -File
+  $OldJobfiles = New-Object System.Collections.ArrayList
+  $OldJobfiles = Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${JobNameScheme}" -File
 
-  $old_logfiles = New-Object System.Collections.ArrayList
-  $old_logfiles = Get-ChildItem -Path "${backup_job_dir}*" -Include "${job_log_name_scheme}" -File
+  $OldLogfiles = New-Object System.Collections.ArrayList
+  $OldLogfiles = Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${JobLogNameScheme}" -File
 
   # Continue if they exist.
-  $old_jobfiles_count = $old_jobfiles.Count
-  $old_logfiles_count = $old_logfiles.Count
-  Write-DebugMsg "old_jobfiles_count: $old_jobfiles_count"
-  Write-DebugMsg "old_logfiles_count: $old_logfiles_count"
+  $OldJobfilesCount = $OldJobfiles.Count
+  $OldLogfilesCount = $OldLogfiles.Count
+  Write-DebugMsg "OldJobfilesCount: $OldJobfilesCount"
+  Write-DebugMsg "OldLogfilesCount: $OldLogfilesCount"
 
   if (
-    ($old_jobfiles_count -eq 0) -and
-    ($old_logfiles_count -eq 0)
+    ($OldJobfilesCount -eq 0) -and
+    ($OldLogfilesCount -eq 0)
   ) {
     Write-DebugMsg "No old jobs to archive."
     return
   }
 
   # Find all existing (0..n) archives.
-  $old_archives = New-Object System.Collections.ArrayList
-  $old_archives = Get-ChildItem -Path "${backup_job_dir}*" -Include "${archive_name_scheme}" -File
+  $OldArchives = New-Object System.Collections.ArrayList
+  $OldArchives = Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${ArchiveNameScheme}" -File
 
   # Delete the oldest archive if it exists.
-  $old_archives_count = $old_archives.Count
-  Write-DebugMsg "old_archives_count: $old_archives_count"
+  $OldArchivesCount = $OldArchives.Count
+  Write-DebugMsg "OldArchivesCount  : $OldArchivesCount"
 
-  if ($old_archives_count -lt $max_archives_count) {
-    Write-DebugMsg "$old_archives_count job archive(s) (MAX=$max_archives_count), just archiving the existing jobs."
+  if ($OldArchivesCount -lt $MaxArchivesCount) {
+    Write-DebugMsg "$OldArchivesCount job archive(s) (MAX=$MaxArchivesCount), just archiving the existing jobs."
   }
   else {
-    Write-InfoMsg "$old_archives_count job archives (MAX=$max_archives_count), deleting the oldest one(s)."
+    Write-InfoMsg "$OldArchivesCount job archives (MAX=$MaxArchivesCount), deleting the oldest one(s)."
 
-    $old_archives = $old_archives | Sort-Object -Descending
-    for ($i = $max_archives_count - 1; $i -lt $old_archives.Count; $i++) {
-      $archive_to_delete = $old_archives[$i]
-      $archive_name = Split-Path -Leaf "${archive_to_delete}"
+    $OldArchives = $OldArchives | Sort-Object -Descending
+    for ($i = $MaxArchivesCount - 1; $i -lt $OldArchives.Count; $i++) {
+      $ArchiveToDelete = $OldArchives[$i]
+      $ArchiveName = Split-Path -Leaf "${ArchiveToDelete}"
 
-      if ($PSCmdlet.ShouldProcess("${archive_to_delete}", "Delete job archive")) {
-        Write-InfoMsg "Deleting job archive ${archive_name}"
-        Write-Host "${archive_to_delete}" -ForegroundColor DarkRed
+      if ($PSCmdlet.ShouldProcess("${ArchiveToDelete}", "Delete job archive")) {
+        Write-InfoMsg "Deleting job archive ${ArchiveName}"
+        Write-Host "${ArchiveToDelete}" -ForegroundColor DarkRed
         try {
-          Remove-Item "$archive_to_delete" -ErrorAction Stop -Confirm:$false
+          Remove-Item "$ArchiveToDelete" -ErrorAction Stop -Confirm:$false
         }
         catch {
-          Write-Error "Cannot delete archive: ${archive_to_delete}"
+          Write-Error "Cannot delete archive: ${ArchiveToDelete}"
         }
       }
     }
@@ -157,47 +157,47 @@ function Export-PreviousJob {
 
   # Determine the name of the new archive. (Use date and time of the jobfiles?)
   # Get date/time from the logfiles if there were no jobfiles.
-  if ($old_jobfiles_count -gt 0) {
-    $last_datetime = Get-LastDateTime $old_jobfiles
+  if ($OldJobfilesCount -gt 0) {
+    $LastDatetime = Get-LastDateTime $OldJobfiles
   }
   else {
-    $last_datetime = Get-LastDateTime $old_logfiles
+    $LastDatetime = Get-LastDateTime $OldLogfiles
   }
 
-  Write-DebugMsg "Last job's date/time: ${last_datetime}"
+  Write-DebugMsg "Last job's date/time: ${LastDatetime}"
 
   # Archive the jobs (jobfile and logfile).
-  $archive_name = "${archive_name_scheme}".Replace("*", "${last_datetime}")
-  $archive_path = "${backup_job_dir}${archive_name}"
-  Write-DebugMsg "archive_name: ${archive_name}"
-  Write-DebugMsg "archive_path: ${archive_path}"
+  $ArchiveName = "${ArchiveNameScheme}".Replace("*", "${LastDatetime}")
+  $ArchivePath = "${BackupJobDirectory}${ArchiveName}"
+  Write-DebugMsg "ArchiveName : ${ArchiveName}"
+  Write-DebugMsg "ArchivePath : ${ArchivePath}"
 
-  if ($PSCmdlet.ShouldProcess("${archive_path}", "Create job archive")) {
-    Write-InfoMsg "Archiving old jobs in ${archive_name}"
+  if ($PSCmdlet.ShouldProcess("${ArchivePath}", "Create job archive")) {
+    Write-InfoMsg "Archiving old jobs in ${ArchiveName}"
     try {
-      Compress-Archive -Path "${backup_job_dir}${job_name_scheme}" -DestinationPath "${archive_path}" -Force -Confirm:$false        # -Force to overwrite if needed.
+      Compress-Archive -Path "${BackupJobDirectory}${JobNameScheme}" -DestinationPath "${ArchivePath}" -Force -Confirm:$false        # -Force to overwrite if needed.
       # Update the archive only if logfiles exist! Otherwise the archive gets deleted.
-      if ($old_logfiles_count -gt 0) {
-        Compress-Archive -Path "${backup_job_dir}${job_log_name_scheme}" -Update -DestinationPath "${archive_path}" -Confirm:$false   # -Update to add.
+      if ($OldLogfilesCount -gt 0) {
+        Compress-Archive -Path "${BackupJobDirectory}${JobLogNameScheme}" -Update -DestinationPath "${ArchivePath}" -Confirm:$false   # -Update to add.
       }
-      Write-Host "${archive_path}" -ForegroundColor DarkGreen
+      Write-Host "${ArchivePath}" -ForegroundColor DarkGreen
     }
     catch {
-      Write-Error "Cannot create archive: ${archive_path}"
+      Write-Error "Cannot create archive: ${ArchivePath}"
     }
   }
 
   # Delete the jobs.
   Write-InfoMsg "Deleting old jobs..."
 
-  if ( $null -ne $old_jobfiles ) {
-    $num_jobfiles_deleted = Remove-FileCollection $old_jobfiles
-    Write-DebugMsg "$num_jobfiles_deleted jobfile(s) deleted."
+  if ( $null -ne $OldJobfiles ) {
+    $DeletedJobfilesCount = Remove-FileCollection $OldJobfiles
+    Write-DebugMsg "$DeletedJobfilesCount jobfile(s) deleted."
   }
 
-  if ( $null -ne $old_logfiles ) {
-    $num_logfiles_deleted = Remove-FileCollection $old_logfiles
-    Write-DebugMsg "$num_logfiles_deleted logfile(s) deleted."
+  if ( $null -ne $OldLogfiles ) {
+    $DeletedLogfilesCount = Remove-FileCollection $OldLogfiles
+    Write-DebugMsg "$DeletedLogfilesCount logfile(s) deleted."
   }
 
 }

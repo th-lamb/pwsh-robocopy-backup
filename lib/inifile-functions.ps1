@@ -3,8 +3,8 @@
 function Write-FormattedValueList {
   [CmdletBinding()]
   param (
-    [System.Collections.ArrayList]$var_names,
-    [System.Collections.ArrayList]$var_values
+    [System.Collections.ArrayList]$VarNames,
+    [System.Collections.ArrayList]$VarValues
   )
 
   #region Check parameters
@@ -13,46 +13,46 @@ function Write-FormattedValueList {
     Throw "Wrong number of parameters provided!"
   }
 
-  if ( $var_names.Count -eq 0 ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter var_names is an empty collection!"
+  if ( $VarNames.Count -eq 0 ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter VarNames is an empty collection!"
     return
   }
 
-  if ( $var_values.Count -eq 0 ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter var_values is an empty collection!"
+  if ( $VarValues.Count -eq 0 ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter VarValues is an empty collection!"
     return
   }
 
-  if ( "" -eq $var_names ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter var_names equals an empty String!"
+  if ( "" -eq $VarNames ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter VarNames equals an empty String!"
     return
   }
 
-  if ( "" -eq $var_values ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter var_values equals an empty String!"
+  if ( "" -eq $VarValues ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter VarValues equals an empty String!"
     return
   }
   #endregion Check parameters
 
-  [System.Collections.ArrayList]$var_names_same_length = New-Object System.Collections.ArrayList
+  [System.Collections.ArrayList]$VarNamesSameLength = New-Object System.Collections.ArrayList
 
   # Determine the longest variable name.
-  $max_length = $( $var_names | Sort-Object length -desc | Select-Object -first 1 ).Length
+  $MaxLength = $( $VarNames | Sort-Object length -desc | Select-Object -first 1 ).Length
 
   # Make shorter variable names longer.
-  for ($i = 0; $i -lt $var_names.Count; $i++) {
-    $var_name = $($var_names[$i])
-    $num_spaces_to_add = $( $max_length - $var_name.Length )
-    $var_name_with_spaces = "${var_name}" + (" " * $num_spaces_to_add)
-    $var_names_same_length.Add("${var_name_with_spaces}") > $null
+  for ($i = 0; $i -lt $VarNames.Count; $i++) {
+    $VarName = $($VarNames[$i])
+    $NumSpacesToAdd = $( $MaxLength - $VarName.Length )
+    $VarNameWithSpaces = "${VarName}" + (" " * $NumSpacesToAdd)
+    $VarNamesSameLength.Add("${VarNameWithSpaces}") > $null
 
   }
 
   # Show debug messages.
   Write-DebugMsg "--------------------------------------------------------------------------------"
   Write-DebugMsg "Values from the settings file:"
-  for ($i = 0; $i -lt $var_names.Count; $i++) {
-    Write-DebugMsg "$($var_names_same_length[$i]): $($var_values[$i])"
+  for ($i = 0; $i -lt $VarNames.Count; $i++) {
+    Write-DebugMsg "$($VarNamesSameLength[$i]): $($VarValues[$i])"
   }
   Write-DebugMsg "--------------------------------------------------------------------------------"
 
@@ -71,40 +71,40 @@ function Read-SettingsFile {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [String]$ini_file
+    [String]$IniFile
   )
 
-  [System.Collections.ArrayList]$var_names = New-Object System.Collections.ArrayList
-  [System.Collections.ArrayList]$var_values = New-Object System.Collections.ArrayList
+  [System.Collections.ArrayList]$VarNames = New-Object System.Collections.ArrayList
+  [System.Collections.ArrayList]$VarValues = New-Object System.Collections.ArrayList
 
-  $ini_file_content = Get-Content "${ini_file}"
+  $IniFileContent = Get-Content "${IniFile}"
 
   # Temporarily disable -WhatIf to ensure the configuration is loaded into the script scope (PowerShell 5.1 workaround).
   $oldWhatIfPreference = $WhatIfPreference
   $WhatIfPreference = $false
 
-  ForEach($line in $ini_file_content) {
+  ForEach($line in $IniFileContent) {
     if (
       ($line -ne "") -and               # Empty line
       (! $line.StartsWith("[")) -and    # Section
       (! $line.StartsWith(";")) -and    # Commented out
       ($line.Contains("="))
     ) {
-      $var_name = ($line -split "=")[0]
-      $var_value = ($line -split "=")[1]
+      $VarName = ($line -split "=")[0]
+      $VarValue = ($line -split "=")[1]
 
       # Store for debug messages.
-      $var_names.Add("${var_name}") > $null
-      $var_values.Add("${var_value}") > $null
+      $VarNames.Add("${VarName}") > $null
+      $VarValues.Add("${VarValue}") > $null
 
       # Interpret numeric values as Int32; others as String.
-      if (Test-IsNumeric $var_value) {
-        [Int32]$int_value = $var_value
-        Set-Variable -Name "${var_name}" -Value $int_value -Scope script
+      if (Test-IsNumeric $VarValue) {
+        [Int32]$IntValue = $VarValue
+        Set-Variable -Name "${VarName}" -Value $IntValue -Scope script
 
-      } elseif ( ${var_value} -is [String] ) {
-        $expanded = Get-ExpandedPath "${var_value}"
-        Set-Variable -Name "${var_name}" -Value "${expanded}" -Scope script
+      } elseif ( ${VarValue} -is [String] ) {
+        $expanded = Get-ExpandedPath "${VarValue}"
+        Set-Variable -Name "${VarName}" -Value "${expanded}" -Scope script
 
       }
 
@@ -114,8 +114,8 @@ function Read-SettingsFile {
 
   $WhatIfPreference = $oldWhatIfPreference
 
-  if ($var_names.Count -gt 0) {
-    Write-FormattedValueList $var_names $var_values
+  if ($VarNames.Count -gt 0) {
+    Write-FormattedValueList $VarNames $VarValues
   }
 
 }

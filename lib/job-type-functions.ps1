@@ -24,7 +24,7 @@ function _showJobTypeList {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
-    [String]$default_job_type
+    [String]$DefaultJobType
   )
 
   Write-Host "__________________________________________________"
@@ -32,27 +32,27 @@ function _showJobTypeList {
   Write-Host "  Press a key to select the backup job-type:"
   Write-Host ""
 
-  if ( "${default_job_type}" -eq "Incremental") {
+  if ( "${DefaultJobType}" -eq "Incremental") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  } elseif ( "${default_job_type}" -eq "Full") {
+  } elseif ( "${DefaultJobType}" -eq "Full") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  } elseif ( "${default_job_type}" -eq "Purge") {
+  } elseif ( "${DefaultJobType}" -eq "Purge") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files) (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  } elseif ( "${default_job_type}" -eq "Archive") {
+  } elseif ( "${DefaultJobType}" -eq "Archive") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute) (", "default", ")" -Color White, Red, White, Yellow, White, Green, White
-  } elseif ( "${default_job_type}" -eq "Cancel") {
+  } elseif ( "${DefaultJobType}" -eq "Cancel") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
@@ -73,7 +73,7 @@ function Get-UserSelectedJobType {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
-    [String]$default_job_type,
+    [String]$DefaultJobType,
     [Parameter(Mandatory = $true)]
     [String]$logfile,
     # Skip all interactive prompts and pauses (useful for automation/CI).
@@ -82,18 +82,18 @@ function Get-UserSelectedJobType {
   )
 
   if ($NonInteractive) {
-    LogAndShowMessage -logfile "${logfile}" -severity INFO -message "Non-interactive mode. Using the default: ${default_job_type}"
-    return "${default_job_type}"
+    LogAndShowMessage -logfile "${logfile}" -severity INFO -message "Non-interactive mode. Using the default: ${DefaultJobType}"
+    return "${DefaultJobType}"
   }
 
   Add-LogMessage -logfile "${logfile}" -severity INFO -message "Asking the user for the job-type..."
 
-  [Int32]$max_wait_time_ms = ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} * 1000
-  [Int32]$check_interval_ms = 100
-  [Int32]$already_waited_ms = 0
+  [Int32]$MaxWaitTimeMilliseconds = ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} * 1000
+  [Int32]$CheckIntervalMilliseconds = 100
+  [Int32]$AlreadyWaitedMilliseconds = 0
   [String]$result = ""
 
-  _showJobTypeList "${default_job_type}"
+  _showJobTypeList "${DefaultJobType}"
   Write-Host "Automatic start in ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} seconds."
 
   # https://powershell.one/tricks/input-devices/detect-key-press
@@ -114,15 +114,15 @@ function Get-UserSelectedJobType {
     }
 
     # Wait.
-    Start-Sleep -Milliseconds $check_interval_ms
-    $already_waited_ms = $already_waited_ms + $check_interval_ms
+    Start-Sleep -Milliseconds $CheckIntervalMilliseconds
+    $AlreadyWaitedMilliseconds = $AlreadyWaitedMilliseconds + $CheckIntervalMilliseconds
 
     # Write a dot every second.
-    if ( ($already_waited_ms % 1000) -eq 0 ) {
+    if ( ($AlreadyWaitedMilliseconds % 1000) -eq 0 ) {
       Write-Host '.' -NoNewline
     }
 
-  } while ($already_waited_ms -lt $max_wait_time_ms)
+  } while ($AlreadyWaitedMilliseconds -lt $MaxWaitTimeMilliseconds)
 
   # Emit a new line
   Write-Host
@@ -149,8 +149,8 @@ function Get-UserSelectedJobType {
     }
 
     's' {
-      $result = "${default_job_type}"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Start selected. Using the default: ${default_job_type}"
+      $result = "${DefaultJobType}"
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Start selected. Using the default: ${DefaultJobType}"
     }
 
     'Escape' {
@@ -160,15 +160,15 @@ function Get-UserSelectedJobType {
 
     'Enter' {
       Write-Host "Using the default."
-      $result = "${default_job_type}"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User just pressed ENTER. Using the default: ${default_job_type}"
+      $result = "${DefaultJobType}"
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User just pressed ENTER. Using the default: ${DefaultJobType}"
     }
 
     '' {
       # User didn't press any key.
       Write-Host "Using the default."
-      $result = "${default_job_type}"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User didn't select a job-type. Using the default: ${default_job_type}"
+      $result = "${DefaultJobType}"
+      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User didn't select a job-type. Using the default: ${DefaultJobType}"
     }
 
     Default {

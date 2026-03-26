@@ -314,7 +314,7 @@ if ($null -ne $BACKUP_LOGFILE) {
 
 #region Ask for job type
 
-$SelectedJobType = Get-UserSelectedJobType -default_job_type "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -NonInteractive:$NonInteractive
+$SelectedJobType = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -NonInteractive:$NonInteractive
 
 switch ($SelectedJobType) {
   "Incremental" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }
@@ -423,7 +423,7 @@ function Initialize-LineRelatedInfo {
   $Script:FinishPreviousJob = $false
   $Script:ContinueCurrentJob = $false
   $Script:SingleFileDefinition = $false
-  $Script:line_type = ""
+  $Script:LineType = ""
 }
 
 # Process the dir-list.
@@ -432,7 +432,7 @@ function _processDirectoryList {
   $DirListContent = Get-Content "${BACKUP_DIRLIST}"
 
   ForEach ($line in $DirListContent) {
-    Write-DebugMsg "Next line: ${line}"
+    Write-DebugMsg "Next line               : ${line}"
 
     # Expand all entries first to avoid interpreting environment variables etc. as filenames.
     $expanded = Get-ExpandedPath "${line}"
@@ -445,10 +445,11 @@ function _processDirectoryList {
       - on errors; or
       - EOF
     #>
-    $line_type = Get-DirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
-    Write-DebugMsg "${line_type}: ${expanded}"
+    $LineType = Get-DirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
+    #TODO: Format "${LineType}:" to a length of exactly 24.
+    Write-DebugMsg "${LineType}: ${expanded}"
 
-    switch -Wildcard ("${line_type}") {
+    switch -Wildcard ("${LineType}") {
       "error: *" {
         # The fallback value of function Get-DirlistLineType
         # No message: function Get-DirlistLineType reports the error/warning.
@@ -507,16 +508,16 @@ function _processDirectoryList {
 
     # Show what we are going to do.
     if ($Script:FinishPreviousJob -or $Script:StartNewJob -or $Script:ContinueCurrentJob -or $Script:SingleFileJob) {
-      $task_list = New-Object System.Collections.ArrayList
-      if ($Script:FinishPreviousJob) { $task_list.Add("Finish previous job") > $null }
-      if ($Script:StartNewJob) { $task_list.Add("Start new job") > $null }
-      if ($Script:ContinueCurrentJob) { $task_list.Add("Continue current job") > $null }
-      if ($Script:SingleFileJob) { $task_list.Add("Copy single file") > $null }
+      $TaskList = New-Object System.Collections.ArrayList
+      if ($Script:FinishPreviousJob) { $TaskList.Add("Finish previous job") > $null }
+      if ($Script:StartNewJob) { $TaskList.Add("Start new job") > $null }
+      if ($Script:ContinueCurrentJob) { $TaskList.Add("Continue current job") > $null }
+      if ($Script:SingleFileJob) { $TaskList.Add("Copy single file") > $null }
 
-      $tasks = ($task_list -join ", ")
+      $tasks = ($TaskList -join ", ")
       Write-DebugMsg "Task(s): ${tasks}"
 
-      $task_list.Clear()
+      $TaskList.Clear()
       $tasks = ""
     }
 
@@ -532,13 +533,13 @@ function _processDirectoryList {
       $Script:SourceDefinitionsCount = ($Script:SourceDefinitionsCount + 1)
       $Script:CurrentJobNum = $Script:SourceDefinitionsCount
       $Script:CurrentSourceDefinition = "${line}"
-      $Script:CurrentSourceType = "${line_type}"
+      $Script:CurrentSourceType = "${LineType}"
       $Script:SingleFileJob = $Script:SingleFileDefinition
 
-      Write-DebugMsg "SourceDefinitionsCount    : $Script:SourceDefinitionsCount"
-      Write-DebugMsg "CurrentJobNum             : $Script:CurrentJobNum"
-      Write-DebugMsg "CurrentSourceDefinition   : ${Script:CurrentSourceDefinition}"
-      Write-DebugMsg "CurrentSourceType         : ${Script:CurrentSourceType}"
+      Write-DebugMsg "SourceDefinitionsCount  : $Script:SourceDefinitionsCount"
+      Write-DebugMsg "CurrentJobNum           : $Script:CurrentJobNum"
+      Write-DebugMsg "CurrentSourceDefinition : ${Script:CurrentSourceDefinition}"
+      Write-DebugMsg "CurrentSourceType       : ${Script:CurrentSourceType}"
 
       # Determine basic information for the job.
       switch -Wildcard ("${Script:CurrentSourceType}") {
@@ -551,13 +552,13 @@ function _processDirectoryList {
           $Script:SourceDir = $FSobject.Path
 
           # Add the filename (pattern) to $IncludedFiles because we must NOT use *.* later!
-          $source_filename = Split-Path -Leaf "${expanded}"
-          Write-DebugMsg "source_filename   : ${source_filename}"
-          $Script:IncludedFiles.Add("${source_filename}") > $null
-          $source_filename = ""
+          $SourceFilename = Split-Path -Leaf "${expanded}"
+          Write-DebugMsg "SourceFilename          : ${SourceFilename}"
+          $Script:IncludedFiles.Add("${SourceFilename}") > $null
+          $SourceFilename = ""
         }
       }
-      Write-DebugMsg "SourceDir         : ${Script:SourceDir}"
+      Write-DebugMsg "SourceDir               : ${Script:SourceDir}"
 
       if ("${Script:SourceDir}" -eq "") {
         LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
@@ -565,7 +566,7 @@ function _processDirectoryList {
       }
       else {
         $Script:TargetDir = Get-TargetDir "${BACKUP_DIR}" "${Script:SourceDir}"
-        Write-DebugMsg "TargetDir         : ${Script:TargetDir}"
+        Write-DebugMsg "TargetDir               : ${Script:TargetDir}"
       }
 
       Write-DebugMsg "----------------------------------------------------------------------"
@@ -581,17 +582,17 @@ function _processDirectoryList {
       Write-DebugMsg "----- Continuing the job: --------------------------------------------"
       # Determine additional information for the job.
       $entry = "${expanded}".Substring(4)   # Remove the leading "  + " or "  - "
-      Write-DebugMsg "entry               : ${entry}"
+      Write-DebugMsg "entry                   : ${entry}"
 
-      switch ("${line_type}") {
+      switch ("${LineType}") {
         "incl-files-pattern" { $Script:IncludedFiles.Add("${entry}") > $null }
         "excl-files-pattern" { $Script:ExcludedFiles.Add("${entry}") > $null }
         "excl-dirs-pattern" { $Script:ExcludedDirs.Add("${entry}") > $null }
       }
 
-      Write-DebugMsg "IncludedFiles.Count   : $($Script:IncludedFiles.Count)"
-      Write-DebugMsg "ExcludedFiles.Count   : $($Script:ExcludedFiles.Count)"
-      Write-DebugMsg "ExcludedDirs.Count    : $($Script:ExcludedDirs.Count)"
+      Write-DebugMsg "IncludedFiles.Count     : $($Script:IncludedFiles.Count)"
+      Write-DebugMsg "ExcludedFiles.Count     : $($Script:ExcludedFiles.Count)"
+      Write-DebugMsg "ExcludedDirs.Count      : $($Script:ExcludedDirs.Count)"
 
       Write-DebugMsg "----------------------------------------------------------------------"
     }
@@ -610,9 +611,9 @@ _processDirectoryList
 Write-DebugMsg "----- End of the dir-list --------------------------------------------"
 
 # Finish the last job?
-$finish_last_job = ($Script:CurrentJobNum -ne 0)
+$FinishLastJob = ($Script:CurrentJobNum -ne 0)
 
-if ($finish_last_job) {
+if ($FinishLastJob) {
   Write-DebugMsg "----- Finishing the last job: ----------------------------------------"
   Invoke-AddJobFile
 }
@@ -636,72 +637,72 @@ Write-DebugMsg "----------------------------------------------------------------
 
 #region Run jobs
 
-[Int32]$job_result_ok_count = 0
-[Int32]$job_result_warning_count = 0
-[Int32]$job_result_error_count = 0
+[Int32]$JobResultOkCount = 0
+[Int32]$JobResultWarningCount = 0
+[Int32]$JobResultErrorCount = 0
 
 $jobfiles = New-Object System.Collections.ArrayList
 $jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File |
 Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) }
-$jobfiles_count = $jobfiles.Count
+$JobfilesCount = $jobfiles.Count
 
-if ($jobfiles_count -eq 0) {
+if ($JobfilesCount -eq 0) {
   LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
 }
 else {
-  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $jobfiles_count job(s)..."
+  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $JobfilesCount job(s)..."
 
   if ($SkipExecution) {
     LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Skipping execution as requested (-SkipExecution)."
   }
   else {
-    for ($i = 0; $i -lt $jobfiles_count; $i++) {
-      $user_defined_job = $jobfiles[$i]
-      Write-InfoMsg "Job: ${user_defined_job}..."
+    for ($i = 0; $i -lt $JobfilesCount; $i++) {
+      $UserDefinedJob = $jobfiles[$i]
+      Write-InfoMsg "Job: ${UserDefinedJob}..."
 
       #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
-      [Int32]$robocopy_exit_code = 0
-      if ($PSCmdlet.ShouldProcess("${user_defined_job}", "Run Robocopy job")) {
+      [Int32]$RobocopyExitCode = 0
+      if ($PSCmdlet.ShouldProcess("${UserDefinedJob}", "Run Robocopy job")) {
         $process = Start-Process -Wait -PassThru -NoNewWindow `
           -FilePath "${RobocopyExecutable}" `
           -ArgumentList "/job:""${RobocopyJobTypeTemplate}""", `
           "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
           "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
-          "/job:""${user_defined_job}"""
+          "/job:""${UserDefinedJob}"""
 
-        $robocopy_exit_code = $process.ExitCode
+        $RobocopyExitCode = $process.ExitCode
 
       }
       else {
         # In -WhatIf mode, we simulate a successful (no changes) exit code.
-        $robocopy_exit_code = 0
+        $RobocopyExitCode = 0
       }
 
-      Write-DebugMsg "Robocopy exit code: $robocopy_exit_code"
+      Write-DebugMsg "Robocopy exit code: $RobocopyExitCode"
 
       # Log errors. Use the jobname (Job1..n) from the filename.
-      [Int32]$job_name_pos = ("${user_defined_job}".LastIndexOf("-") + 1)
-      [Int32]$job_name_length = ("${user_defined_job}".LastIndexOf(".") - $job_name_pos)
-      [String]$job_name = "${user_defined_job}".Substring($job_name_pos, $job_name_length)
+      [Int32]$JobNamePosition = ("${UserDefinedJob}".LastIndexOf("-") + 1)
+      [Int32]$JobNameLength = ("${UserDefinedJob}".LastIndexOf(".") - $JobNamePosition)
+      [String]$JobName = "${UserDefinedJob}".Substring($JobNamePosition, $JobNameLength)
 
-      LogAndShowRobocopyError "${BACKUP_LOGFILE}" "${job_name}" $robocopy_exit_code
+      LogAndShowRobocopyError "${BACKUP_LOGFILE}" "${JobName}" $RobocopyExitCode
 
       # Update counters.
-      switch ($robocopy_exit_code) {
+      switch ($RobocopyExitCode) {
         { $_ -in 0..7 } {
-          $job_result_ok_count = ($job_result_ok_count + 1)
+          $JobResultOkCount = ($JobResultOkCount + 1)
         }
         { $_ -in 8..15 } {
-          $job_result_warning_count = ($job_result_warning_count + 1)
+          $JobResultWarningCount = ($JobResultWarningCount + 1)
         }
         16 {
-          $job_result_error_count = ($job_result_error_count + 1)
+          $JobResultErrorCount = ($JobResultErrorCount + 1)
         }
       }
 
     }
 
-    LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$job_result_ok_count jobs finished successfully, $job_result_warning_count with warnings, $job_result_error_count with errors."
+    LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$JobResultOkCount jobs finished successfully, $JobResultWarningCount with warnings, $JobResultErrorCount with errors."
 
   }
 

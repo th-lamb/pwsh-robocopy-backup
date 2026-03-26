@@ -107,62 +107,62 @@ TODO:
     [String]$message
   )
 
-  $is_err = $false
+  $IsError = $false
 
   switch ($severity) {
     ([SeverityKeyword]::EMERG) {
-      $is_err = $true
-      $background_color = "Red"
-      $foreground_color = "White"
+      $IsError = $true
+      $MsgBackgroundColor = "Red"
+      $MsgForegroundColor = "White"
     }
     ([SeverityKeyword]::ALERT) {
-      $is_err = $true
-      $background_color = "Red"
-      $foreground_color = "Black"
+      $IsError = $true
+      $MsgBackgroundColor = "Red"
+      $MsgForegroundColor = "Black"
     }
     ([SeverityKeyword]::CRIT) {
-      $is_err = $true
-      $background_color = "Yellow"
-      $foreground_color = "Black"
+      $IsError = $true
+      $MsgBackgroundColor = "Yellow"
+      $MsgForegroundColor = "Black"
     }
     ([SeverityKeyword]::ERR) {
-      $is_err = $true
-      $background_color = "White"
-      $foreground_color = "Red"
+      $IsError = $true
+      $MsgBackgroundColor = "White"
+      $MsgForegroundColor = "Red"
     }
     ([SeverityKeyword]::WARNING) {
-      $background_color = "White"
-      $foreground_color = "Black"
+      $MsgBackgroundColor = "White"
+      $MsgForegroundColor = "Black"
     }
     ([SeverityKeyword]::NOTICE) {
-      $background_color = "Blue"
-      $foreground_color = "White"
+      $MsgBackgroundColor = "Blue"
+      $MsgForegroundColor = "White"
     }
     ([SeverityKeyword]::INFO) {
-      $background_color = "Black"
-      $foreground_color = "White"
+      $MsgBackgroundColor = "Black"
+      $MsgForegroundColor = "White"
     }
     ([SeverityKeyword]::DEBUG) {
-      $background_color = "Black"
-      $foreground_color = "DarkGray"
+      $MsgBackgroundColor = "Black"
+      $MsgForegroundColor = "DarkGray"
     }
     Default {
       # Illegal severity level!
-      $err_message = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
-      Write-ColoredMessage ([SeverityKeyword]::ERR) "${err_message}"
-      Throw "${err_message}"
+      $ErrorMessage = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
+      Write-ColoredMessage ([SeverityKeyword]::ERR) "${ErrorMessage}"
+      Throw "${ErrorMessage}"
     }
   }
 
   #TODO: Finish the remaining section!
-  #Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}"
+  #Write-Host "${message}" -ForegroundColor "${MsgForegroundColor}" -BackgroundColor "${MsgBackgroundColor}"
 
-  if ($is_err) {
+  if ($IsError) {
     #Write-Error "${message}"
     #Write-Error "${message}" 2>> .\error.log                     # Nothing in console, the whole verbose error message in the logfile
 
-    #[Console]::ForegroundColor = "${foreground_color}"
-    #[Console]::BackgroundColor = "${background_color}"
+    #[Console]::ForegroundColor = "${MsgForegroundColor}"
+    #[Console]::BackgroundColor = "${MsgBackgroundColor}"
 
     #[Console]::Error.WriteLine("${message}")                     # no output to the logfile
     #[Console]::Error.WriteLine("${message}") 1>> .\1.log         # no output to the logfile
@@ -181,12 +181,12 @@ TODO:
 
     #[Console]::ResetColor()
 
-    Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}" # 6>> .\error.log
+    Write-Host "${message}" -ForegroundColor "${MsgForegroundColor}" -BackgroundColor "${MsgBackgroundColor}" # 6>> .\error.log
 
   }
   else {
     #TODO: remove the redirection after testing
-    Write-Host "${message}" -ForegroundColor "${foreground_color}" -BackgroundColor "${background_color}" # 6>> .\success.log
+    Write-Host "${message}" -ForegroundColor "${MsgForegroundColor}" -BackgroundColor "${MsgBackgroundColor}" # 6>> .\success.log
   }
 
 }
@@ -379,13 +379,13 @@ function Exit-WithEmergMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$exit_code,
+    [Int32]$ExitCode,
     [Parameter(Mandatory = $true)]
     [String]$message
   )
 
   Write-EmergMsg "${message}"
-  exit $exit_code
+  exit $ExitCode
 
 }
 
@@ -400,13 +400,13 @@ function Exit-WithAlertMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$exit_code,
+    [Int32]$ExitCode,
     [Parameter(Mandatory = $true)]
     [String]$message
   )
 
   Write-AlertMsg "${message}"
-  exit $exit_code
+  exit $ExitCode
 
 }
 
@@ -421,13 +421,13 @@ function Exit-WithCritMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$exit_code,
+    [Int32]$ExitCode,
     [Parameter(Mandatory = $true)]
     [String]$message
   )
 
   Write-CritMsg "${message}"
-  exit $exit_code
+  exit $ExitCode
 
 }
 
@@ -442,13 +442,13 @@ function Exit-WithErrMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$exit_code,
+    [Int32]$ExitCode,
     [Parameter(Mandatory = $true)]
     [String]$message
   )
 
   Write-ErrMsg "${message}"
-  exit $exit_code
+  exit $ExitCode
 
 }
 
