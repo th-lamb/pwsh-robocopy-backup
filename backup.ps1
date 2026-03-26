@@ -95,6 +95,7 @@ function Write-EarlyMsg {
   $color = switch ($severity) {
     { $_ -in "EMERG", "ALERT", "CRIT", "ERR" } { "Red" }
     "WARNING" { "Yellow" }
+    "DEBUG" { "DarkGray" }
     Default { "White" }
   }
 
