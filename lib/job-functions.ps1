@@ -157,12 +157,12 @@ function Get-DirlistLineType {
         $ObjectType = "${ExistingType}"   # We use the real object type!
       }
       Default {
-        Write-Error "Get-DirlistLineType(): Unknown result from Test-FsObjectTypeMismatch(): ${result}"
+        Write-Error "Get-DirlistLineType()   : Unknown result from Test-FsObjectTypeMismatch(): ${result}"
         Throw "Unknown result from Test-FsObjectTypeMismatch(): ${result}"
       }
     }
 
-    Write-DebugMsg "Get-DirlistLineType(): ObjectType : ${ObjectType}"
+    Write-DebugMsg "Get-DirlistLineType()   : ObjectType : ${ObjectType}"
 
     switch ("${ObjectType}") {
       "directory" { return "source-dir" }
