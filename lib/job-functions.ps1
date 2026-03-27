@@ -489,16 +489,16 @@ function Add-JobFile {
     [System.Boolean]$CopySingleFile
   )
 
-  Write-DebugMsg "Add-JobFile(): BackupJobDirectory   : ${BackupJobDirectory}"
-  Write-DebugMsg "Add-JobFile(): computername         : ${computername}"
-  Write-DebugMsg "Add-JobFile(): CurrentJobNumber     : $CurrentJobNumber"
-  Write-DebugMsg "Add-JobFile(): DirlistEntry         : ${DirlistEntry}"
-  Write-DebugMsg "Add-JobFile(): SourceDirectory      : ${SourceDirectory}"
-  Write-DebugMsg "Add-JobFile(): TargetDirectory      : ${TargetDirectory}"
-  Write-DebugMsg "Add-JobFile(): IncludedFiles.Count  : $($IncludedFiles.Count)"
-  Write-DebugMsg "Add-JobFile(): ExcludedDirs.Count   : $($ExcludedDirs.Count)"
-  Write-DebugMsg "Add-JobFile(): ExcludedFiles.Count  : $($ExcludedFiles.Count)"
-  Write-DebugMsg "Add-JobFile(): CopySingleFile       : $CopySingleFile"
+  Write-DebugMsg "Add-JobFile(): BackupJobDirectory : ${BackupJobDirectory}"
+  Write-DebugMsg "Add-JobFile(): computername       : ${computername}"
+  Write-DebugMsg "Add-JobFile(): CurrentJobNumber   : $CurrentJobNumber"
+  Write-DebugMsg "Add-JobFile(): DirlistEntry       : ${DirlistEntry}"
+  Write-DebugMsg "Add-JobFile(): SourceDirectory    : ${SourceDirectory}"
+  Write-DebugMsg "Add-JobFile(): TargetDirectory    : ${TargetDirectory}"
+  Write-DebugMsg "Add-JobFile(): IncludedFiles.Count: $($IncludedFiles.Count)"
+  Write-DebugMsg "Add-JobFile(): ExcludedDirs.Count : $($ExcludedDirs.Count)"
+  Write-DebugMsg "Add-JobFile(): ExcludedFiles.Count: $($ExcludedFiles.Count)"
+  Write-DebugMsg "Add-JobFile(): CopySingleFile     : $CopySingleFile"
 
   # Paths for the current job
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
@@ -507,8 +507,8 @@ function Add-JobFile {
   $JobfilePath = "${BackupJobDirectory}${computername}-Job$CurrentJobNumber.RCJ"
   $LogfilePath = "${BackupJobDirectory}${computername}-Job$CurrentJobNumber.log"
 
-  Write-DebugMsg "Add-JobFile(): JobfilePath          : ${JobfilePath}"
-  Write-DebugMsg "Add-JobFile(): LogfilePath          : ${LogfilePath}"
+  Write-DebugMsg "Add-JobFile(): JobfilePath        : ${JobfilePath}"
+  Write-DebugMsg "Add-JobFile(): LogfilePath        : ${LogfilePath}"
 
   if ($PSCmdlet.ShouldProcess("${JobfilePath}", "Create Robocopy job file")) {
     # Create job file

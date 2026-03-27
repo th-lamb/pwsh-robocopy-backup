@@ -347,7 +347,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 
 #region Create job files
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Creating job files..."
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "----- Creating job files...-----".PadRight(80, "-")
 
 <# Create a job file for each directory in the dir-list.
   - Loop over all lines.
