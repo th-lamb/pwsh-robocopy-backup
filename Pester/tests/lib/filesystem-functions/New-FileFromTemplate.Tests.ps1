@@ -1,15 +1,20 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/filesystem-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
+. "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\logging-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/filesystem-functions/"
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+  . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\logging-functions.ps1"
+
+  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
 
   # For messages in tested functions
-  . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 5  # Reduced to 5 because New-FileFromTemplate writes an INFO message.
 
   # For logging in tested functions
-  . "${ProjectRoot}lib/logging-functions.ps1"
   $Script:logfile = "${workingFolder}New-FileFromTemplate.Tests.log"
 }
 

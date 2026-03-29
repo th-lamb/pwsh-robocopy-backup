@@ -1,11 +1,15 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/job-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\job-functions.ps1"
+. "${ProjectRoot}\lib\logging-functions.ps1"
 
-  #$Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-functions/"
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\job-functions.ps1"
+  . "${ProjectRoot}\lib\logging-functions.ps1"
+
+  #$Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
 
   # For logging in tested functions
-  . "${ProjectRoot}lib/logging-functions.ps1"
   #$Script:logfile = "${workingFolder}Test-FsObjectTypeMismatch.Tests.log"
 }
 
@@ -15,8 +19,8 @@ Describe 'Test-FsObjectTypeMismatch' {
   Context 'Matching object types' {
     It 'A directory matches an expected directory.' {
       $specified_type = "directory"
-      $existing_type = "directory"
-      $expected = "match"
+      $existing_type  = "directory"
+      $expected       = "match"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -24,8 +28,8 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'A directory matches an expected directory pattern.' {
       $specified_type = "directory pattern"
-      $existing_type = "directory"
-      $expected = "match"
+      $existing_type  = "directory"
+      $expected       = "match"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -33,8 +37,8 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'A file matches an expected file.' {
       $specified_type = "file"
-      $existing_type = "file"
-      $expected = "match"
+      $existing_type  = "file"
+      $expected       = "match"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -42,8 +46,8 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'A file matches an expected file pattern.' {
       $specified_type = "file pattern"
-      $existing_type = "file"
-      $expected = "match"
+      $existing_type  = "file"
+      $expected       = "match"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -53,8 +57,8 @@ Describe 'Test-FsObjectTypeMismatch' {
   Context 'Non-existent objects' {
     It 'Non-existent directory = missing' {
       $specified_type = "directory"
-      $existing_type = $null
-      $expected = "missing"
+      $existing_type  = $null
+      $expected       = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -62,8 +66,8 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'Non-existent directory pattern = missing' {
       $specified_type = "directory pattern"
-      $existing_type = $null
-      $expected = "missing"
+      $existing_type  = $null
+      $expected       = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -71,8 +75,8 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'Non-existent file = missing' {
       $specified_type = "file"
-      $existing_type = $null
-      $expected = "missing"
+      $existing_type  = $null
+      $expected       = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -80,8 +84,8 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'Non-existent file pattern = missing' {
       $specified_type = "file pattern"
-      $existing_type = $null
-      $expected = "missing"
+      $existing_type  = $null
+      $expected       = "missing"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -91,8 +95,8 @@ Describe 'Test-FsObjectTypeMismatch' {
   Context 'Type mismatch' {
     It 'A file does not match an expected directory' {
       $specified_type = "directory"
-      $existing_type = "file"
-      $expected = "type mismatch"
+      $existing_type  = "file"
+      $expected       = "type mismatch"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"
@@ -100,8 +104,8 @@ Describe 'Test-FsObjectTypeMismatch' {
 
     It 'A directory does not match an expected file' {
       $specified_type = "file"
-      $existing_type = "directory"
-      $expected = "type mismatch"
+      $existing_type  = "directory"
+      $expected       = "type mismatch"
 
       $result = Test-FsObjectTypeMismatch "${specified_type}" "${existing_type}"
       $result | Should -Be "${expected}"

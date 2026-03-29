@@ -1,12 +1,16 @@
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\inifile-functions.ps1"
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
+. "${ProjectRoot}\lib\message-functions.ps1"
+
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/inifile-functions.ps1"
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+  . "${ProjectRoot}\lib\message-functions.ps1"
   $Script:ini_file = "${PSScriptRoot}/Read-SettingsFile.Tests.ini"
 
-  . "${ProjectRoot}lib/filesystem-functions.ps1"
-
   # For messages in tested functions
-  . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 6
 }
 

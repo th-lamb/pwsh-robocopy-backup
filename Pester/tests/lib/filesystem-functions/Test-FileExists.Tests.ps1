@@ -1,8 +1,11 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/filesystem-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/filesystem-functions/"
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+
+  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
   $Script:logfile = "${workingFolder}/Test-FileExists.Tests.log"
 }
 

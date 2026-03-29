@@ -1,4 +1,4 @@
-$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\message-functions.ps1"
 
 BeforeAll {

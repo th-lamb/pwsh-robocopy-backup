@@ -1,11 +1,15 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/job-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\job-functions.ps1"
+. "${ProjectRoot}\lib\logging-functions.ps1"
 
-  #$Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-functions/"
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\job-functions.ps1"
+  . "${ProjectRoot}\lib\logging-functions.ps1"
+
+  #$Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
 
   # For logging in tested functions
-  . "${ProjectRoot}lib/logging-functions.ps1"
   #$Script:logfile = "${workingFolder}Get-TargetDir.Tests.log"
 }
 

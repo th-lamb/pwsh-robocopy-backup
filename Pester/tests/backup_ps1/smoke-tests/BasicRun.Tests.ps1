@@ -1,20 +1,21 @@
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
+
 # Smoke Test for backup.ps1
 # This test executes the script in a sandbox and verifies its behavior using -WhatIf.
 
 Describe "backup.ps1 Smoke Test" {
     $SandboxRoot = $null
-    $ProjectRoot = $null
     $smokeTestPs1 = $null
     $smokeTestIni = $null
     $smokeTestConf = $null
 
     #TODO: Extract functions like "path-resolution" to be re-used by all smoke tests?
     BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
         # --- ROBUST PATH RESOLUTION ---
         $current = $PSScriptRoot
         while ($current -and -not $ProjectRoot) {
             if (Test-Path (Join-Path $current "backup.ps1")) {
-                $ProjectRoot = $current
             } else {
                 $current = Split-Path $current -Parent
             }

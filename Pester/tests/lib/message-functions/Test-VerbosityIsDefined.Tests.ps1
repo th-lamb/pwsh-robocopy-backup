@@ -1,6 +1,9 @@
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\message-functions.ps1"
+
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/message-functions.ps1"
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\message-functions.ps1"
 }
 
 
@@ -10,7 +13,7 @@ Describe 'Test-VerbosityIsDefined' {
     It 'Returns $true for: 0..7' {
       $values = @(0, 1, 2, 3, 4, 5, 6, 7)
 
-      for ($i=0; $i -lt $values.Length; $i++) {
+      for ($i = 0; $i -lt $values.Length; $i++) {
         $Script:__VERBOSE = $values[$i]
         Test-VerbosityIsDefined | Should -Be $true
       }
@@ -21,7 +24,7 @@ Describe 'Test-VerbosityIsDefined' {
     It 'Returns $false for values outside: 0..7' {
       $values = @(-2, -1, 8, 9)
 
-      for ($i=0; $i -lt $values.Length; $i++) {
+      for ($i = 0; $i -lt $values.Length; $i++) {
         $Script:__VERBOSE = $values[$i]
         Test-VerbosityIsDefined | Should -Be $false
       }

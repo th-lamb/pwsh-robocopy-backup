@@ -1,11 +1,15 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/job-archive-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\job-archive-functions.ps1"
+. "${ProjectRoot}\lib\message-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-archive-functions/"
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\job-archive-functions.ps1"
+  . "${ProjectRoot}\lib\message-functions.ps1"
+
+  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-archive-functions/"
 
   # For messages in tested functions
-  . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 6
 
   # ini-values
@@ -97,7 +101,7 @@ Describe 'Export-PreviousJob' {
 
       # Get the expected timestamp from the actual files created
       $testFiles = Get-ChildItem -Path "${workingFolder}*" -Include "${JOB_FILE_NAME_SCHEME}" -File
-      $last_datetime = ($testFiles | Sort-Object -Descending -Property LastWriteTime)[0].LastWriteTime.GetDateTimeFormats('s').Replace(":","")
+      $last_datetime = ($testFiles | Sort-Object -Descending -Property LastWriteTime)[0].LastWriteTime.GetDateTimeFormats('s').Replace(":", "")
       $archive_name = "${ARCHIVE_NAME_SCHEME}".Replace("*", "${last_datetime}")
       $expected = "${workingFolder}${archive_name}"
 
@@ -203,7 +207,7 @@ Describe 'Export-PreviousJob' {
       } | Should -Throw
     }
 
-    #TODO: Throws an exception when called without parameter.
+#TODO: Throws an exception when called without parameter.
 #    It 'Throws an exception when called without parameter.' {
 #      {
 #        Get-LastDateTime

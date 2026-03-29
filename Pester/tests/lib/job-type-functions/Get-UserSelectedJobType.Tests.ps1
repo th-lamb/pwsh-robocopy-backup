@@ -1,14 +1,18 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/job-type-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\job-type-functions.ps1"
+. "${ProjectRoot}\lib\logging-functions.ps1"
 
-  #$Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-type-functions/"
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\job-type-functions.ps1"
+  . "${ProjectRoot}\lib\logging-functions.ps1"
+
+  #$Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-type-functions/"
 
   # Simulate ini-values
   $Script:JOB_TYPE_SELECTION_MAX_WAITING_TIME_S = 3
 
   # For logging in tested functions
-  . "${ProjectRoot}lib/logging-functions.ps1"
   #$Script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
 }
 
@@ -19,14 +23,14 @@ Describe 'Get-UserSelectedJobType' {
     #TODO: Remove -Skip parameter if fully implemented.
     It 'User selects: Incremental' -Skip:$true {
       $default_job_type = "Incremental"
-      $expected = "Incremental"
+      $expected         = "Incremental"
 
       Mock Add-LogMessage {}
 
       #TODO: Read the "I" from the console!
       #Mock Read-Host {return "I"}
       #Mock [Console]::KeyAvailable { return "I" }
-      Mock ReadKey {return "I"}
+      Mock ReadKey { return "I" }
 
       $result = Get-UserSelectedJobType "${default_job_type}" "${logfile}"
       $result | Should -Be "${expected}"

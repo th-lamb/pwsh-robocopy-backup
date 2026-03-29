@@ -1,15 +1,20 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/filesystem-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
+. "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\logging-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/filesystem-functions/"
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+  . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\logging-functions.ps1"
+
+  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
 
   # For messages in tested functions
-  . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 6
 
   # For logging in tested functions
-  . "${ProjectRoot}lib/logging-functions.ps1"
   $Script:logfile = "${workingFolder}New-Directory.Tests.log"
 }
 
@@ -18,7 +23,7 @@ BeforeAll {
 Describe 'New-Directory' {
   Context 'Expected situations' {
     It 'Successfully creates a new directory' {
-      $dir_to_create  = "${workingFolder}dir_to_create"
+      $dir_to_create = "${workingFolder}dir_to_create"
 
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
       New-Directory 'Test' "${dir_to_create}" "${logfile}"
@@ -29,7 +34,7 @@ Describe 'New-Directory' {
     }
 
     It 'Does nothing if the directory already exists' {
-      $dir_to_create  = "${workingFolder}existing_dir"
+      $dir_to_create = "${workingFolder}existing_dir"
 
       New-Directory 'Test' "${dir_to_create}" "${logfile}"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
@@ -68,7 +73,7 @@ Describe 'New-Directory' {
     }
 
     It 'Throws an exception when called with an empty logfile.' {
-      $dir_to_create  = "${workingFolder}existing_dir"
+      $dir_to_create = "${workingFolder}existing_dir"
 
       {
         New-Directory 'Test' "${dir_to_create}" ""

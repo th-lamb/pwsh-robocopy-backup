@@ -1,7 +1,10 @@
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\job-archive-functions.ps1"
+
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/job-archive-functions.ps1"
-  $Script:workingFolder = "${ProjectRoot}Pester/resources/lib/job-archive-functions/Get-LastDateTime testfiles/"
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\job-archive-functions.ps1"
+  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-archive-functions/Get-LastDateTime testfiles/"
 }
 
 
@@ -19,7 +22,7 @@ Describe 'Get-LastDateTime' {
       $last_file_name = "last.txt"
 
       $expected_file = Get-ChildItem -Path "${workingFolder}${last_file_name}" -File
-      $expected_date_time = $expected_file.LastWriteTime.GetDateTimeFormats('s').Replace(":","")
+      $expected_date_time = $expected_file.LastWriteTime.GetDateTimeFormats('s').Replace(":", "")
 
       [System.Collections.ArrayList]$file_list
       $file_list = Get-ChildItem -Path "${workingFolder}*" -File
@@ -48,7 +51,7 @@ Describe 'Get-LastDateTime' {
       } | Should -Throw
     }
 
-    #TODO: Throws an exception when called without parameter.
+#TODO: Throws an exception when called without parameter.
 #    It 'Throws an exception when called without parameter.' {
 #      {
 #        Get-LastDateTime

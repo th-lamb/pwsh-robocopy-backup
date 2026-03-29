@@ -1,6 +1,9 @@
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\inifile-functions.ps1"
+
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/inifile-functions.ps1"
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
 }
 
 
@@ -8,7 +11,7 @@ BeforeAll {
 Describe 'Test-IsNumeric' {
   Context 'Numeric values' {
     It 'A number is numeric' {
-      $value = 10
+      $value    = 10
       $expected = $true
 
       $result = Test-IsNumeric $value
@@ -16,8 +19,8 @@ Describe 'Test-IsNumeric' {
     }
 
     It 'A string containing a number is numeric' {
-      [string]$value = "10"
-      $expected = $true
+      [string]$value  = "10"
+      $expected       = $true
 
       $result = Test-IsNumeric $value
       $result | Should -Be $expected
@@ -26,7 +29,7 @@ Describe 'Test-IsNumeric' {
 
   Context 'Non-numeric values' {
     It 'A string with other chars is NOT a number' {
-      $value = "A 10"
+      $value    = "A 10"
       $expected = $false
 
       $result = Test-IsNumeric $value

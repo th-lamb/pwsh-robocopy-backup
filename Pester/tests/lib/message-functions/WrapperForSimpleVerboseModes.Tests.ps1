@@ -1,10 +1,13 @@
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+. "${ProjectRoot}\lib\message-functions.ps1"
+
 BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}/../../../../"
-  . "${ProjectRoot}lib/message-functions.ps1"
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\message-functions.ps1"
 
   Mock Write-ColoredMessage {
     $Script:used_severity = $Severity
-    $Script:used_message  = $Message
+    $Script:used_message = $Message
   } -Verifiable
 }
 

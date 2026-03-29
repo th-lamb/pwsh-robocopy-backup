@@ -1,14 +1,18 @@
-BeforeAll {
-  $ProjectRoot = Resolve-Path "${PSScriptRoot}\..\..\..\..\"  # Backslashes for the jobfile!
-  . "${ProjectRoot}lib/job-functions.ps1"
+﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
+. "${ProjectRoot}\lib\job-functions.ps1"
+. "${ProjectRoot}\lib\message-functions.ps1"
 
-  $workingFolder    = "${ProjectRoot}Pester\resources\lib\job-functions\"  # Backslashes for the jobfile!
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
+  . "${ProjectRoot}\lib\job-functions.ps1"
+  . "${ProjectRoot}\lib\message-functions.ps1"
+
+  $workingFolder = "${ProjectRoot}\Pester\resources\lib\job-functions\"  # Backslashes for the jobfile!
   $Script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
   $Script:expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
-  $Script:created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
+  $Script:created_jobfiles_folder = "${workingFolder}created_jobfiles\"
 
   # For messages in tested functions
-  . "${ProjectRoot}lib/message-functions.ps1"
   $Script:__VERBOSE = 6
 }
 
@@ -26,7 +30,7 @@ Describe 'Add-JobFile' {
       $template_content = (Get-Content -Path "${template}") -join "`r`n"  # See: https://stackoverflow.com/a/15041925/5944475
 
       $new_jobfile = "${template}".Replace("${jobfile_templates_folder}", "${expected_jobfiles_folder}")
-      $updated_content = $template_content.Replace("<ProjectRoot>", "${ProjectRoot}")
+      $updated_content = $template_content.Replace("<ProjectRoot>", "${ProjectRoot}\")
 
       Set-Content -Path "${new_jobfile}" -Value "${updated_content}"
     }
@@ -34,16 +38,16 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: source-dir.' {
     # Parameters
-    [String]$backup_job_dir             = "${created_jobfiles_folder}"
-    [String]$computername               = "MyComputer"
-    [Int32]$current_job_num             = 1
-    [String]$dirlist_entry              = "C:\foo\"
-    [String]$source_dir                 = "C:\foo\"
-    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [String]$backup_job_dir = "${created_jobfiles_folder}"
+    [String]$computername   = "MyComputer"
+    [Int32]$current_job_num = 1
+    [String]$dirlist_entry  = "C:\foo\"
+    [String]$source_dir     = "C:\foo\"
+    [String]$target_dir     = "C:\Backup\C\foo\"
     [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
-    [System.Boolean]$copy_single_file   = $false
+    [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
     #$included_files
@@ -55,7 +59,7 @@ Describe 'Add-JobFile' {
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
     $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
@@ -66,16 +70,16 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: source-file.' {
     # Parameters
-    [String]$backup_job_dir             = "${created_jobfiles_folder}"
-    [String]$computername               = "MyComputer"
-    [Int32]$current_job_num             = 2
-    [String]$dirlist_entry              = "C:\foo\bar.txt"
-    [String]$source_dir                 = "C:\foo\"
-    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [String]$backup_job_dir = "${created_jobfiles_folder}"
+    [String]$computername   = "MyComputer"
+    [Int32]$current_job_num = 2
+    [String]$dirlist_entry  = "C:\foo\bar.txt"
+    [String]$source_dir     = "C:\foo\"
+    [String]$target_dir     = "C:\Backup\C\foo\"
     [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
-    [System.Boolean]$copy_single_file   = $true
+    [System.Boolean]$copy_single_file = $true
 
     # Add data to the arrays?
     $included_files.Add("bar.txt") > $null
@@ -87,7 +91,7 @@ Describe 'Add-JobFile' {
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
     $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
@@ -98,16 +102,16 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: source-file-pattern.' {
     # Parameters
-    [String]$backup_job_dir             = "${created_jobfiles_folder}"
-    [String]$computername               = "MyComputer"
-    [Int32]$current_job_num             = 3
-    [String]$dirlist_entry              = "C:\foo\*.txt"
-    [String]$source_dir                 = "C:\foo\"
-    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [String]$backup_job_dir = "${created_jobfiles_folder}"
+    [String]$computername   = "MyComputer"
+    [Int32]$current_job_num = 3
+    [String]$dirlist_entry  = "C:\foo\*.txt"
+    [String]$source_dir     = "C:\foo\"
+    [String]$target_dir     = "C:\Backup\C\foo\"
     [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
-    [System.Boolean]$copy_single_file   = $true
+    [System.Boolean]$copy_single_file = $true
 
     # Add data to the arrays?
     $included_files.Add("*.txt") > $null
@@ -119,7 +123,7 @@ Describe 'Add-JobFile' {
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
     $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
@@ -130,16 +134,16 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: incl-files-pattern.' {
     # Parameters
-    [String]$backup_job_dir             = "${created_jobfiles_folder}"
-    [String]$computername               = "MyComputer"
-    [Int32]$current_job_num             = 4
-    [String]$dirlist_entry              = "C:\foo\"
-    [String]$source_dir                 = "C:\foo\"
-    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [String]$backup_job_dir = "${created_jobfiles_folder}"
+    [String]$computername   = "MyComputer"
+    [Int32]$current_job_num = 4
+    [String]$dirlist_entry  = "C:\foo\"
+    [String]$source_dir     = "C:\foo\"
+    [String]$target_dir     = "C:\Backup\C\foo\"
     [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
-    [System.Boolean]$copy_single_file   = $false
+    [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
     $included_files.AddRange( @("*.txt", "*.xml") )
@@ -151,7 +155,7 @@ Describe 'Add-JobFile' {
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
     $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
@@ -162,16 +166,16 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: excl-files-pattern.' {
     # Parameters
-    [String]$backup_job_dir             = "${created_jobfiles_folder}"
-    [String]$computername               = "MyComputer"
-    [Int32]$current_job_num             = 5
-    [String]$dirlist_entry              = "C:\foo\"
-    [String]$source_dir                 = "C:\foo\"
-    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [String]$backup_job_dir = "${created_jobfiles_folder}"
+    [String]$computername   = "MyComputer"
+    [Int32]$current_job_num = 5
+    [String]$dirlist_entry  = "C:\foo\"
+    [String]$source_dir     = "C:\foo\"
+    [String]$target_dir     = "C:\Backup\C\foo\"
     [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
-    [System.Boolean]$copy_single_file   = $false
+    [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
     #$included_files
@@ -183,7 +187,7 @@ Describe 'Add-JobFile' {
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
     $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
@@ -194,16 +198,16 @@ Describe 'Add-JobFile' {
 
   It 'Writes a correct job file for line type: excl-dirs-pattern.' {
     # Parameters
-    [String]$backup_job_dir             = "${created_jobfiles_folder}"
-    [String]$computername               = "MyComputer"
-    [Int32]$current_job_num             = 6
-    [String]$dirlist_entry              = "C:\foo\"
-    [String]$source_dir                 = "C:\foo\"
-    [String]$target_dir                 = "C:\Backup\C\foo\"
+    [String]$backup_job_dir = "${created_jobfiles_folder}"
+    [String]$computername   = "MyComputer"
+    [Int32]$current_job_num = 6
+    [String]$dirlist_entry  = "C:\foo\"
+    [String]$source_dir     = "C:\foo\"
+    [String]$target_dir     = "C:\Backup\C\foo\"
     [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
     [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
-    [System.Boolean]$copy_single_file   = $false
+    [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
     #$included_files
@@ -215,7 +219,7 @@ Describe 'Add-JobFile' {
 
     # Compare the result with the template!
     $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-    $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
+    $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
     $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
