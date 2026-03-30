@@ -84,7 +84,7 @@ function Get-LastDateTime {
 
 }
 
-function Export-PreviousJob {
+function Export-PreviousJobsArchive {
   # Archives old jobfiles (zip file) and then deletes them.
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
@@ -100,7 +100,7 @@ function Export-PreviousJob {
     [System.Byte]$MaxArchivesCount  # 0..255
   )
 
-  Write-DebugMsg "Export-PreviousJob(${BackupJobDirectory}, ${JobNameScheme}, ${JobLogNameScheme}, ${ArchiveNameScheme}, $MaxArchivesCount)"
+  Write-DebugMsg "Export-PreviousJobsArchive(${BackupJobDirectory}, ${JobNameScheme}, ${JobLogNameScheme}, ${ArchiveNameScheme}, $MaxArchivesCount)"
 
   # Get all old job- and logfiles (null if nothing was found).
   $OldJobfiles = New-Object System.Collections.ArrayList
