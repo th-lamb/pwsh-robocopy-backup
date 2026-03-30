@@ -29,15 +29,15 @@ BeforeAll {
     $logFile2 = "${JOB_LOGFILE_NAME_SCHEME}".Replace("*", 2)
     $logFile3 = "${JOB_LOGFILE_NAME_SCHEME}".Replace("*", 3)
 
-    $testFiles = New-Object System.Collections.Generic.List[System.Object]
+    $testFiles = [System.Collections.Generic.List[string]]::new()
 
-    $testFiles.Add("${jobFile1}") > $null
-    $testFiles.Add("${jobFile2}") > $null
-    $testFiles.Add("${jobFile3}") > $null
+    $testFiles.Add("${jobFile1}")
+    $testFiles.Add("${jobFile2}")
+    $testFiles.Add("${jobFile3}")
 
-    $testFiles.Add("${logFile1}") > $null
-    $testFiles.Add("${logFile2}") > $null
-    $testFiles.Add("${logFile3}") > $null
+    $testFiles.Add("${logFile1}")
+    $testFiles.Add("${logFile2}")
+    $testFiles.Add("${logFile3}")
 
     $testFiles.ToArray()
   }
@@ -47,11 +47,11 @@ BeforeAll {
     $archive2 = "${ARCHIVE_NAME_SCHEME}".Replace("*", "2000-01-02T000000")
     $archive3 = "${ARCHIVE_NAME_SCHEME}".Replace("*", "2000-01-03T000000")
 
-    $testArchives = New-Object System.Collections.Generic.List[System.Object]
+    $testArchives = [System.Collections.Generic.List[string]]::new()
 
-    $testArchives.Add("${archive1}") > $null
-    $testArchives.Add("${archive2}") > $null
-    $testArchives.Add("${archive3}") > $null
+    $testArchives.Add("${archive1}")
+    $testArchives.Add("${archive2}")
+    $testArchives.Add("${archive3}")
 
     $testArchives.ToArray()
   }

@@ -22,24 +22,19 @@
 #TODO: Add logging - not only console messages!
 
 function Remove-FileCollection {
-  # Deletes all files specified in the ArrayList and returns the number of deleted files.
+  # Deletes all files specified in the List and returns the number of deleted files.
   [OutputType([System.Int32])]
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true)]
     [AllowEmptyCollection()]
-    [System.Collections.ArrayList]$FilesToDelete
+    [System.Collections.Generic.List[string]]$FilesToDelete
   )
 
   #region Check parameters
   if ( $FilesToDelete.Count -eq 0 ) {
     Write-WarningMsg "Remove-FileCollection(): Parameter FilesToDelete is an empty collection!"
     return 0
-  }
-
-  if ( "" -eq $FilesToDelete ) {
-    Write-Error "Remove-FileCollection(): Parameter FilesToDelete equals an empty String!"
-    Throw "Parameter FilesToDelete equals an empty String!"
   }
   #endregion Check parameters
 
@@ -70,14 +65,16 @@ function Get-LastDateTime {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [System.Collections.ArrayList]$FileList
+    [System.Collections.Generic.List[string]]$FileList
   )
 
   if ($FileList.Count -eq 0) {
     return ""
   }
 
-  $LastFile = ($FileList | Sort-Object -Descending -Property LastWriteTime)[0]
+  # Convert string paths back to FileInfo for sorting by LastWriteTime
+  $Files = $FileList | ForEach-Object { Get-Item -Path $_ }
+  $LastFile = ($Files | Sort-Object -Descending -Property LastWriteTime)[0]
   $LastDatetime = $LastFile.LastWriteTime.GetDateTimeFormats('s').Replace(":", "")
 
   $LastDatetime
@@ -102,12 +99,12 @@ function Export-PreviousJobsArchive {
 
   Write-DebugMsg "Export-PreviousJobsArchive(${BackupJobDirectory}, ${JobNameScheme}, ${JobLogNameScheme}, ${ArchiveNameScheme}, $MaxArchivesCount)"
 
-  # Get all old job- and logfiles (null if nothing was found).
-  $OldJobfiles = New-Object System.Collections.ArrayList
-  $OldJobfiles = Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${JobNameScheme}" -File
+  # Get all old job- and logfiles.
+  $OldJobfiles = [System.Collections.Generic.List[string]]::new()
+  Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${JobNameScheme}" -File | ForEach-Object { $OldJobfiles.Add($_.FullName) }
 
-  $OldLogfiles = New-Object System.Collections.ArrayList
-  $OldLogfiles = Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${JobLogNameScheme}" -File
+  $OldLogfiles = [System.Collections.Generic.List[string]]::new()
+  Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${JobLogNameScheme}" -File | ForEach-Object { $OldLogfiles.Add($_.FullName) }
 
   # Continue if they exist.
   $OldJobfilesCount = $OldJobfiles.Count
@@ -124,7 +121,6 @@ function Export-PreviousJobsArchive {
   }
 
   # Find all existing (0..n) archives.
-  $OldArchives = New-Object System.Collections.ArrayList
   $OldArchives = Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${ArchiveNameScheme}" -File
 
   # Delete the oldest archive if it exists.

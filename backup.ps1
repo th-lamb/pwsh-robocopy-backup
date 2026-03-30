@@ -371,9 +371,9 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "----- Creating job files...-----".Pa
 
 [String]$SourceDir = ""
 [String]$TargetDir = ""
-[System.Collections.ArrayList]$IncludedFiles = New-Object System.Collections.ArrayList
-[System.Collections.ArrayList]$ExcludedDirs = New-Object System.Collections.ArrayList
-[System.Collections.ArrayList]$ExcludedFiles = New-Object System.Collections.ArrayList
+$IncludedFiles = [System.Collections.Generic.List[string]]::new()
+$ExcludedDirs = [System.Collections.Generic.List[string]]::new()
+$ExcludedFiles = [System.Collections.Generic.List[string]]::new()
 
 [Int32]$JobsCreatedCount = 0
 
@@ -508,11 +508,11 @@ function _processDirectoryList {
 
     # Show what we are going to do.
     if ($Script:FinishPreviousJob -or $Script:StartNewJob -or $Script:ContinueCurrentJob -or $Script:SingleFileJob) {
-      $TaskList = New-Object System.Collections.ArrayList
-      if ($Script:FinishPreviousJob) { $TaskList.Add("Finish previous job") > $null }
-      if ($Script:StartNewJob) { $TaskList.Add("Start new job") > $null }
-      if ($Script:ContinueCurrentJob) { $TaskList.Add("Continue current job") > $null }
-      if ($Script:SingleFileJob) { $TaskList.Add("Copy single file") > $null }
+      $TaskList = [System.Collections.Generic.List[string]]::new()
+      if ($Script:FinishPreviousJob) { $TaskList.Add("Finish previous job") }
+      if ($Script:StartNewJob) { $TaskList.Add("Start new job") }
+      if ($Script:ContinueCurrentJob) { $TaskList.Add("Continue current job") }
+      if ($Script:SingleFileJob) { $TaskList.Add("Copy single file") }
 
       $tasks = ($TaskList -join ", ")
       Write-DebugMsg "Task(s)                 : ${tasks}"
@@ -552,7 +552,7 @@ function _processDirectoryList {
           # Add the filename (pattern) to $IncludedFiles because we must NOT use *.* later!
           $SourceFilename = Split-Path -Leaf "${expanded}"
           Write-DebugMsg "SourceFilename          : ${SourceFilename}"
-          $Script:IncludedFiles.Add("${SourceFilename}") > $null
+          $Script:IncludedFiles.Add("${SourceFilename}")
           $SourceFilename = ""
         }
       }
@@ -583,9 +583,9 @@ function _processDirectoryList {
       Write-DebugMsg "entry                   : ${entry}"
 
       switch ("${LineType}") {
-        "incl-files-pattern" { $Script:IncludedFiles.Add("${entry}") > $null }
-        "excl-files-pattern" { $Script:ExcludedFiles.Add("${entry}") > $null }
-        "excl-dirs-pattern" { $Script:ExcludedDirs.Add("${entry}") > $null }
+        "incl-files-pattern" { $Script:IncludedFiles.Add("${entry}") }
+        "excl-files-pattern" { $Script:ExcludedFiles.Add("${entry}") }
+        "excl-dirs-pattern" { $Script:ExcludedDirs.Add("${entry}") }
       }
 
       Write-DebugMsg "IncludedFiles.Count     : $($Script:IncludedFiles.Count)"
@@ -639,10 +639,10 @@ Write-DebugMsg "-----".PadRight(80, "-")
 [Int32]$JobResultWarningCount = 0
 [Int32]$JobResultErrorCount = 0
 
-$jobfiles = New-Object System.Collections.ArrayList
-$jobfiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File |
+$JobFiles = [System.Collections.Generic.List[string]]::new()
+$JobFiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File |
 Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) }
-$JobfilesCount = $jobfiles.Count
+$JobfilesCount = $JobFiles.Count
 
 if ($JobfilesCount -eq 0) {
   LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
@@ -655,7 +655,7 @@ else {
   }
   else {
     for ($i = 0; $i -lt $JobfilesCount; $i++) {
-      $UserDefinedJob = $jobfiles[$i]
+      $UserDefinedJob = $JobFiles[$i]
       Write-InfoMsg "Job: ${UserDefinedJob}..."
 
       #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!

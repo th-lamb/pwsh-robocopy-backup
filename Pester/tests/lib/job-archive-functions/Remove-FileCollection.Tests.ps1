@@ -28,10 +28,10 @@ Describe 'Remove-FileCollection' {
       Test-Path "${workingFolder}testfile3" -PathType Leaf | Should -Be $true
 
       # Add them to an array.
-      $files_to_delete = New-Object System.Collections.ArrayList
-      $files_to_delete.Add("${workingFolder}testfile1") > $null
-      $files_to_delete.Add("${workingFolder}testfile2") > $null
-      $files_to_delete.Add("${workingFolder}testfile3") > $null
+      $files_to_delete = [System.Collections.Generic.List[string]]::new()
+      $files_to_delete.Add("${workingFolder}testfile1")
+      $files_to_delete.Add("${workingFolder}testfile2")
+      $files_to_delete.Add("${workingFolder}testfile3")
 
       # Call Remove-FileCollection with that array.
       Mock Write-Host {}  # Omit output within the tested function.
@@ -54,10 +54,10 @@ Describe 'Remove-FileCollection' {
       Test-Path "${workingFolder}testfile3" -PathType Leaf | Should -Be $true
 
       # Add them to an array.
-      $files_to_delete = New-Object System.Collections.ArrayList
-      $files_to_delete.Add("${workingFolder}testfile1") > $null
-      $files_to_delete.Add("${workingFolder}testfile2") > $null
-      $files_to_delete.Add("${workingFolder}testfile3") > $null
+      $files_to_delete = [System.Collections.Generic.List[string]]::new()
+      $files_to_delete.Add("${workingFolder}testfile1")
+      $files_to_delete.Add("${workingFolder}testfile2")
+      $files_to_delete.Add("${workingFolder}testfile3")
 
       # Call Remove-FileCollection with that array.
       Mock Write-Host {}  # Omit output within the tested function.
@@ -100,11 +100,10 @@ Describe 'Remove-FileCollection' {
     }
 
     It 'Throws an exception when called with an empty String.' {
-      Mock Write-Error {} -Verifiable
-
+      # No check for a specific message. The type system throws a cast exception first.
       {
         Remove-FileCollection ""
-      } | Should -Throw "Parameter FilesToDelete equals an empty String!"
+      } | Should -Throw
     }
 
 #TODO: Throws an exception when called without parameter.

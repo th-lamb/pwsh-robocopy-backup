@@ -3,8 +3,8 @@
 function Write-FormattedValueList {
   [CmdletBinding()]
   param (
-    [System.Collections.ArrayList]$VarNames,
-    [System.Collections.ArrayList]$VarValues
+    [System.Collections.Generic.List[string]]$VarNames,
+    [System.Collections.Generic.List[string]]$VarValues
   )
 
   #region Check parameters
@@ -22,19 +22,9 @@ function Write-FormattedValueList {
     Write-WarningMsg "Write-FormattedValueList(): Parameter VarValues is an empty collection!"
     return
   }
-
-  if ( "" -eq $VarNames ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter VarNames equals an empty String!"
-    return
-  }
-
-  if ( "" -eq $VarValues ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter VarValues equals an empty String!"
-    return
-  }
   #endregion Check parameters
 
-  [System.Collections.ArrayList]$VarNamesSameLength = New-Object System.Collections.ArrayList
+  $VarNamesSameLength = [System.Collections.Generic.List[string]]::new()
 
   # Determine the longest variable name.
   $MaxLength = $( $VarNames | Sort-Object length -desc | Select-Object -first 1 ).Length
@@ -44,7 +34,7 @@ function Write-FormattedValueList {
     $VarName = $($VarNames[$i])
     $NumSpacesToAdd = $( $MaxLength - $VarName.Length )
     $VarNameWithSpaces = "${VarName}" + (" " * $NumSpacesToAdd)
-    $VarNamesSameLength.Add("${VarNameWithSpaces}") > $null
+    $VarNamesSameLength.Add("${VarNameWithSpaces}")
 
   }
 
@@ -70,12 +60,12 @@ function Test-IsNumeric ($Value) {
 function Read-SettingsFile {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$IniFile
   )
 
-  [System.Collections.ArrayList]$VarNames = New-Object System.Collections.ArrayList
-  [System.Collections.ArrayList]$VarValues = New-Object System.Collections.ArrayList
+  $VarNames = [System.Collections.Generic.List[string]]::new()
+  $VarValues = [System.Collections.Generic.List[string]]::new()
 
   $IniFileContent = Get-Content "${IniFile}"
 
@@ -83,26 +73,27 @@ function Read-SettingsFile {
   $oldWhatIfPreference = $WhatIfPreference
   $WhatIfPreference = $false
 
-  ForEach($line in $IniFileContent) {
+  ForEach ($line in $IniFileContent) {
     if (
-      ($line -ne "") -and               # Empty line
-      (! $line.StartsWith("[")) -and    # Section
-      (! $line.StartsWith(";")) -and    # Commented out
+      ($line -ne "") -and # Empty line
+      (! $line.StartsWith("[")) -and # Section
+      (! $line.StartsWith(";")) -and # Commented out
       ($line.Contains("="))
     ) {
       $VarName = ($line -split "=")[0]
       $VarValue = ($line -split "=")[1]
 
       # Store for debug messages.
-      $VarNames.Add("${VarName}") > $null
-      $VarValues.Add("${VarValue}") > $null
+      $VarNames.Add("${VarName}")
+      $VarValues.Add("${VarValue}")
 
       # Interpret numeric values as Int32; others as String.
       if (Test-IsNumeric $VarValue) {
         [Int32]$IntValue = $VarValue
         Set-Variable -Name "${VarName}" -Value $IntValue -Scope script
 
-      } elseif ( ${VarValue} -is [String] ) {
+      }
+      elseif ( ${VarValue} -is [String] ) {
         $expanded = Get-ExpandedPath "${VarValue}"
         Set-Variable -Name "${VarName}" -Value "${expanded}" -Scope script
 

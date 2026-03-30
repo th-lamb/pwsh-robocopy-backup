@@ -65,17 +65,5 @@ Describe 'Write-FormattedValueList' {
       Should -Invoke -CommandName "Write-WarningMsg" -Times 3 -Exactly
       Should -Invoke -CommandName "Write-DebugMsg" -Times 0
     }
-
-    It 'Writes only a warning when called with an empty String.' {
-      Mock Write-WarningMsg {} -Verifiable
-      Mock Write-DebugMsg {} -Verifiable
-
-      Write-FormattedValueList "" @("foo")
-      Write-FormattedValueList @("foo") ""
-      Write-FormattedValueList "" ""
-
-      Should -Invoke -CommandName "Write-WarningMsg" -Times 3 -Exactly
-      Should -Invoke -CommandName "Write-DebugMsg" -Times 0
-    }
   }
 }

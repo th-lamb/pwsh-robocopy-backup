@@ -22,7 +22,6 @@ Describe 'Add-JobFile' {
   BeforeAll {
     # Copy all templates to folder $expected_jobfiles_folder, and
     # replace "<ProjectRoot>" with the current $ProjectRoot.
-    $templates = New-Object System.Collections.ArrayList
     $templates = Get-ChildItem -Path "${jobfile_templates_folder}*" -Include "*.RCJ" -File
 
     for ($i = 0; $i -lt $templates.Count; $i++) {
@@ -44,9 +43,9 @@ Describe 'Add-JobFile' {
     [String]$dirlist_entry  = "C:\foo\"
     [String]$source_dir     = "C:\foo\"
     [String]$target_dir     = "C:\Backup\C\foo\"
-    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    $included_files = [System.Collections.Generic.List[string]]::new()
+    $excluded_dirs = [System.Collections.Generic.List[string]]::new()
+    $excluded_files = [System.Collections.Generic.List[string]]::new()
     [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
@@ -76,13 +75,13 @@ Describe 'Add-JobFile' {
     [String]$dirlist_entry  = "C:\foo\bar.txt"
     [String]$source_dir     = "C:\foo\"
     [String]$target_dir     = "C:\Backup\C\foo\"
-    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    $included_files = [System.Collections.Generic.List[string]]::new()
+    $excluded_dirs = [System.Collections.Generic.List[string]]::new()
+    $excluded_files = [System.Collections.Generic.List[string]]::new()
     [System.Boolean]$copy_single_file = $true
 
     # Add data to the arrays?
-    $included_files.Add("bar.txt") > $null
+    $included_files.Add("bar.txt")
     #$excluded_dirs
     #$excluded_files
 
@@ -108,13 +107,13 @@ Describe 'Add-JobFile' {
     [String]$dirlist_entry  = "C:\foo\*.txt"
     [String]$source_dir     = "C:\foo\"
     [String]$target_dir     = "C:\Backup\C\foo\"
-    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    $included_files = [System.Collections.Generic.List[string]]::new()
+    $excluded_dirs = [System.Collections.Generic.List[string]]::new()
+    $excluded_files = [System.Collections.Generic.List[string]]::new()
     [System.Boolean]$copy_single_file = $true
 
     # Add data to the arrays?
-    $included_files.Add("*.txt") > $null
+    $included_files.Add("*.txt")
     #$excluded_dirs
     #$excluded_files
 
@@ -140,13 +139,14 @@ Describe 'Add-JobFile' {
     [String]$dirlist_entry  = "C:\foo\"
     [String]$source_dir     = "C:\foo\"
     [String]$target_dir     = "C:\Backup\C\foo\"
-    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    $included_files = [System.Collections.Generic.List[string]]::new()
+    $excluded_dirs = [System.Collections.Generic.List[string]]::new()
+    $excluded_files = [System.Collections.Generic.List[string]]::new()
     [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
-    $included_files.AddRange( @("*.txt", "*.xml") )
+    # Explicit cast to [string[]] is needed because AddRange expects IEnumerable[string].
+    $included_files.AddRange( [string[]]@("*.txt", "*.xml") )
     #$excluded_dirs
     #$excluded_files
 
@@ -172,15 +172,16 @@ Describe 'Add-JobFile' {
     [String]$dirlist_entry  = "C:\foo\"
     [String]$source_dir     = "C:\foo\"
     [String]$target_dir     = "C:\Backup\C\foo\"
-    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    $included_files = [System.Collections.Generic.List[string]]::new()
+    $excluded_dirs = [System.Collections.Generic.List[string]]::new()
+    $excluded_files = [System.Collections.Generic.List[string]]::new()
     [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
     #$included_files
     #$excluded_dirs
-    $excluded_files.AddRange( @("*.tmp", "*.todo") )
+    # Explicit cast to [string[]] is needed because AddRange expects IEnumerable[string].
+    $excluded_files.AddRange( [string[]]@("*.tmp", "*.todo") )
 
     # Function call with all values.
     Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
@@ -204,14 +205,15 @@ Describe 'Add-JobFile' {
     [String]$dirlist_entry  = "C:\foo\"
     [String]$source_dir     = "C:\foo\"
     [String]$target_dir     = "C:\Backup\C\foo\"
-    [System.Collections.ArrayList]$included_files = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_dirs = New-Object System.Collections.ArrayList
-    [System.Collections.ArrayList]$excluded_files = New-Object System.Collections.ArrayList
+    $included_files = [System.Collections.Generic.List[string]]::new()
+    $excluded_dirs = [System.Collections.Generic.List[string]]::new()
+    $excluded_files = [System.Collections.Generic.List[string]]::new()
     [System.Boolean]$copy_single_file = $false
 
     # Add data to the arrays?
     #$included_files
-    $excluded_dirs.AddRange( @("C:\foo\.git\", "C:\foo\test\") )
+    # Explicit cast to [string[]] is needed because AddRange expects IEnumerable[string].
+    $excluded_dirs.AddRange( [string[]]@("C:\foo\.git\", "C:\foo\test\") )
     #$excluded_files
 
     # Function call with all values.

@@ -24,8 +24,8 @@ Describe 'Get-LastDateTime' {
       $expected_file = Get-ChildItem -Path "${workingFolder}${last_file_name}" -File
       $expected_date_time = $expected_file.LastWriteTime.GetDateTimeFormats('s').Replace(":", "")
 
-      [System.Collections.ArrayList]$file_list
-      $file_list = Get-ChildItem -Path "${workingFolder}*" -File
+      $file_list = [System.Collections.Generic.List[string]]::new()
+      Get-ChildItem -Path "${workingFolder}*" -File | ForEach-Object { $file_list.Add($_.FullName) }
 
       $result = Get-LastDateTime $file_list
       $result | Should -Be $expected_date_time
