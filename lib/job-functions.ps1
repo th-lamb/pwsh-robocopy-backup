@@ -1,44 +1,25 @@
 ﻿#     Helper functions
 #     ================
 #
+# Call structure:
+# ---------------
+# Add-Job     --->  _addHeader
+#             --->  _addSourceAndTarget
+#             --->  _addJobConfig
+#             --->  _finalizeJob        --->  _addIncludedFiles
+#                                       --->  _addExcludedDirs
+#                                       --->  _addExcludedFiles
+#             --->  _writeToJobfile
+#
 # Not meant to be called directly:
 # - _writeToJobfile()
-# - _writeHeader()
-# - _addDirectories()
-# - _addUserSettings()
+# - _addHeader()
+# - _addSourceAndTarget()
+# - _addJobConfig()
 # - _addIncludedFiles(), _addExcludedDirs(), _addExcludedFiles()
 # - _finalizeJob()
 #
 ################################################################################
-
-
-
-#TODO: Implement `TODO\in-memory-jobfiles\Plan\1-in-memory-jobfiles.md`
-# Current call structure:
-# -----------------------
-# Add-JobFile --->  _writeHeader        --->  _writeToJobfile
-#             --->  _addSourceAndTarget --->  _writeToJobfile
-#             --->  _addJobConfig       --->  _writeToJobfile
-#             --->  _finalizeJob        --->  _writeToJobfile
-#                                       --->  _addIncludedFiles
-#                                       --->  _addExcludedDirs
-#                                       --->  _addExcludedFiles
-#
-# Planned call structure:
-# -----------------------
-# Add-Job     --->  _addHeader          --->  _addToJob
-#             --->  _addSourceAndTarget --->  _addToJob
-#             --->  _addJobConfig       --->  _addToJob
-#             --->  _finalizeJob        --->  _addToJob
-#                                       --->  _addIncludedFiles
-#                                       --->  _addExcludedDirs
-#                                       --->  _addExcludedFiles
-#TODO: new: Write-JobToFile
-
-
-
-#$JobLines = New-Object System.Collections.Generic.List[String]
-[System.Collections.Generic.List[String]]$JobLines
 
 
 
@@ -284,45 +265,18 @@ function Get-TargetDir {
 
 #region Jobfile creation
 
-function _writeToJobfile {
-  #TODO: Replace with simple $JobLines.Add(...) commands?
-  #TODO: Use this function to just write the job to the file?
-  # Writes the specified line to the specified job file.
+function _addHeader {
+  # Adds the job file header.
+  <# Note: No [Parameter(Mandatory = $true)] for System.Collections.Generic.List[string]
+    Reason: In PS 5.1, the binder seems to "unroll" or misinterpret a Generic.List during
+    the mandatory check if the list is empty.
+    Result: It sees an empty list and decides it "can't bind this to a mandatory object"
+    and throws the generic "empty string" error instead of a collection error.
+  #>
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
-    [Parameter(Mandatory = $true)]
-    [AllowEmptyString()]
-    [String]$line,
-    [Parameter(Mandatory = $true)]
-    [System.Boolean]$CreateNewFile
-  )
-
-  if (${CreateNewFile}) {
-    "${line}" | Out-File -FilePath "${JobfilePath}" -Encoding oem
-  }
-  else {
-    "${line}" | Out-File -FilePath "${JobfilePath}" -Encoding oem -Append
-  }
-
-  # Robocopy job files (.RCJ) are expected to be in the OEM code page (e.g. CP850 on German systems).
-  # Using '-Encoding oem' ensures that German umlauts etc. are written correctly for Robocopy.
-  # Tested encodings and their results in Robocopy log:
-  # ascii           : _tempor?r\Bahnversp?tung
-  # ansi (CP1252)   : _temporr\Bahnversptung (0xE4 in CP1252 is 0xD5 in CP850, which is 'Õ')
-  # unicode (UTF-16): _temporär\Bahnverspätung, but Robocopy reads: _temporõr\Bahnverspõtung
-  # utf8            : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung (UTF-8 bytes read as CP850)
-  # oem (CP850)     : _temporär\Bahnverspätung (CORRECT)
-
-}
-
-function _writeHeader {
-  # Writes the job file header.
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines,
     [Parameter(Mandatory = $true)]
     [String]$computername,
     [Parameter(Mandatory = $true)]
@@ -334,12 +288,9 @@ function _writeHeader {
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
   # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
   # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Robocopy Job ${computername}-Job${CurrentJobNumber}" -CreateNewFile $true
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: For dir-list entry: ${DirlistEntry}" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
-  # $JobLines.Add(":: Robocopy Job ${computername}-Job${CurrentJobNumber}")
-  # $JobLines.Add(":: For dir-list entry: ${DirlistEntry}")
-  # $JobLines.Add("")
+  $JobLines.Add(":: Robocopy Job ${computername}-Job${CurrentJobNumber}")
+  $JobLines.Add(":: For dir-list entry: ${DirlistEntry}")
+  $JobLines.Add("")
 
 }
 
@@ -347,20 +298,20 @@ function _addSourceAndTarget {
   # Adds source and target directory to the job file.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines,
     [Parameter(Mandatory = $true)]
     [String]$SourceDirectory,
     [Parameter(Mandatory = $true)]
     [String]$TargetDirectory
   )
 
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Source Directory" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/SD:${SourceDirectory}" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Destination Directory" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/DD:${TargetDirectory}" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+  $JobLines.Add(":: Source Directory")
+  $JobLines.Add("/SD:${SourceDirectory}")
+  $JobLines.Add("")
+  $JobLines.Add(":: Destination Directory")
+  $JobLines.Add("/DD:${TargetDirectory}")
+  $JobLines.Add("")
 
 }
 
@@ -368,18 +319,18 @@ function _addJobConfig {
   # Adds user settings (e.g. logging options) to the job file.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines,
     [Parameter(Mandatory = $true)]
     [String]$LogfilePath
   )
 
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: ----- User settings ---------------------------------------------------------" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Logging options" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/UNILOG:${LogfilePath}" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line ":: Copy options" -CreateNewFile $false
+  $JobLines.Add(":: ----- User settings ---------------------------------------------------------")
+  $JobLines.Add("")
+  $JobLines.Add(":: Logging options")
+  $JobLines.Add("/UNILOG:${LogfilePath}")
+  $JobLines.Add("")
+  $JobLines.Add(":: Copy options")
 
 }
 
@@ -390,17 +341,18 @@ function _addIncludedFiles {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$IncludedFiles
   )
 
   # Append the Robocopy switch
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/IF :: Include the following Files." -CreateNewFile $false
+  $JobLines.Add("/IF :: Include the following Files.")
 
   # Append all entries
   foreach ($entry in $IncludedFiles) {
-    _writeToJobfile -JobfilePath "${JobfilePath}" -line "  ${entry}" -CreateNewFile $false
+    $JobLines.Add("  ${entry}")
   }
 
 }
@@ -412,17 +364,18 @@ function _addExcludedDirs {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedDirs
   )
 
   # Append the Robocopy switch
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/XD :: eXclude Directories matching given names/paths." -CreateNewFile $false
+  $JobLines.Add("/XD :: eXclude Directories matching given names/paths.")
 
   # Append all entries
   foreach ($entry in $ExcludedDirs) {
-    _writeToJobfile -JobfilePath "${JobfilePath}" -line "  ${entry}" -CreateNewFile $false
+    $JobLines.Add("  ${entry}")
   }
 
 }
@@ -434,17 +387,18 @@ function _addExcludedFiles {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedFiles
   )
 
   # Append the Robocopy switch
-  _writeToJobfile -JobfilePath "${JobfilePath}" -line "/XF :: eXclude Files matching given names/paths/wildcards." -CreateNewFile $false
+  $JobLines.Add("/XF :: eXclude Files matching given names/paths/wildcards.")
 
   # Append all entries
   foreach ($entry in $ExcludedFiles) {
-    _writeToJobfile -JobfilePath "${JobfilePath}" -line "  ${entry}" -CreateNewFile $false
+    $JobLines.Add("  ${entry}")
   }
 
 }
@@ -453,10 +407,13 @@ function _finalizeJob {
   # Adds all included/excluded entries to the specified job file.
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$IncludedFiles,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedDirs,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedFiles,
     [Parameter(Mandatory = $true)]
     [System.Boolean]$CopySingleFile
@@ -469,34 +426,58 @@ function _finalizeJob {
     $IncludedFiles.Add("*.*")
   }
 
-  _addIncludedFiles "${JobfilePath}" $IncludedFiles
+  _addIncludedFiles -JobLines $JobLines -IncludedFiles $IncludedFiles
   $SpacerNeeded = $true
 
   # Add excluded dirs?
   if (! ($ExcludedDirs.Count -eq 0) ) {
     if ($SpacerNeeded) {
-      _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+      $JobLines.Add("")
       $SpacerNeeded = $false
     }
 
-    _addExcludedDirs "${JobfilePath}" $ExcludedDirs
+    _addExcludedDirs -JobLines $JobLines -ExcludedDirs $ExcludedDirs
     $SpacerNeeded = $true
   }
 
   if (! ($ExcludedFiles.Count -eq 0) ) {
     if ($SpacerNeeded) {
-      _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
+      $JobLines.Add("")
       $SpacerNeeded = $false
     }
 
-    _addExcludedFiles "${JobfilePath}" $ExcludedFiles
+    _addExcludedFiles -JobLines $JobLines -ExcludedFiles $ExcludedFiles
   }
 
   # Add robocopy option /LEV:1 to copy only a single file?
   if ($CopySingleFile) {
-    _writeToJobfile -JobfilePath "${JobfilePath}" -line "" -CreateNewFile $false
-    _writeToJobfile -JobfilePath "${JobfilePath}" -line "/LEV:1 :: only copy the top n LEVels of the source directory tree." -CreateNewFile $false
+    $JobLines.Add("")
+    $JobLines.Add("/LEV:1 :: only copy the top n LEVels of the source directory tree.")
   }
+
+}
+
+function _writeToJobfile {
+  # Writes the specified lines to the specified job file.
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [String]$JobfilePath,
+    [AllowEmptyCollection()]
+    [System.Collections.Generic.List[string]]$JobLines
+  )
+
+  # Robocopy job files (.RCJ) are expected to be in the OEM code page (e.g. CP850 on German systems).
+  # Using '-Encoding oem' ensures that German umlauts etc. are written correctly for Robocopy.
+  # Tested encodings and their results in Robocopy log:
+  # ascii           : _tempor?r\Bahnversp?tung
+  # ansi (CP1252)   : _temporr\Bahnversptung (0xE4 in CP1252 is 0xD5 in CP850, which is 'Õ')
+  # unicode (UTF-16): _temporär\Bahnverspätung, but Robocopy reads: _temporõr\Bahnverspõtung
+  # utf8            : _temporär\Bahnverspätung, but Robocopy reads: _tempor├ñr\Bahnversp├ñtung (UTF-8 bytes read as CP850)
+  # oem (CP850)     : _temporär\Bahnverspätung (CORRECT)
+
+  #TODO: Write the whole List to the file
+  Set-Content -Path $JobfilePath -Value $JobLines -Encoding OEM -ErrorAction Stop
 
 }
 
@@ -516,8 +497,11 @@ function Add-JobFile {
     [String]$SourceDirectory,
     [Parameter(Mandatory = $true)]
     [String]$TargetDirectory,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$IncludedFiles,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedDirs,
+    [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedFiles,
     [Parameter(Mandatory = $true)]
     [System.Boolean]$CopySingleFile
@@ -544,20 +528,24 @@ function Add-JobFile {
   Write-DebugMsg "Add-JobFile(): JobfilePath        : ${JobfilePath}"
   Write-DebugMsg "Add-JobFile(): LogfilePath        : ${LogfilePath}"
 
+  #TODO: Do the ShouldProcess part only when we actually write to the file?
   if ($PSCmdlet.ShouldProcess("${JobfilePath}", "Create Robocopy job file")) {
     # Create job
-    #TODO: continue
-    # $JobLines = New-Object System.Collections.Generic.List[String]
-    _writeHeader -JobfilePath "${JobfilePath}" -computername "${computername}" -CurrentJobNumber $CurrentJobNumber -DirlistEntry "${DirlistEntry}"
+    $JobLines = [System.Collections.Generic.List[string]]::new()
+    _addHeader -JobLines $JobLines -computername "${computername}" -CurrentJobNumber $CurrentJobNumber -DirlistEntry "${DirlistEntry}"
 
     # Add paths
-    _addSourceAndTarget -JobfilePath "${JobfilePath}" -SourceDirectory "${SourceDirectory}" -TargetDirectory "${TargetDirectory}"
+    _addSourceAndTarget -JobLines $JobLines -SourceDirectory "${SourceDirectory}" -TargetDirectory "${TargetDirectory}"
 
     # Add next section for user-dependent settings
-    _addJobConfig -JobfilePath "${JobfilePath}" -LogfilePath "${LogfilePath}"
+    _addJobConfig -JobLines $JobLines -LogfilePath "${LogfilePath}"
 
     # Add included/excluded files/directories (and additional options).
-    _finalizeJob -JobfilePath "${JobfilePath}" -IncludedFiles $IncludedFiles -ExcludedDirs $ExcludedDirs -ExcludedFiles $ExcludedFiles -CopySingleFile $CopySingleFile
+    _finalizeJob -JobLines $JobLines -IncludedFiles $IncludedFiles -ExcludedDirs $ExcludedDirs -ExcludedFiles $ExcludedFiles -CopySingleFile $CopySingleFile
+  }
+
+  if ($PSCmdlet.ShouldProcess("${JobfilePath}", "Create Robocopy job file")) {
+    _writeToJobfile -JobfilePath $JobfilePath -JobLines $JobLines
   }
 
 }
