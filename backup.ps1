@@ -347,7 +347,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 
 #region Create job files
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "----- Creating job files...-----".PadRight(80, "-")
+LogAndShowMessage "${BACKUP_LOGFILE}" INFO "----- Creating job files -----".PadRight(70, "-")
 
 <# Create a job file for each directory in the dir-list.
   - Loop over all lines.
@@ -398,7 +398,7 @@ function Invoke-AddJobFile {
 
   Initialize-JobRelatedInfo
 
-  Write-DebugMsg "-----".PadRight(80, "-")
+  Write-DebugMsg "-----".PadRight(70, "-")
 }
 
 function Initialize-JobRelatedInfo {
@@ -524,12 +524,12 @@ function _processDirectoryList {
     #region Actual job creation ------------------------------------------------
 
     if ($Script:FinishPreviousJob) {
-      Write-DebugMsg "----- Finishing the previous job -----".PadRight(80, "-")
+      Write-DebugMsg "----- Finishing the previous job -----".PadRight(70, "-")
       Invoke-AddJobFile
     }
 
     if ($Script:StartNewJob) {
-      Write-DebugMsg "----- Starting a new job -----".PadRight(80, "-")
+      Write-DebugMsg "----- Starting a new job -----".PadRight(70, "-")
       $Script:SourceDefinitionsCount = ($Script:SourceDefinitionsCount + 1)
       $Script:CurrentJobNum = $Script:SourceDefinitionsCount
       $Script:CurrentSourceDefinition = "${line}"
@@ -567,17 +567,17 @@ function _processDirectoryList {
         Write-DebugMsg "TargetDir               : ${Script:TargetDir}"
       }
 
-      Write-DebugMsg "-----".PadRight(80, "-")
+      Write-DebugMsg "-----".PadRight(70, "-")
     }
 
     if ($Script:SingleFileJob) {
-      Write-DebugMsg "----- Copying a single file -----".PadRight(80, "-")
+      Write-DebugMsg "----- Copying a single file -----".PadRight(70, "-")
       Invoke-AddJobFile
     }
 
     # Add included/excluded files/directories to the job file (robocopy options /IF, /XF, /XD).
     if ($Script:ContinueCurrentJob) {
-      Write-DebugMsg "----- Continuing the job -----".PadRight(80, "-")
+      Write-DebugMsg "----- Continuing the job -----".PadRight(70, "-")
       # Determine additional information for the job.
       $entry = "${expanded}".Substring(4)   # Remove the leading "  + " or "  - "
       Write-DebugMsg "entry                   : ${entry}"
@@ -592,7 +592,7 @@ function _processDirectoryList {
       Write-DebugMsg "ExcludedFiles.Count     : $($Script:ExcludedFiles.Count)"
       Write-DebugMsg "ExcludedDirs.Count      : $($Script:ExcludedDirs.Count)"
 
-      Write-DebugMsg "-----".PadRight(80, "-")
+      Write-DebugMsg "-----".PadRight(70, "-")
     }
 
     #endregion Actual job creation ---------------------------------------------
@@ -606,19 +606,19 @@ function _processDirectoryList {
 
 _processDirectoryList
 
-Write-DebugMsg "----- End of the dir-list -----".PadRight(80, "-")
+Write-DebugMsg "----- End of the dir-list -----".PadRight(70, "-")
 
 # Finish the last job?
 $FinishLastJob = ($Script:CurrentJobNum -ne 0)
 
 if ($FinishLastJob) {
-  Write-DebugMsg "----- Finishing the last job -----".PadRight(80, "-")
+  Write-DebugMsg "----- Finishing the last job -----".PadRight(70, "-")
   Invoke-AddJobFile
 }
 
 LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:JobsCreatedCount job file(s) created."
 
-Write-DebugMsg "----- Results -----".PadRight(80, "-")
+Write-DebugMsg "----- Results -----".PadRight(70, "-")
 Write-DebugMsg "SourceDefinitionsCount: $Script:SourceDefinitionsCount"
 Write-DebugMsg "StartNewJob           : $Script:StartNewJob"
 Write-DebugMsg "ContinueCurrentJob    : $Script:ContinueCurrentJob"
@@ -627,7 +627,7 @@ Write-DebugMsg "IncludedFiles.Count   : $($Script:IncludedFiles.Count)"
 Write-DebugMsg "ExcludedFiles.Count   : $($Script:ExcludedFiles.Count)"
 Write-DebugMsg "ExcludedDirs.Count    : $($Script:ExcludedDirs.Count)"
 Write-DebugMsg "JobsCreatedCount      : $Script:JobsCreatedCount"
-Write-DebugMsg "-----".PadRight(80, "-")
+Write-DebugMsg "-----".PadRight(70, "-")
 
 #endregion Create job files ####################################################
 
