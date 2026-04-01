@@ -114,7 +114,7 @@ $oldWhatIfPreference = $WhatIfPreference
 $WhatIfPreference = $false
 
 #TODO: Make versioning "generic" - using commands like "git tag v0.1.00" and %%SCRIPT_VERSION%% here?
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.1.00"
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.2.00"
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
 Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
 
@@ -661,15 +661,13 @@ else {
       #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
       [Int32]$RobocopyExitCode = 0
       if ($PSCmdlet.ShouldProcess("${UserDefinedJob}", "Run Robocopy job")) {
-        $process = Start-Process -Wait -PassThru -NoNewWindow `
-          -FilePath "${RobocopyExecutable}" `
-          -ArgumentList "/job:""${RobocopyJobTypeTemplate}""", `
-          "/job:""${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}""", `
-          "/job:""${ROBOCOPY_JOB_TEMPLATE_LOGGING}""", `
-          "/job:""${UserDefinedJob}"""
+        & "${RobocopyExecutable}" `
+          "/job:${RobocopyJobTypeTemplate}" `
+          "/job:${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" `
+          "/job:${ROBOCOPY_JOB_TEMPLATE_LOGGING}" `
+          "/job:${UserDefinedJob}" | Out-Host
 
-        $RobocopyExitCode = $process.ExitCode
-
+        $RobocopyExitCode = $LASTEXITCODE
       }
       else {
         # In -WhatIf mode, we simulate a successful (no changes) exit code.
