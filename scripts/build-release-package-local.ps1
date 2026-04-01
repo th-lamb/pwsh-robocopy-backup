@@ -6,8 +6,11 @@
 # (Prevents inherited -Confirm prompts from nested/suspended shells).
 $ConfirmPreference = 'High'
 
+# --- Variables ---
 $packageName = "pwsh-robocopy-backup"
-$version = "v-local-test"
+$lastTag = (git describe --tags --abbrev=0 2>$null)   # Last Git tag (e.g., v0.1.00)
+# $version = "v-local-test"
+$version = "$lastTag"
 $stagingDir = "$packageName"
 $distDir = "dist"
 $zipName = "$packageName-$version.zip"
@@ -18,13 +21,13 @@ $CurrentScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location "$CurrentScriptDir\.."
 
 # --- Version Check ---
-# Get the last Git tag (e.g., v0.1.00)
-$lastTag = (git describe --tags --abbrev=0 2>$null)
 if ($lastTag) {
     # Extract the version from backup.ps1
-    # We look for: $SCRIPT_VERSION = "0.1.00"
-    $versionLine = Get-Content "backup.ps1" | Select-String "\$SCRIPT_VERSION\s*=\s*`"([0-9\.]+)`""
-    if ($versionLine -match "([0-9\.]+)") {
+    # Example: "SCRIPT_VERSION" -Option ReadOnly -Value "0.2.00"
+    # $versionLine = Get-Content "backup.ps1" | Select-String "SCRIPT_VERSION.*Value\s`"([0-9\.]+)`""
+    $versionLine = Get-Content "backup.ps1" | Select-String "Set-Variable -Name `"SCRIPT_VERSION`""
+
+    if ($versionLine -match "Value\s`"([0-9\.]+)`"") {
         $actualVersion = $Matches[1]
         $expectedTag = "v$actualVersion"
 
