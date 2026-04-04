@@ -83,6 +83,7 @@ class DirectorySettings {
   [void] Normalize() {
     # List of properties that are definitely directories
     #TODO: Update list
+    #TODO: Make this automatic? Adding values manually is error-prone!
     $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR', 'TRACE_LOG_DIR')
 
     foreach ($Prop in $DirProperties) {
@@ -102,14 +103,14 @@ class FileSettings {
   [string]$BACKUP_DIRLIST   # e.g. C:\Backup\<username>\<Computername>\dir-list.conf
 
   # Templates for jobtype
-  [string]$JOB_TEMPLATE_INCR    = "${SCRIPT_DIR}templates\incr_backup.RCJ"
-  [string]$JOB_TEMPLATE_FULL    = "${SCRIPT_DIR}templates\full_backup.RCJ"
-  [string]$JOB_TEMPLATE_PURGE   = "${SCRIPT_DIR}templates\purge.RCJ"
+  [string]$JOB_TEMPLATE_INCR = "${SCRIPT_DIR}templates\incr_backup.RCJ"
+  [string]$JOB_TEMPLATE_FULL = "${SCRIPT_DIR}templates\full_backup.RCJ"
+  [string]$JOB_TEMPLATE_PURGE = "${SCRIPT_DIR}templates\purge.RCJ"
   [string]$JOB_TEMPLATE_ARCHIVE = "${SCRIPT_DIR}templates\only_archive_attr.RCJ"
 
   # Template for job settings
   [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS = "${SCRIPT_DIR}templates\global_exclusions.RCJ"
-  [string]$JOB_TEMPLATE_LOGGING           = "${SCRIPT_DIR}templates\logging.RCJ"
+  [string]$JOB_TEMPLATE_LOGGING = "${SCRIPT_DIR}templates\logging.RCJ"
 
   # Optional files
   [string]$ROBOCOPY = "robocopy"        # Fallback: Windows' own robocopy
@@ -118,10 +119,10 @@ class FileSettings {
 # Container for logging-related settings
 class LoggingSettings {
   # Standard logfile
-  [string]$BACKUP_LOGFILE = "backup.log"          # e.g. C:\Backup\<username>\<Computername>\Backup.log
+  [string]$BACKUP_LOGFILE = "Backup.log"          # e.g. C:\Backup\<username>\<Computername>\Backup.log
 
   # Error log
-  [string]$ERROR_LOGFILE = "error.log"            # e.g. C:\Backup\<username>\<Computername>\Error.log
+  [string]$ERROR_LOGFILE = "Error.log"            # e.g. C:\Backup\<username>\<Computername>\Error.log
 
   # Trace log
   [bool]$ENABLE_TRACE_LOG = $true
