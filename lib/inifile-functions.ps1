@@ -72,7 +72,7 @@ class DirectorySettings {
   [string]$BACKUP_DIR                   # e.g. C:\Backup\<username>\<Computername>\
 
   # Other mandatory directories
-  [string]$BACKUP_TEMPLATES_DIR
+  [string]$BACKUP_TEMPLATES_DIR = "${SCRIPT_DIR}templates\"
   [string]$BACKUP_JOB_DIR               #TODO: Can we find a standard in case the user doesn't specify this?
 
   # Optional directories
@@ -98,18 +98,18 @@ class DirectorySettings {
 # Container for file-related settings
 class FileSettings {
   # Files for the backup itself
-  [string]$DIRLIST_TEMPLATE             # e.g. <ScriptFolder>\templates\dir-list-template.conf
-  [string]$BACKUP_DIRLIST               # e.g. C:\Backup\<username>\<Computername>\dir-list.conf
+  [string]$DIRLIST_TEMPLATE = "${SCRIPT_DIR}templates\dir-list-template.conf"
+  [string]$BACKUP_DIRLIST   # e.g. C:\Backup\<username>\<Computername>\dir-list.conf
 
   # Templates for jobtype
-  [string]$JOB_TEMPLATE_INCR            # e.g. <ScriptFolder>\templates\incr_backup.RCJ
-  [string]$JOB_TEMPLATE_FULL            # e.g. <ScriptFolder>\templates\full_backup.RCJ
-  [string]$JOB_TEMPLATE_PURGE           # e.g. <ScriptFolder>\templates\purge.RCJ
-  [string]$JOB_TEMPLATE_ARCHIVE         # e.g. <ScriptFolder>\templates\only_archive_attr.RCJ
+  [string]$JOB_TEMPLATE_INCR    = "${SCRIPT_DIR}templates\incr_backup.RCJ"
+  [string]$JOB_TEMPLATE_FULL    = "${SCRIPT_DIR}templates\full_backup.RCJ"
+  [string]$JOB_TEMPLATE_PURGE   = "${SCRIPT_DIR}templates\purge.RCJ"
+  [string]$JOB_TEMPLATE_ARCHIVE = "${SCRIPT_DIR}templates\only_archive_attr.RCJ"
 
   # Template for job settings
-  [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS   # e.g. <ScriptFolder>\templates\global_exclusions.RCJ
-  [string]$JOB_TEMPLATE_LOGGING             # e.g. <ScriptFolder>\templates\logging.RCJ
+  [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS = "${SCRIPT_DIR}templates\global_exclusions.RCJ"
+  [string]$JOB_TEMPLATE_LOGGING           = "${SCRIPT_DIR}templates\logging.RCJ"
 
   # Optional files
   [string]$ROBOCOPY = "robocopy"        # Fallback: Windows' own robocopy
@@ -186,8 +186,6 @@ function Read-Config {
     "Mandatory Directories" = "Directories"
     #TODO: The INI file has [Mandatory directories] and [Directories] <-- 2x directories!
     "Directories"           = "Directories"
-    "Mandatory files"       = "Files"
-    #TODO: The INI file has [Mandatory files] and [Files] <-- 2x files!
     "Files"                 = "Files"
     "Logging Settings"      = "Logging"
     "Job settings"          = "Jobs"

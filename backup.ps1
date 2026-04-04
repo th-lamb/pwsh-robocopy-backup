@@ -196,6 +196,7 @@ catch {
 Write-EarlyMsg INFO "Reading the settings file..."
 
 $iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
+#TODO: Replace with new Read-Config function
 try {
   Read-SettingsFile ("${iniFile}")
 }
@@ -211,11 +212,12 @@ Write-EarlyMsg INFO "Settings file read."
 
 
 #TODO: Only a test
-# $config = Read-Config -IniFile "${iniFile}"
+$config = Read-Config -IniFile "${iniFile}"
 
 # $config                     # Returns the first level "General     : GeneralSettings - Directories : DirectorySettings - etc."
 # $config.General             # Returns __VERBOSE 7
 # $config.Directories         # Returns BACKUP_BASE_DIR      : ${SCRIPT_DIR}destination\ - BACKUP_USER_BASE_DIR : ${BACKUP_BASE_DIR}testuser\ - etc.
+# $config.Directories.BACKUP_TEMPLATES_DIR
 
 # Write-Host "config.Archiving.MAX_ARCHIVES_COUNT: $($config.Archiving.MAX_ARCHIVES_COUNT)" -ForegroundColor Yellow
 
@@ -255,14 +257,14 @@ if (! ${FSobject}.Exists) {
     - ERROR_LOGFILE
 #>
 
-Test-NecessaryDirectory 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'DIRLIST_TEMPLATE' "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_INCR' "${JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_FULL' "${JOB_TEMPLATE_FULL}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_PURGE' "${JOB_TEMPLATE_PURGE}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_ARCHIVE' "${JOB_TEMPLATE_ARCHIVE}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_GLOBAL_EXCLUSIONS' "${JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_LOGGING' "${JOB_TEMPLATE_LOGGING}" "${BACKUP_LOGFILE}"
+Test-NecessaryDirectory 'BACKUP_TEMPLATES_DIR' $config.Directories.BACKUP_TEMPLATES_DIR "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'DIRLIST_TEMPLATE' $config.Files.DIRLIST_TEMPLATE "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_INCR' $config.Files.JOB_TEMPLATE_INCR "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_FULL' $config.Files.JOB_TEMPLATE_FULL "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_PURGE' $config.Files.JOB_TEMPLATE_PURGE "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_ARCHIVE' $config.Files.JOB_TEMPLATE_ARCHIVE "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_GLOBAL_EXCLUSIONS' $config.Files.JOB_TEMPLATE_GLOBAL_EXCLUSIONS "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_LOGGING' $config.Files.JOB_TEMPLATE_LOGGING "${BACKUP_LOGFILE}"
 
 # Note: Different cases for $BACKUP_BASE_DIR (some cannot be created)!
 $DirType = Get-SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
@@ -299,7 +301,7 @@ switch ("${DirType}") {
 $RobocopyExecutable = Get-ExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
 
 # Create the dir-list from the template if necessary.
-$IsDirlistCreated = New-FileFromTemplate 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
+$IsDirlistCreated = New-FileFromTemplate 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" $config.Files.DIRLIST_TEMPLATE "${BACKUP_LOGFILE}"
 
 if ($IsDirlistCreated -and -not $NonInteractive) {
   Write-InfoMsg "Opening the dir-list in Editor and wait..."
