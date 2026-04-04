@@ -206,6 +206,23 @@ catch {
 
 Write-EarlyMsg INFO "Settings file read."
 
+
+
+
+
+#TODO: Only a test
+# $config = Read-Config -IniFile "${iniFile}"
+
+# $config                     # Returns the first level "General     : GeneralSettings - Directories : DirectorySettings - etc."
+# $config.General             # Returns __VERBOSE 7
+# $config.Directories         # Returns BACKUP_BASE_DIR      : ${SCRIPT_DIR}destination\ - BACKUP_USER_BASE_DIR : ${BACKUP_BASE_DIR}testuser\ - etc.
+
+# Write-Host "config.Archiving.MAX_ARCHIVES_COUNT: $($config.Archiving.MAX_ARCHIVES_COUNT)" -ForegroundColor Yellow
+
+
+
+
+
 #endregion Read settings file ##################################################
 
 
@@ -226,7 +243,7 @@ if (! ${FSobject}.Exists) {
   - Mandatory:
     - BACKUP_TEMPLATES_DIR
     - DIRLIST_TEMPLATE
-    - ROBOCOPY_JOB_TYPE_TEMPLATE_INCR, ...
+    - JOB_TEMPLATE_INCR, ...
   - Created automatically:
     - BACKUP_BASE_DIR
     - BACKUP_USER_BASE_DIR
@@ -240,12 +257,12 @@ if (! ${FSobject}.Exists) {
 
 Test-NecessaryDirectory 'BACKUP_TEMPLATES_DIR' "${BACKUP_TEMPLATES_DIR}" "${BACKUP_LOGFILE}"
 Test-NecessaryFile 'DIRLIST_TEMPLATE' "${DIRLIST_TEMPLATE}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'ROBOCOPY_JOB_TYPE_TEMPLATE_INCR' "${ROBOCOPY_JOB_TYPE_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'ROBOCOPY_JOB_TYPE_TEMPLATE_FULL' "${ROBOCOPY_JOB_TYPE_TEMPLATE_FULL}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE' "${ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE' "${ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS' "${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'ROBOCOPY_JOB_TEMPLATE_LOGGING' "${ROBOCOPY_JOB_TEMPLATE_LOGGING}" "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_INCR' "${JOB_TEMPLATE_INCR}" "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_FULL' "${JOB_TEMPLATE_FULL}" "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_PURGE' "${JOB_TEMPLATE_PURGE}" "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_ARCHIVE' "${JOB_TEMPLATE_ARCHIVE}" "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_GLOBAL_EXCLUSIONS' "${JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" "${BACKUP_LOGFILE}"
+Test-NecessaryFile 'JOB_TEMPLATE_LOGGING' "${JOB_TEMPLATE_LOGGING}" "${BACKUP_LOGFILE}"
 
 # Note: Different cases for $BACKUP_BASE_DIR (some cannot be created)!
 $DirType = Get-SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
@@ -317,10 +334,10 @@ if ($null -ne $BACKUP_LOGFILE) {
 $SelectedJobType = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -NonInteractive:$NonInteractive
 
 switch ($SelectedJobType) {
-  "Incremental" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_INCR }
-  "Full" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_FULL }
-  "Purge" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_PURGE }
-  "Archive" { $RobocopyJobTypeTemplate = $ROBOCOPY_JOB_TYPE_TEMPLATE_ARCHIVE }
+  "Incremental" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_INCR }
+  "Full" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_FULL }
+  "Purge" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_PURGE }
+  "Archive" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_ARCHIVE }
   "Cancel" { exit 0 }
   Default {
     # Illegal choice
@@ -663,8 +680,8 @@ else {
       if ($PSCmdlet.ShouldProcess("${UserDefinedJob}", "Run Robocopy job")) {
         & "${RobocopyExecutable}" `
           "/job:${RobocopyJobTypeTemplate}" `
-          "/job:${ROBOCOPY_JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" `
-          "/job:${ROBOCOPY_JOB_TEMPLATE_LOGGING}" `
+          "/job:${JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" `
+          "/job:${JOB_TEMPLATE_LOGGING}" `
           "/job:${UserDefinedJob}" | Out-Host
 
         $RobocopyExitCode = $LASTEXITCODE
