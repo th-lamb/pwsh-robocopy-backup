@@ -168,7 +168,6 @@ class ScriptConfig {
 
 
 
-#TODO: function Read-MyConfig
 function Read-Config {
   [CmdletBinding()]
   param (
