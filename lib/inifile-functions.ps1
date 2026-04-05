@@ -235,6 +235,12 @@ function Read-Config {
   }
 
   # Ensure paths are normalized
+  <# FIXME: Final call of `$Config.Directories.Normalize()` might be too late for combined variables!
+    Example: the user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and re-uses
+    this variable to for in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
+    When `$Config.Directories.Normalize()` is called, the expanded paths are already assembled and
+    the *missing "\" is in the middle* of the string!
+  #>
   $Config.Directories.Normalize()
 
   return $Config

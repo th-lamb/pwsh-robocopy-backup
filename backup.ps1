@@ -330,10 +330,10 @@ if (![string]::IsNullOrWhiteSpace($Config.Logging.BACKUP_LOGFILE)) {
 $SelectedJobType = Get-UserSelectedJobType -DefaultJobType $Config.Jobs.DEFAULT_JOB_TYPE -logfile $Config.Logging.BACKUP_LOGFILE -MaxWaitingTimeS $Config.Jobs.JOB_TYPE_SELECTION_MAX_WAITING_TIME_S -NonInteractive:$NonInteractive
 
 switch ($SelectedJobType) {
-  "Incremental" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_INCR }
-  "Full" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_FULL }
-  "Purge" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_PURGE }
-  "Archive" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_ARCHIVE }
+  "Incremental" { $RobocopyJobTypeTemplate = $Config.Files.JOB_TEMPLATE_INCR }
+  "Full" { $RobocopyJobTypeTemplate = $Config.Files.JOB_TEMPLATE_FULL }
+  "Purge" { $RobocopyJobTypeTemplate = $Config.Files.JOB_TEMPLATE_PURGE }
+  "Archive" { $RobocopyJobTypeTemplate = $Config.Files.JOB_TEMPLATE_ARCHIVE }
   "Cancel" { exit 0 }
   Default {
     # Illegal choice
@@ -676,8 +676,8 @@ else {
       if ($PSCmdlet.ShouldProcess("${UserDefinedJob}", "Run Robocopy job")) {
         & "${RobocopyExecutable}" `
           "/job:${RobocopyJobTypeTemplate}" `
-          "/job:$($Config.Jobs.JOB_TEMPLATE_GLOBAL_EXCLUSIONS)" `
-          "/job:$($Config.Jobs.JOB_TEMPLATE_LOGGING)" `
+          "/job:$($Config.Files.JOB_TEMPLATE_GLOBAL_EXCLUSIONS)" `
+          "/job:$($Config.Files.JOB_TEMPLATE_LOGGING)" `
           "/job:${UserDefinedJob}" | Out-Host
 
         $RobocopyExitCode = $LASTEXITCODE
