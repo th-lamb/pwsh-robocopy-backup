@@ -1,9 +1,15 @@
 ﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\inifile-functions.ps1"
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+
+  $script:config = [ScriptConfig]::new()
 }
 
 
@@ -14,7 +20,7 @@ Describe 'Test-VerbosityIsDefined' {
       $values = @(0, 1, 2, 3, 4, 5, 6, 7)
 
       for ($i = 0; $i -lt $values.Length; $i++) {
-        $Script:__VERBOSE = $values[$i]
+        $config.General.__VERBOSE = $values[$i]
         Test-VerbosityIsDefined | Should -Be $true
       }
     }
@@ -25,14 +31,18 @@ Describe 'Test-VerbosityIsDefined' {
       $values = @(-2, -1, 8, 9)
 
       for ($i = 0; $i -lt $values.Length; $i++) {
-        $Script:__VERBOSE = $values[$i]
+        $config.General.__VERBOSE = $values[$i]
         Test-VerbosityIsDefined | Should -Be $false
       }
     }
 
-    It 'Returns $false for non-numeric values.' {
-      $Script:__VERBOSE = "foo"
+    It 'Returns $false if the config object is missing.' {
+      $oldConfig = $script:config
+      $script:config = $null
+
       Test-VerbosityIsDefined | Should -Be $false
+
+      $script:config = $oldConfig
     }
   }
 }

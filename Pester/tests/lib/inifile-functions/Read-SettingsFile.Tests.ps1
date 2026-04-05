@@ -8,10 +8,13 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
+
+  $script:config = [ScriptConfig]::new()
+
   $Script:ini_file = "${PSScriptRoot}/Read-SettingsFile.Tests.ini"
 
   # For messages in tested functions
-  $Script:__VERBOSE = 6
+  $config.General.__VERBOSE = 6
 }
 
 

@@ -11,7 +11,7 @@ Describe "backup.ps1 Smoke Test" {
 
     #TODO: Extract functions like "path-resolution" to be re-used by all smoke tests?
     BeforeAll {
-  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
+    $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
         # --- ROBUST PATH RESOLUTION ---
         $current = $PSScriptRoot
         while ($current -and -not $ProjectRoot) {

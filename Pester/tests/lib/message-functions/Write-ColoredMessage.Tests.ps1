@@ -1,10 +1,16 @@
 ﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\inifile-functions.ps1"
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\message-functions.ps1"
-  $Script:__VERBOSE = 6
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+  $script:config = [ScriptConfig]::new()
+
+  $config.General.__VERBOSE = 6
 
   function Test-SeverityExpectedBackgroundColor {
     param (

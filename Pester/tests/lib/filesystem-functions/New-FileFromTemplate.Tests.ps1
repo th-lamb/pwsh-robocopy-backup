@@ -2,17 +2,21 @@
 . "${ProjectRoot}\lib\filesystem-functions.ps1"
 . "${ProjectRoot}\lib\message-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
+. "${ProjectRoot}\lib\inifile-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
   . "${ProjectRoot}\lib\logging-functions.ps1"
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+
+  $script:config = [ScriptConfig]::new()
 
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
 
   # For messages in tested functions
-  $Script:__VERBOSE = 5  # Reduced to 5 because New-FileFromTemplate writes an INFO message.
+  $config.General.__VERBOSE = 5  # Reduced to 5 because New-FileFromTemplate writes an INFO message.
 
   # For logging in tested functions
   $Script:logfile = "${workingFolder}New-FileFromTemplate.Tests.log"

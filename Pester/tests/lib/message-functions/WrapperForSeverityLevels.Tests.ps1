@@ -1,9 +1,15 @@
 ﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\inifile-functions.ps1"
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+
+  $script:config = [ScriptConfig]::new()
 
   Mock Write-ColoredMessage {
     $Script:used_severity = $Severity
@@ -100,7 +106,7 @@ Describe 'Write-WarningMsg' {
       $test_message     = "Test message"
       $expected_message = "[WARNING] ${test_message}"
 
-      $Script:__VERBOSE = 4
+      $config.General.__VERBOSE = 4
       Write-WarningMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
@@ -109,7 +115,7 @@ Describe 'Write-WarningMsg' {
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 4.' {
-      $Script:__VERBOSE = 3
+      $config.General.__VERBOSE = 3
       Write-WarningMsg -Message "Test message"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 0
@@ -126,11 +132,14 @@ Describe 'Write-WarningMsg' {
     It 'Throws an exception if $__VERBOSE is not defined.' {
       Mock Write-ErrMsg {}  # Omit output within the tested function.
 
-      Clear-Variable __VERBOSE -Scope Script
+      $oldConfig = $script:config
+      $script:config = $null
 
       {
         Write-WarningMsg -Message "Test message"
       } | Should -Throw
+
+      $script:config = $oldConfig
     }
   }
 }
@@ -142,7 +151,7 @@ Describe 'Write-NoticeMsg' {
       $test_message     = "Test message"
       $expected_message = "[NOTICE ] ${test_message}"
 
-      $Script:__VERBOSE = 5
+      $config.General.__VERBOSE = 5
       Write-NoticeMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
@@ -151,7 +160,7 @@ Describe 'Write-NoticeMsg' {
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 5.' {
-      $Script:__VERBOSE = 4
+      $config.General.__VERBOSE = 4
       Write-NoticeMsg -Message "Test message"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 0
@@ -168,11 +177,14 @@ Describe 'Write-NoticeMsg' {
     It 'Throws an exception if $__VERBOSE is not defined.' {
       Mock Write-ErrMsg {}  # Omit output within the tested function.
 
-      Clear-Variable __VERBOSE -Scope Script
+      $oldConfig = $script:config
+      $script:config = $null
 
       {
         Write-NoticeMsg -Message "Test message"
       } | Should -Throw
+
+      $script:config = $oldConfig
     }
   }
 }
@@ -184,7 +196,7 @@ Describe 'Write-InfoMsg' {
       $test_message     = "Test message"
       $expected_message = "[INFO   ] ${test_message}"
 
-      $Script:__VERBOSE = 6
+      $config.General.__VERBOSE = 6
       Write-InfoMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
@@ -193,7 +205,7 @@ Describe 'Write-InfoMsg' {
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 6.' {
-      $Script:__VERBOSE = 5
+      $config.General.__VERBOSE = 5
       Write-InfoMsg -Message "Test message"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 0
@@ -210,11 +222,14 @@ Describe 'Write-InfoMsg' {
     It 'Throws an exception if $__VERBOSE is not defined.' {
       Mock Write-ErrMsg {}  # Omit output within the tested function.
 
-      Clear-Variable __VERBOSE -Scope Script
+      $oldConfig = $script:config
+      $script:config = $null
 
       {
         Write-InfoMsg -Message "Test message"
       } | Should -Throw
+
+      $script:config = $oldConfig
     }
   }
 }
@@ -226,7 +241,7 @@ Describe 'Write-DebugMsg' {
       $test_message     = "Test message"
       $expected_message = "[DEBUG  ] ${test_message}"
 
-      $Script:__VERBOSE = 7
+      $config.General.__VERBOSE = 7
       Write-DebugMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
@@ -235,7 +250,7 @@ Describe 'Write-DebugMsg' {
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 7.' {
-      $Script:__VERBOSE = 6
+      $config.General.__VERBOSE = 6
       Write-DebugMsg -Message "Test message"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 0
@@ -252,11 +267,14 @@ Describe 'Write-DebugMsg' {
     It 'Throws an exception if $__VERBOSE is not defined.' {
       Mock Write-ErrMsg {}  # Omit output within the tested function.
 
-      Clear-Variable __VERBOSE -Scope Script
+      $oldConfig = $script:config
+      $script:config = $null
 
       {
         Write-DebugMsg -Message "Test message"
       } | Should -Throw
+
+      $script:config = $oldConfig
     }
   }
 }

@@ -2,16 +2,22 @@
 . "${ProjectRoot}\lib\robocopy-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
 . "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\inifile-functions.ps1"
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\robocopy-functions.ps1"
   . "${ProjectRoot}\lib\logging-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+
+  $script:config = [ScriptConfig]::new()
 
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/robocopy-functions/"
   $Script:logfile = "${workingFolder}LogAndShowRobocopyError.Tests.log"
-  $Script:__VERBOSE = 6
+  $config.General.__VERBOSE = 6
 
   function Format-RegexString {
     Param(

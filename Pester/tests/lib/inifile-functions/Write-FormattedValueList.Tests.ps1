@@ -1,14 +1,18 @@
 ﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\inifile-functions.ps1"
 . "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+
+  $script:config = [ScriptConfig]::new()
 
   # For messages in tested functions
-  $Script:__VERBOSE = 6
+  $config.General.__VERBOSE = 6
 }
 
 

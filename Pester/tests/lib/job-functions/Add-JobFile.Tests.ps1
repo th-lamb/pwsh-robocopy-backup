@@ -1,11 +1,17 @@
 ﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
 . "${ProjectRoot}\lib\job-functions.ps1"
 . "${ProjectRoot}\lib\message-functions.ps1"
+. "${ProjectRoot}\lib\inifile-functions.ps1"
+. "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
   . "${ProjectRoot}\lib\job-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+
+  $script:config = [ScriptConfig]::new()
 
   $workingFolder = "${ProjectRoot}\Pester\resources\lib\job-functions\"  # Backslashes for the jobfile!
   $Script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
@@ -13,7 +19,7 @@ BeforeAll {
   $Script:created_jobfiles_folder = "${workingFolder}created_jobfiles\"
 
   # For messages in tested functions
-  $Script:__VERBOSE = 6
+  $config.General.__VERBOSE = 6
 }
 
 
