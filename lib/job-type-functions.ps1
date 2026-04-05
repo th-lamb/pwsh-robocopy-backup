@@ -76,6 +76,8 @@ function Get-UserSelectedJobType {
     [String]$DefaultJobType,
     [Parameter(Mandatory = $true)]
     [String]$logfile,
+    [Parameter(Mandatory = $true)]
+    [Int32]$MaxWaitingTimeS,
     # Skip all interactive prompts and pauses (useful for automation/CI).
     [Parameter(Mandatory = $false)]
     [switch]$NonInteractive
@@ -88,13 +90,13 @@ function Get-UserSelectedJobType {
 
   Add-LogMessage -logfile "${logfile}" -severity INFO -message "Asking the user for the job-type..."
 
-  [Int32]$MaxWaitTimeMilliseconds = ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} * 1000
+  [Int32]$MaxWaitTimeMilliseconds = $MaxWaitingTimeS * 1000
   [Int32]$CheckIntervalMilliseconds = 100
   [Int32]$AlreadyWaitedMilliseconds = 0
   [String]$result = ""
 
   _showJobTypeList "${DefaultJobType}"
-  Write-Host "Automatic start in ${JOB_TYPE_SELECTION_MAX_WAITING_TIME_S} seconds."
+  Write-Host "Automatic start in ${MaxWaitingTimeS} seconds."
 
   # https://powershell.one/tricks/input-devices/detect-key-press
   :waitForKey do {

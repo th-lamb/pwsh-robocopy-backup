@@ -327,7 +327,7 @@ if (![string]::IsNullOrWhiteSpace($Config.Logging.BACKUP_LOGFILE)) {
 
 #region Ask for job type
 
-$SelectedJobType = Get-UserSelectedJobType -DefaultJobType $Config.Jobs.DEFAULT_JOB_TYPE -logfile $Config.Logging.BACKUP_LOGFILE -NonInteractive:$NonInteractive
+$SelectedJobType = Get-UserSelectedJobType -DefaultJobType $Config.Jobs.DEFAULT_JOB_TYPE -logfile $Config.Logging.BACKUP_LOGFILE -MaxWaitingTimeS $Config.Jobs.JOB_TYPE_SELECTION_MAX_WAITING_TIME_S -NonInteractive:$NonInteractive
 
 switch ($SelectedJobType) {
   "Incremental" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_INCR }
