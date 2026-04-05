@@ -14,8 +14,7 @@
 #
 # 1. Source this file.
 #
-# 2. Define variable ${__VERBOSE} with value 0..7 in your script.
-#    -> Set ${__VERBOSE} via options --quiet, --verbose or similar.
+# 2. Define the $Config object with a General.__VERBOSE property (0..7).
 #
 # 3. Replace Write-Host commands with function calls depending on the message severity.
 #    -> e.g. Write-NoticeMsg() for important (but expected) messages, and Write-ErrMsg()
@@ -26,18 +25,18 @@
 #     ===============================
 #
 # The message functions are related to a specific severity level. Messages will
-# be written if $__VERBOSE is equal to or higher than this level.
+# be written if $Config.General.__VERBOSE is equal to or higher than this level.
 #
-#   | Function            | Severity (value)| Condition             |
-#   +---------------------+-----------------+-----------------------+
-#   | Write-EmergMsg()    | emerg     (0)   | none (always written) |
-#   | Write-AlertMsg()    | alert     (1)   | ""                    |
-#   | Write-CritMsg()     | crit      (2)   | ""                    |
-#   | Write-ErrMsg()      | err       (3)   | ""                    |
-#   | Write-WarningMsg()  | warning   (4)   | ${__VERBOSE} >= 4     |
-#   | Write-NoticeMsg()   | notice    (5)   | ${__VERBOSE} >= 5     |
-#   | Write-InfoMsg()     | info      (6)   | ${__VERBOSE} >= 6     |
-#   | Write-DebugMsg()    | debug     (7)   | ${__VERBOSE} = 7      |
+#   | Function            | Severity (value)| Condition                       |
+#   +---------------------+-----------------+---------------------------------+
+#   | Write-EmergMsg()    | emerg     (0)   | none (always written)           |
+#   | Write-AlertMsg()    | alert     (1)   | ""                              |
+#   | Write-CritMsg()     | crit      (2)   | ""                              |
+#   | Write-ErrMsg()      | err       (3)   | ""                              |
+#   | Write-WarningMsg()  | warning   (4)   | $Config.General.__VERBOSE >= 4  |
+#   | Write-NoticeMsg()   | notice    (5)   | $Config.General.__VERBOSE >= 5  |
+#   | Write-InfoMsg()     | info      (6)   | $Config.General.__VERBOSE >= 6  |
+#   | Write-DebugMsg()    | debug     (7)   | $Config.General.__VERBOSE = 7   |
 #
 #
 #     Helper functions
@@ -201,16 +200,9 @@ function Get-VerbosityLevel {
   <# Returns the verbosity level (0..7) from the $config object or legacy $__VERBOSE variable.
      Returns $null if neither is defined.
   #>
-  # 1. Try the new config object
-  $cfgVar = Get-Variable -Name "config" -ErrorAction SilentlyContinue
+  $cfgVar = Get-Variable -Name "Config" -ErrorAction SilentlyContinue
   if ($null -ne $cfgVar -and $null -ne $cfgVar.Value.General) {
     return $cfgVar.Value.General.__VERBOSE
-  }
-
-  # 2. Try the legacy variable (backward compatibility for tests)
-  $vVar = Get-Variable -Name "__VERBOSE" -ErrorAction SilentlyContinue
-  if ($null -ne $vVar) {
-    return $vVar.Value
   }
 
   return $null
