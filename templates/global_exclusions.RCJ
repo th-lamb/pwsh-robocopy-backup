@@ -5,6 +5,7 @@
   %Temp%\   ::  C:\Users\<username>\AppData\Local\Temp\
   C:\$Recycle.Bin\
   C:\PerfLogs\
+  C:\Recovery\
   C:\System Volume Information\
   .git
   node_modules
