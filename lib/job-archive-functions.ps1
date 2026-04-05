@@ -42,7 +42,7 @@ function Remove-FileCollection {
 
   foreach ($FileToDelete in $FilesToDelete) {
     if ($PSCmdlet.ShouldProcess("${FileToDelete}", "Delete file")) {
-      Write-Host "${FileToDelete}" -ForegroundColor DarkRed
+      Write-Host "[INFO   ] ${FileToDelete}" -ForegroundColor DarkRed
       try {
         Remove-Item "${FileToDelete}" -ErrorAction Stop -Confirm:$false
         $DeletedFilesCount++
@@ -140,7 +140,7 @@ function Export-PreviousJobsArchive {
 
       if ($PSCmdlet.ShouldProcess("${ArchiveToDelete}", "Delete job archive")) {
         Write-InfoMsg "Deleting job archive ${ArchiveName}"
-        Write-Host "${ArchiveToDelete}" -ForegroundColor DarkRed
+        Write-Host "[INFO   ] ${ArchiveToDelete}" -ForegroundColor DarkRed
         try {
           Remove-Item "$ArchiveToDelete" -ErrorAction Stop -Confirm:$false
         }
@@ -176,7 +176,8 @@ function Export-PreviousJobsArchive {
       if ($OldLogfilesCount -gt 0) {
         Compress-Archive -Path "${BackupJobDirectory}${JobLogNameScheme}" -Update -DestinationPath "${ArchivePath}" -Confirm:$false   # -Update to add.
       }
-      Write-Host "${ArchivePath}" -ForegroundColor DarkGreen
+      Write-Host "[INFO   ] ${ArchivePath}" -ForegroundColor DarkGreen
+      #Write-InfoMsg "Created archive ${ArchivePath}"
     }
     catch {
       Write-Error "Cannot create archive: ${ArchivePath}"
