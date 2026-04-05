@@ -175,6 +175,8 @@ function Read-Config {
     [String]$IniFile
   )
 
+  #FIXME: Consider $WhatIfPreference = $oldWhatIfPreference as in the old "Read-SettingsFile" function?
+
   $Config = [ScriptConfig]::new()
   #TODO: Do we want to return the (non-populated) container with standard values?
   if (-not (Test-Path $IniFile)) { return $Config }
@@ -219,10 +221,14 @@ function Read-Config {
         }
         # Expand paths for strings
         elseif ($prop.TypeNameOfValue -eq 'System.String') {
+          # Temporarily set a local variable so that cross-references in the INI file
+          # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
           $subObject.$key = Get-ExpandedPath $val
+          Set-Variable -Name $key -Value $subObject.$key -Scope Local
         }
         else {
           $subObject.$key = $val
+          Set-Variable -Name $key -Value $subObject.$key -Scope Local
         }
       }
     }

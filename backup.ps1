@@ -197,33 +197,24 @@ Write-EarlyMsg INFO "Reading the settings file..."
 
 $iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
 #TODO: Replace with new Read-Config function
-try {
-  Read-SettingsFile ("${iniFile}")
-}
-catch {
-  Write-EarlyMsg ERR "Failed to read settings file [${iniFile}]! Error: $_"
-  exit 1
-}
+# try {
+#   Read-SettingsFile ("${iniFile}")
+# }
+# catch {
+#   Write-EarlyMsg ERR "Failed to read settings file [${iniFile}]! Error: $_"
+#   exit 1
+# }
+
+
+
+# Configuration object with default values
+$Config = [ScriptConfig]::new()
+
+# Populate with values from the ini file.
+#TODO: Also add error handling for missing INI file?
+$Config = Read-Config -IniFile "${iniFile}"
 
 Write-EarlyMsg INFO "Settings file read."
-
-
-
-
-
-#TODO: Only a test
-$config = Read-Config -IniFile "${iniFile}"
-
-# $config                     # Returns the first level "General     : GeneralSettings - Directories : DirectorySettings - etc."
-# $config.General             # Returns __VERBOSE 7
-# $config.Directories         # Returns BACKUP_BASE_DIR      : ${SCRIPT_DIR}destination\ - BACKUP_USER_BASE_DIR : ${BACKUP_BASE_DIR}testuser\ - etc.
-# $config.Directories.BACKUP_TEMPLATES_DIR
-
-# Write-Host "config.Archiving.MAX_ARCHIVES_COUNT: $($config.Archiving.MAX_ARCHIVES_COUNT)" -ForegroundColor Yellow
-
-
-
-
 
 #endregion Read settings file ##################################################
 
@@ -234,10 +225,10 @@ $config = Read-Config -IniFile "${iniFile}"
 Write-EarlyMsg INFO "Checking necessary directories and files..."
 
 # Create logfile folder if necessary. (May be different from $BACKUP_DIR.)
-$FSobject = Get-ParentDir "${BACKUP_LOGFILE}"
+$FSobject = Get-ParentDir $Config.Logging.BACKUP_LOGFILE
 if (! ${FSobject}.Exists) {
   Write-EarlyMsg INFO "Creating logfile directory..."
-  [void](New-Directory 'LOGFILE_DIR' $(${FSobject}.Path) "${BACKUP_LOGFILE}")
+  [void](New-Directory 'LOGFILE_DIR' "$($FSobject.Path)" $Config.Logging.BACKUP_LOGFILE)
   Write-EarlyMsg INFO "Logfile directory created."
 }
 
@@ -257,30 +248,33 @@ if (! ${FSobject}.Exists) {
     - ERROR_LOGFILE
 #>
 
-Test-NecessaryDirectory 'BACKUP_TEMPLATES_DIR' $config.Directories.BACKUP_TEMPLATES_DIR "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'DIRLIST_TEMPLATE' $config.Files.DIRLIST_TEMPLATE "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_INCR' $config.Files.JOB_TEMPLATE_INCR "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_FULL' $config.Files.JOB_TEMPLATE_FULL "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_PURGE' $config.Files.JOB_TEMPLATE_PURGE "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_ARCHIVE' $config.Files.JOB_TEMPLATE_ARCHIVE "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_GLOBAL_EXCLUSIONS' $config.Files.JOB_TEMPLATE_GLOBAL_EXCLUSIONS "${BACKUP_LOGFILE}"
-Test-NecessaryFile 'JOB_TEMPLATE_LOGGING' $config.Files.JOB_TEMPLATE_LOGGING "${BACKUP_LOGFILE}"
+Test-NecessaryDirectory 'BACKUP_TEMPLATES_DIR' $Config.Directories.BACKUP_TEMPLATES_DIR $Config.Logging.BACKUP_LOGFILE
+Test-NecessaryFile 'DIRLIST_TEMPLATE' $Config.Files.DIRLIST_TEMPLATE $Config.Logging.BACKUP_LOGFILE
+Test-NecessaryFile 'JOB_TEMPLATE_INCR' $Config.Files.JOB_TEMPLATE_INCR $Config.Logging.BACKUP_LOGFILE
+Test-NecessaryFile 'JOB_TEMPLATE_FULL' $Config.Files.JOB_TEMPLATE_FULL $Config.Logging.BACKUP_LOGFILE
+Test-NecessaryFile 'JOB_TEMPLATE_PURGE' $Config.Files.JOB_TEMPLATE_PURGE $Config.Logging.BACKUP_LOGFILE
+Test-NecessaryFile 'JOB_TEMPLATE_ARCHIVE' $Config.Files.JOB_TEMPLATE_ARCHIVE $Config.Logging.BACKUP_LOGFILE
+Test-NecessaryFile 'JOB_TEMPLATE_GLOBAL_EXCLUSIONS' $Config.Files.JOB_TEMPLATE_GLOBAL_EXCLUSIONS $Config.Logging.BACKUP_LOGFILE
+Test-NecessaryFile 'JOB_TEMPLATE_LOGGING' $Config.Files.JOB_TEMPLATE_LOGGING $Config.Logging.BACKUP_LOGFILE
 
 # Note: Different cases for $BACKUP_BASE_DIR (some cannot be created)!
-$DirType = Get-SpecifiedBackupBaseDirType "${BACKUP_BASE_DIR}"
+$DirType = Get-SpecifiedBackupBaseDirType $Config.Directories.BACKUP_BASE_DIR
 Write-DebugMsg "BackupBaseDir type: ${DirType}"
 
 switch ("${DirType}") {
   "directory" {
-    [void](New-Directory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}")
+    [void](New-Directory 'BACKUP_BASE_DIR' $Config.Directories.BACKUP_BASE_DIR $Config.Logging.BACKUP_LOGFILE)
   }
   { $_ -in "drive letter", "network share" } {
-    Test-NecessaryDirectory 'BACKUP_BASE_DIR' "${BACKUP_BASE_DIR}" "${BACKUP_LOGFILE}"
+    Test-NecessaryDirectory 'BACKUP_BASE_DIR' $Config.Directories.BACKUP_BASE_DIR $Config.Logging.BACKUP_LOGFILE
   }
   "relative path" {
     # Interpret as path below script dir, current drive or ...?
-    $AbsoluteBaseDir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
-    [void](New-Directory 'BACKUP_BASE_DIR (absolute path)' "${AbsoluteBaseDir}" "${BACKUP_LOGFILE}")
+    #TODO: This may not yet have a test case!
+    #TODO: Check if the following change to $Config.Directories.BACKUP_BASE_DIR has correct syntax!
+    # $AbsoluteBaseDir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
+    $AbsoluteBaseDir = "${SCRIPT_DIR}\$($Config.Directories.BACKUP_BASE_DIR)"
+    [void](New-Directory 'BACKUP_BASE_DIR (absolute path)' "${AbsoluteBaseDir}" $Config.Logging.BACKUP_LOGFILE)
   }
   "network computer" {
     Write-CritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
@@ -293,19 +287,19 @@ switch ("${DirType}") {
 }
 
 #TODO: Report creation of these dirs (as INFO).
-[void](New-Directory 'BACKUP_USER_BASE_DIR' "${BACKUP_USER_BASE_DIR}" "${BACKUP_LOGFILE}")
-[void](New-Directory 'BACKUP_DIR' "${BACKUP_DIR}" "${BACKUP_LOGFILE}")
-[void](New-Directory 'BACKUP_JOB_DIR' "${BACKUP_JOB_DIR}" "${BACKUP_LOGFILE}")
+[void](New-Directory 'BACKUP_USER_BASE_DIR' $Config.Directories.BACKUP_USER_BASE_DIR $Config.Logging.BACKUP_LOGFILE)
+[void](New-Directory 'BACKUP_DIR' $Config.Directories.BACKUP_DIR $Config.Logging.BACKUP_LOGFILE)
+[void](New-Directory 'BACKUP_JOB_DIR' $Config.Directories.BACKUP_JOB_DIR $Config.Logging.BACKUP_LOGFILE)
 
 # Make sure that robocopy has been found if only "robocopy" is defined in the ini file!
-$RobocopyExecutable = Get-ExecutablePath 'ROBOCOPY' "${ROBOCOPY}" "${BACKUP_LOGFILE}"
+$RobocopyExecutable = Get-ExecutablePath 'ROBOCOPY' $Config.Files.ROBOCOPY $Config.Logging.BACKUP_LOGFILE
 
 # Create the dir-list from the template if necessary.
-$IsDirlistCreated = New-FileFromTemplate 'BACKUP_DIRLIST' "${BACKUP_DIRLIST}" $config.Files.DIRLIST_TEMPLATE "${BACKUP_LOGFILE}"
+$IsDirlistCreated = New-FileFromTemplate 'BACKUP_DIRLIST' $Config.Files.BACKUP_DIRLIST $Config.Files.DIRLIST_TEMPLATE $Config.Logging.BACKUP_LOGFILE
 
 if ($IsDirlistCreated -and -not $NonInteractive) {
   Write-InfoMsg "Opening the dir-list in Editor and wait..."
-  Notepad.exe "${BACKUP_DIRLIST}" | Out-Null
+  Notepad.exe $Config.Files.BACKUP_DIRLIST | Out-Null
 }
 
 Write-EarlyMsg INFO "Necessary directories and files checked."
@@ -316,13 +310,13 @@ Write-EarlyMsg INFO "Necessary directories and files checked."
 
 #region Start logging to actual logfile
 
-Add-EmptyLineToLogfile "${BACKUP_LOGFILE}"  # One empty line between the previous and this backup.
+Add-EmptyLineToLogfile $Config.Logging.BACKUP_LOGFILE # One empty line between the previous and this backup.
 
-# Flushes early bootstrap messages to the real log file now that $BACKUP_LOGFILE is available.
-if ($null -ne $BACKUP_LOGFILE) {
+# Flushes early bootstrap messages to the real log file now that BACKUP_LOGFILE is available.
+if (![string]::IsNullOrWhiteSpace($Config.Logging.BACKUP_LOGFILE)) {
   foreach ($msg in $Script:earlyMsgBuffer) {
     # Using direct Add-LogMessage (ignoring __VERBOSE for early mandatory info).
-    Add-LogMessage -logfile $BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
+    Add-LogMessage -logfile $Config.Logging.BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
   }
   $Script:earlyMsgBuffer.Clear()
 }
@@ -333,13 +327,13 @@ if ($null -ne $BACKUP_LOGFILE) {
 
 #region Ask for job type
 
-$SelectedJobType = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -NonInteractive:$NonInteractive
+$SelectedJobType = Get-UserSelectedJobType -DefaultJobType $Config.Jobs.DEFAULT_JOB_TYPE -logfile $Config.Logging.BACKUP_LOGFILE -NonInteractive:$NonInteractive
 
 switch ($SelectedJobType) {
-  "Incremental" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_INCR }
-  "Full" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_FULL }
-  "Purge" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_PURGE }
-  "Archive" { $RobocopyJobTypeTemplate = $JOB_TEMPLATE_ARCHIVE }
+  "Incremental" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_INCR }
+  "Full" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_FULL }
+  "Purge" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_PURGE }
+  "Archive" { $RobocopyJobTypeTemplate = $Config.Jobs.JOB_TEMPLATE_ARCHIVE }
   "Cancel" { exit 0 }
   Default {
     # Illegal choice
@@ -354,11 +348,11 @@ switch ($SelectedJobType) {
 
 #region Archive previous jobs
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Archiving previous jobs..."
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "Archiving previous jobs..."
 
-Export-PreviousJobsArchive "${BACKUP_JOB_DIR}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
+Export-PreviousJobsArchive $Config.Directories.BACKUP_JOB_DIR $Config.Jobs.JOB_FILE_NAME_SCHEME $Config.jobs.JOB_LOGFILE_NAME_SCHEME $Config.Archiving.ARCHIVE_NAME_SCHEME $Config.Archiving.MAX_ARCHIVES_COUNT
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "Previous jobs archived."
 
 #endregion Archive previous job files ##########################################
 
@@ -366,7 +360,7 @@ LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Previous jobs archived."
 
 #region Create job files
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "----- Creating job files -----".PadRight(70, "-")
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "----- Creating job files -----".PadRight(70, "-")
 
 <# Create a job file for each directory in the dir-list.
   - Loop over all lines.
@@ -401,7 +395,7 @@ function Invoke-AddJobFile {
   Write-DebugMsg "Invoke-AddJobFile()"
 
   Add-JobFile `
-    "${BACKUP_JOB_DIR}" `
+    $Config.Directories.BACKUP_JOB_DIR `
     "${COMPUTERNAME}" `
     $Script:CurrentJobNum `
     "${Script:CurrentSourceDefinition}" `
@@ -448,7 +442,7 @@ function Initialize-LineRelatedInfo {
 # Process the dir-list.
 
 function _processDirectoryList {
-  $DirListContent = Get-Content "${BACKUP_DIRLIST}"
+  $DirListContent = Get-Content $Config.Files.BACKUP_DIRLIST
 
   ForEach ($line in $DirListContent) {
     Write-DebugMsg "Next line               : ${line}"
@@ -464,7 +458,7 @@ function _processDirectoryList {
       - on errors; or
       - EOF
     #>
-    $LineType = Get-DirlistLineType "${expanded}" "${BACKUP_LOGFILE}"
+    $LineType = Get-DirlistLineType "${expanded}" $Config.Logging.BACKUP_LOGFILE
     $LineTypeLabel = "${LineType}".PadRight(24)
     Write-DebugMsg "${LineTypeLabel}: ${expanded}"
 
@@ -472,11 +466,11 @@ function _processDirectoryList {
       "error: *" {
         # The fallback value of function Get-DirlistLineType
         # No message: function Get-DirlistLineType reports the error/warning.
-        #LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Error in dir-list: ${line}"
+        #LogAndShowMessage $Config.Logging.BACKUP_LOGFILE ERR "Error in dir-list: ${line}"
         $Script:FinishPreviousJob = $true
       }
       "invalid: *" {
-        LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "Invalid entry in dir-list: ${line}"
+        LogAndShowMessage $Config.Logging.BACKUP_LOGFILE WARNING "Invalid entry in dir-list: ${line}"
         $Script:FinishPreviousJob = $true
       }
       "ignore" {
@@ -519,7 +513,7 @@ function _processDirectoryList {
     if ($Script:ContinueCurrentJob) {
       if ($Script:CurrentJobNum -eq 0) {
         $Script:ContinueCurrentJob = $false
-        LogAndShowMessage "${BACKUP_LOGFILE}" ERR "No folder/job defined for: ${line}"
+        LogAndShowMessage $Config.Logging.BACKUP_LOGFILE ERR "No folder/job defined for: ${line}"
       }
     }
 
@@ -578,11 +572,11 @@ function _processDirectoryList {
       Write-DebugMsg "SourceDir               : ${Script:SourceDir}"
 
       if ("${Script:SourceDir}" -eq "") {
-        LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Parent directory not specified for: ${line}"
+        LogAndShowMessage $Config.Logging.BACKUP_LOGFILE ERR "Parent directory not specified for: ${line}"
         Initialize-JobRelatedInfo
       }
       else {
-        $Script:TargetDir = Get-TargetDir "${BACKUP_DIR}" "${Script:SourceDir}"
+        $Script:TargetDir = Get-TargetDir $Config.Directories.BACKUP_DIR "${Script:SourceDir}"
         Write-DebugMsg "TargetDir               : ${Script:TargetDir}"
       }
 
@@ -635,7 +629,7 @@ if ($FinishLastJob) {
   Invoke-AddJobFile
 }
 
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$Script:JobsCreatedCount job file(s) created."
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "$Script:JobsCreatedCount job file(s) created."
 
 Write-DebugMsg "----- Results -----".PadRight(70, "-")
 Write-DebugMsg "SourceDefinitionsCount: $Script:SourceDefinitionsCount"
@@ -659,18 +653,18 @@ Write-DebugMsg "-----".PadRight(70, "-")
 [Int32]$JobResultErrorCount = 0
 
 $JobFiles = [System.Collections.Generic.List[string]]::new()
-$JobFiles = Get-ChildItem -Path "${BACKUP_JOB_DIR}*" -Include "${JOB_FILE_NAME_SCHEME}" -File |
+$JobFiles = Get-ChildItem -Path (Join-Path $Config.Directories.BACKUP_JOB_DIR "*") -Include $Config.Jobs.JOB_FILE_NAME_SCHEME -File |
 Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) }
 $JobfilesCount = $JobFiles.Count
 
 if ($JobfilesCount -eq 0) {
-  LogAndShowMessage "${BACKUP_LOGFILE}" WARNING "No jobfiles created!"
+  LogAndShowMessage $Config.Logging.BACKUP_LOGFILE WARNING "No jobfiles created!"
 }
 else {
-  LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Running $JobfilesCount job(s)..."
+  LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "Running $JobfilesCount job(s)..."
 
   if ($SkipExecution) {
-    LogAndShowMessage "${BACKUP_LOGFILE}" INFO "Skipping execution as requested (-SkipExecution)."
+    LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "Skipping execution as requested (-SkipExecution)."
   }
   else {
     for ($i = 0; $i -lt $JobfilesCount; $i++) {
@@ -682,8 +676,8 @@ else {
       if ($PSCmdlet.ShouldProcess("${UserDefinedJob}", "Run Robocopy job")) {
         & "${RobocopyExecutable}" `
           "/job:${RobocopyJobTypeTemplate}" `
-          "/job:${JOB_TEMPLATE_GLOBAL_EXCLUSIONS}" `
-          "/job:${JOB_TEMPLATE_LOGGING}" `
+          "/job:$($Config.Jobs.JOB_TEMPLATE_GLOBAL_EXCLUSIONS)" `
+          "/job:$($Config.Jobs.JOB_TEMPLATE_LOGGING)" `
           "/job:${UserDefinedJob}" | Out-Host
 
         $RobocopyExitCode = $LASTEXITCODE
@@ -700,7 +694,7 @@ else {
       [Int32]$JobNameLength = ("${UserDefinedJob}".LastIndexOf(".") - $JobNamePosition)
       [String]$JobName = "${UserDefinedJob}".Substring($JobNamePosition, $JobNameLength)
 
-      LogAndShowRobocopyError "${BACKUP_LOGFILE}" "${JobName}" $RobocopyExitCode
+      LogAndShowRobocopyError $Config.Logging.BACKUP_LOGFILE "${JobName}" $RobocopyExitCode
 
       # Update counters.
       switch ($RobocopyExitCode) {
@@ -717,7 +711,7 @@ else {
 
     }
 
-    LogAndShowMessage "${BACKUP_LOGFILE}" INFO "$JobResultOkCount jobs finished successfully, $JobResultWarningCount with warnings, $JobResultErrorCount with errors."
+    LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "$JobResultOkCount jobs finished successfully, $JobResultWarningCount with warnings, $JobResultErrorCount with errors."
 
   }
 
@@ -731,7 +725,7 @@ else {
 $endTime = (Get-Date)
 $elapsedTime = $endTime - $startTime
 $message = "Script finished in {0:hh} h {0:mm} min {0:ss} sec." -f $elapsedTime
-LogAndShowMessage "${BACKUP_LOGFILE}" INFO "${message}"
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "${message}"
 
 
 

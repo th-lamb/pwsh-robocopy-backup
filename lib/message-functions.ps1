@@ -197,23 +197,29 @@ TODO:
 
 #region Helper functions - checks
 
-function Test-VerbosityIsDefined {
-  <# Returns false if ${__VERBOSE} is not defined or
-    if ${__VERBOSE} is not between 0..7.
+function Get-VerbosityLevel {
+  <# Returns the verbosity level (0..7) from the $config object or legacy $__VERBOSE variable.
+     Returns $null if neither is defined.
   #>
-
-  $MIN = 0
-  $MAX = 7
-
-  # Handles undefined, null, "", and " ".
-  if ([string]::IsNullOrWhiteSpace($__VERBOSE)) {
-    return $false
+  # 1. Try the new config object
+  $cfgVar = Get-Variable -Name "config" -ErrorAction SilentlyContinue
+  if ($null -ne $cfgVar -and $null -ne $cfgVar.Value.General) {
+    return $cfgVar.Value.General.__VERBOSE
   }
 
-  # Try to convert to an integer and check if it's within 0..7.
-  $val = $__VERBOSE -as [int]
-  return ($null -ne $val -and $val -ge $MIN -and $val -le $MAX)
+  # 2. Try the legacy variable (backward compatibility for tests)
+  $vVar = Get-Variable -Name "__VERBOSE" -ErrorAction SilentlyContinue
+  if ($null -ne $vVar) {
+    return $vVar.Value
+  }
 
+  return $null
+}
+
+function Test-VerbosityIsDefined {
+  <# Returns $true if a valid verbosity level (0..7) is found. #>
+  $val = Get-VerbosityLevel
+  return ($null -ne $val -and $val -as [int] -ge 0 -and $val -as [int] -le 7)
 }
 
 #endregion Helper functions - checks ###########################################
@@ -286,14 +292,12 @@ function Write-WarningMsg {
     [String]$message
   )
 
-  # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (Test-VerbosityIsDefined) ) {
     Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
-  # Write message if ${__VERBOSE} >= 4 (warning).
-  if ("$__VERBOSE" -ge 4) {
+  if ((Get-VerbosityLevel) -ge 4) {
     Write-ColoredMessage ([SeverityKeyword]::WARNING) "[WARNING] ${message}"
   }
 
@@ -307,14 +311,12 @@ function Write-NoticeMsg {
     [String]$message
   )
 
-  # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (Test-VerbosityIsDefined) ) {
     Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
-  # Write message if ${__VERBOSE} >= 5 (notice).
-  if ("$__VERBOSE" -ge 5) {
+  if ((Get-VerbosityLevel) -ge 5) {
     Write-ColoredMessage ([SeverityKeyword]::NOTICE) "[NOTICE ] ${message}"
   }
 
@@ -328,14 +330,12 @@ function Write-InfoMsg {
     [String]$message
   )
 
-  # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (Test-VerbosityIsDefined) ) {
     Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
-  # Write message if ${__VERBOSE} >= 6 (info).
-  if ("$__VERBOSE" -ge 6) {
+  if ((Get-VerbosityLevel) -ge 6) {
     Write-ColoredMessage ([SeverityKeyword]::INFO) "[INFO   ] ${message}"
   }
 
@@ -349,14 +349,12 @@ function Write-DebugMsg {
     [String]$message
   )
 
-  # Check: ${__VERBOSE} is defined and between 0..7?
   if (! (Test-VerbosityIsDefined) ) {
     Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
     Throw "__VERBOSE is not defined and between 0..7!"
   }
 
-  # Write message if ${__VERBOSE} >= 7 (debug).
-  if ("$__VERBOSE" -ge 7) {
+  if ((Get-VerbosityLevel) -ge 7) {
     Write-ColoredMessage ([SeverityKeyword]::DEBUG) "[DEBUG  ] ${message}"
   }
 
@@ -493,7 +491,7 @@ function Write-NormalMessage {
   }
 
   # Write message if ${__VERBOSE} >= 5 (notice).
-  if ("$__VERBOSE" -ge 5) {
+  if ((Get-VerbosityLevel) -ge 5) {
     Write-ColoredMessage INFO "[INFO   ] ${message}"
   }
 
@@ -516,7 +514,7 @@ function Write-VerboseMessage {
   }
 
   # Write message if ${__VERBOSE} = 7 (debug).
-  if ("$__VERBOSE" -eq 7) {
+  if ((Get-VerbosityLevel) -eq 7) {
     Write-ColoredMessage INFO "[INFO   ] ${message}"
   }
 
