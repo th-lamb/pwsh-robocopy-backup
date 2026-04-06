@@ -229,8 +229,11 @@ function Get-Container {
   return $SectionMap[$iniHeader]
 }
 
+#TODO: Add Pester tests for Read-Config (as the old ones for Read-SettingsFile)
 function Read-Config {
-  #TODO: Check $WhatIfPreference handling in this function
+  <# Reads the specified INI file and returns a Configuration Object with all settings.
+    The structure of the Config Object is like $Config.Container.Property = Value
+  #>
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -238,67 +241,73 @@ function Read-Config {
   )
 
   $Config = [ScriptConfig]::new()
-  #TODO: Do we want to return the (non-populated) container with standard values?
-  if (-not (Test-Path $IniFile)) { return $Config }
+
+  if (-not (Test-Path $IniFile)) {
+    Write-WarningMsg "Settings file not found: [$IniFile]. Using default values."
+    return $Config
+  }
 
   $IniFileContent = Get-Content "${IniFile}"
   $TargetContainer = $null
 
   # Temporarily disable -WhatIf to ensure the configuration is loaded into the script scope (PowerShell 5.1 workaround).
   $oldWhatIfPreference = $WhatIfPreference
-  $WhatIfPreference = $false
+  try {
+    $WhatIfPreference = $false
 
-  foreach ($Line in $IniFileContent) {
-    $Line = $Line.Trim()
-    if ($Line -match '^\[(.+)\]$') {
-      # Look up the code-friendly name using the human-friendly header
-      $IniHeader = $Matches[1].Trim()
-      $TargetContainer = Get-Container -IniHeader "${IniHeader}"
+    foreach ($Line in $IniFileContent) {
+      $Line = $Line.Trim()
+      if ($Line -match '^\[(.+)\]$') {
+        # Look up the code-friendly name using the human-friendly header
+        $IniHeader = $Matches[1].Trim()
+        $TargetContainer = Get-Container -IniHeader "${IniHeader}"
 
-      if ($null -eq $TargetContainer) {
-        Write-WarningMsg "Unrecognized section in INI file: [$IniHeader]"
-      }
-    }
-    elseif ($Line -match '^(.+?)=(.+)$' -and $TargetContainer) {
-      $key = $Matches[1].Trim()
-      $val = $Matches[2].Trim()
-
-      $SubObject = $Config.$TargetContainer
-
-      # Use PowerShell's hidden 'PSObject' to check if the property exists
-      if ($SubObject.PSObject.Properties[$key] -and -not [string]::IsNullOrWhiteSpace($val)) {
-        $prop = $SubObject.PSObject.Properties[$key]
-
-        # Handle Booleans correctly
-        if ($prop.TypeNameOfValue -eq 'System.Boolean') {
-          if ($val -match '^(true|1|yes|on)$') { $SubObject.$key = $true }
-          elseif ($val -match '^(false|0|no|off)$') { $SubObject.$key = $false }
-        }
-        # Expand paths for strings
-        elseif ($prop.TypeNameOfValue -eq 'System.String') {
-          # Temporarily set a local variable so that cross-references in the INI file
-          # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
-          $SubObject.$key = Get-ExpandedPath $val
-          Set-Variable -Name $key -Value $SubObject.$key -Scope Local
-        }
-        else {
-          $SubObject.$key = $val
-          Set-Variable -Name $key -Value $SubObject.$key -Scope Local
+        if ($null -eq $TargetContainer) {
+          Write-WarningMsg "Unrecognized section in INI file: [$IniHeader]"
         }
       }
+      elseif ($Line -match '^(.+?)=(.+)$' -and $TargetContainer) {
+        $key = $Matches[1].Trim()
+        $val = $Matches[2].Trim()
+
+        $SubObject = $Config.$TargetContainer
+
+        # Use PowerShell's hidden 'PSObject' to check if the property exists
+        if ($SubObject.PSObject.Properties[$key] -and -not [string]::IsNullOrWhiteSpace($val)) {
+          $prop = $SubObject.PSObject.Properties[$key]
+
+          # Handle Booleans correctly
+          if ($prop.TypeNameOfValue -eq 'System.Boolean') {
+            if ($val -match '^(true|1|yes|on)$') { $SubObject.$key = $true }
+            elseif ($val -match '^(false|0|no|off)$') { $SubObject.$key = $false }
+          }
+          # Expand paths for strings
+          elseif ($prop.TypeNameOfValue -eq 'System.String') {
+            # Temporarily set a local variable so that cross-references in the INI file
+            # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
+            $SubObject.$key = Get-ExpandedPath $val
+            Set-Variable -Name $key -Value $SubObject.$key -Scope Local
+          }
+          else {
+            $SubObject.$key = $val
+            Set-Variable -Name $key -Value $SubObject.$key -Scope Local
+          }
+        }
+      }
     }
+
+    # Ensure paths are normalized
+    <# FIXME: Final call of `$Config.Directories.Normalize()` might be too late for combined variables!
+      Example: the user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and re-uses
+      this variable to for in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
+      When `$Config.Directories.Normalize()` is called, the expanded paths are already assembled and
+      the *missing "\" is in the middle* of the string!
+    #>
+    $Config.Directories.Normalize()
   }
-
-  # Ensure paths are normalized
-  <# FIXME: Final call of `$Config.Directories.Normalize()` might be too late for combined variables!
-    Example: the user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and re-uses
-    this variable to for in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
-    When `$Config.Directories.Normalize()` is called, the expanded paths are already assembled and
-    the *missing "\" is in the middle* of the string!
-  #>
-  $Config.Directories.Normalize()
-
-  $WhatIfPreference = $oldWhatIfPreference
+  finally {
+    $WhatIfPreference = $oldWhatIfPreference
+  }
 
   <# TODO: Output new settings
     - As in old function Read-SettingsFile?
