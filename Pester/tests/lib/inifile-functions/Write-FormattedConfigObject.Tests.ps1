@@ -15,6 +15,37 @@ BeforeAll {
 
 
 Describe 'Write-FormattedConfigObject' {
+  It 'Matches the expected output file exactly.' {
+    $ResourcesDir = "${ProjectRoot}\Pester\resources\lib\inifile-functions\Write-FormattedConfigObject"
+    $ExpectedFile = "${ResourcesDir}\expected_output.txt"
+    $ActualFile = "${ResourcesDir}\actual_output.txt"
+
+    $DummyConfig = [ScriptConfig]::new()
+    $DummyConfig.General.__VERBOSE = 7
+    $DummyConfig.Directories.BACKUP_BASE_DIR = "C:\TestBackup\"
+    $DummyConfig.Jobs.DEFAULT_JOB_TYPE = "Full"
+
+    # Mock Write-DebugMsg to write to actual_output.txt
+    Mock Write-DebugMsg {
+      param($message)
+      $message | Out-File -FilePath $ActualFile -Append -Encoding ascii
+    }
+
+    if (Test-Path $ActualFile) { Remove-Item $ActualFile }
+
+    Write-FormattedConfigObject -ConfigObject $DummyConfig
+
+    # Compare files. We read them and split into lines to avoid newline issues (CRLF vs LF).
+    $ExpectedLines = (Get-Content $ExpectedFile) -split '\r?\n' | Where-Object { $_ -ne "" }
+    $ActualLines = (Get-Content $ActualFile) -split '\r?\n' | Where-Object { $_ -ne "" }
+
+    # Simple comparison
+    $ActualLines | Should -Be $ExpectedLines
+
+    # Clean up actual output if test passes
+    if ($PSItem.Passed) { Remove-Item $ActualFile }
+  }
+
   It 'Correctly formats and aligns a ScriptConfig object.' {
     $DummyConfig = [ScriptConfig]::new()
     # Override some values to have predictable output
