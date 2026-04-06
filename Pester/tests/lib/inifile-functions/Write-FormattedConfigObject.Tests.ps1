@@ -1,6 +1,4 @@
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
-. "${ProjectRoot}\lib\message-functions.ps1"
-. "${ProjectRoot}\lib\inifile-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
@@ -25,6 +23,8 @@ Describe 'Write-FormattedConfigObject' {
     $DummyConfig.Directories.BACKUP_BASE_DIR = "C:\TestBackup\"
     $DummyConfig.Jobs.DEFAULT_JOB_TYPE = "Full"
 
+    $DummyConfig.Normalize()
+
     # Mock Write-DebugMsg to write to actual_output.txt
     Mock Write-DebugMsg {
       param($message)
@@ -42,8 +42,8 @@ Describe 'Write-FormattedConfigObject' {
     # Simple comparison
     $ActualLines | Should -Be $ExpectedLines
 
-    # Clean up actual output if test passes
-    if ($PSItem.Passed) { Remove-Item $ActualFile }
+    # Clean up actual output if test passes (Pester throws if Should fails, so this line is skipped on failure)
+    Remove-Item $ActualFile
   }
 
   It 'Correctly formats and aligns a ScriptConfig object.' {
@@ -52,6 +52,8 @@ Describe 'Write-FormattedConfigObject' {
     $DummyConfig.General.__VERBOSE = 7
     $DummyConfig.Directories.BACKUP_BASE_DIR = "C:\TestBackup\"
     $DummyConfig.Jobs.DEFAULT_JOB_TYPE = "Full"
+
+    $DummyConfig.Normalize()
 
     $Messages = [System.Collections.Generic.List[string]]::new()
 

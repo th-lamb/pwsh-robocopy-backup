@@ -56,7 +56,7 @@ function Write-FormattedConfigObject {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [ScriptConfig]$ConfigObject
+    $ConfigObject
   )
 
   $VarNames = [System.Collections.Generic.List[string]]::new()
@@ -205,7 +205,7 @@ class LoggingSettings {
 
   # Trace log
   [bool]$ENABLE_TRACE_LOG = $true
-  [string]$TRACE_LOG_LOCAL_DIR = "%Temp%"         #TODO: Make sure this works as intended!
+  [string]$TRACE_LOG_LOCAL_DIR = "%Temp%\"        #TODO: Make sure %Temp% works as intended!
   [string]$TRACE_LOGFILE_NAME = "Trace.log"       # e.g. C:\Windows\Temp\Trace.log
   [bool]$UPLOAD_TRACE_TO_BACKUP_DIR = $true
 
