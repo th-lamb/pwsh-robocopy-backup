@@ -49,6 +49,54 @@ function Write-FormattedValueList {
 
 }
 
+function Write-FormattedConfigObject {
+  <# Formats and writes the contents of a ScriptConfig object to the debug stream.
+    Iterates through all containers and their properties to show the final values.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [ScriptConfig]$ConfigObject
+  )
+
+  $VarNames = [System.Collections.Generic.List[string]]::new()
+  $VarValues = [System.Collections.Generic.List[string]]::new()
+
+  # Iterate through the containers (General, Directories, Files, etc.)
+  foreach ($ContainerProp in $ConfigObject.PSObject.Properties) {
+    $Container = $ContainerProp.Value
+    if ($null -ne $Container -and $Container.PSObject.Properties) {
+      foreach ($SettingProp in $Container.PSObject.Properties) {
+        $VarNames.Add($SettingProp.Name)
+        $VarValues.Add($SettingProp.Value -as [string])
+      }
+    }
+  }
+
+  if ($VarNames.Count -eq 0) {
+    Write-WarningMsg "Write-FormattedConfigObject(): No settings found in ConfigObject!"
+    return
+  }
+
+  # Determine the longest variable name for padding.
+  $MaxLength = 0
+  foreach ($Name in $VarNames) {
+    if ($Name.Length -gt $MaxLength) { $MaxLength = $Name.Length }
+  }
+
+  # Show debug messages.
+  Write-DebugMsg "--------------------------------------------------------------------------------"
+  Write-DebugMsg "Values from the configuration object:"
+  for ($i = 0; $i -lt $VarNames.Count; $i++) {
+    $VarName = $VarNames[$i]
+    $Value = $VarValues[$i]
+    $Padding = " " * ($MaxLength - $VarName.Length)
+    Write-DebugMsg "$($VarName)$($Padding): $($Value)"
+  }
+  Write-DebugMsg "--------------------------------------------------------------------------------"
+
+}
+
 # https://stackoverflow.com/a/10939609/5944475
 function Test-IsNumeric ($Value) {
   return $Value -match "^[\d\.]+$"
@@ -309,13 +357,7 @@ function Read-Config {
     $WhatIfPreference = $oldWhatIfPreference
   }
 
-  <# TODO: Output new settings
-    - As in old function Read-SettingsFile?
-    - Just "print" the Configuration Object?
-  #>
-  # if ($VarNames.Count -gt 0) {
-  #   Write-FormattedValueList $VarNames $VarValues
-  # }
+  Write-FormattedConfigObject -ConfigObject $Config
 
   return $Config
 }
