@@ -32,7 +32,7 @@ Describe 'Get-LastDateTime' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty String.' {
       {
         Get-LastDateTime ""

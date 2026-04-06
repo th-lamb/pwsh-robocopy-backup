@@ -47,7 +47,7 @@ Describe 'Test-NecessaryFile' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty definition_name.' {
       {
         Test-NecessaryFile ""

@@ -9,7 +9,7 @@ BeforeAll {
 
 
 Describe 'Get-Container' {
-  Context 'Wrong Usage' {
+  Context 'Correct INI headers' {
     It 'Returns correct container for INI header [General].' {
       $IniHeader = "General"
       $expected = "General"
@@ -67,7 +67,7 @@ Describe 'Get-Container' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty String.' {
       {
         Get-Container ""

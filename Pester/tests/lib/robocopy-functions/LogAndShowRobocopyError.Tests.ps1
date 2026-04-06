@@ -483,7 +483,7 @@ Describe 'LogAndShowRobocopyError' {
   }
 
   #Context 'Invalid exit code' {
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty logfile.' {
       {
         LogAndShowRobocopyError ""

@@ -122,7 +122,7 @@ Describe 'Write-WarningMsg' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty message.' {
       {
         Write-WarningMsg ""
@@ -167,7 +167,7 @@ Describe 'Write-NoticeMsg' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty message.' {
       {
         Write-NoticeMsg ""
@@ -212,7 +212,7 @@ Describe 'Write-InfoMsg' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty message.' {
       {
         Write-InfoMsg ""
@@ -257,7 +257,7 @@ Describe 'Write-DebugMsg' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty message.' {
       {
         Write-DebugMsg ""

@@ -74,7 +74,7 @@ Describe 'Remove-FileCollection' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     # https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-arrays?view=powershell-7.3#null-or-empty
 
     It 'Throws an exception when called with a null value.' {

@@ -101,17 +101,17 @@ class DirectorySettings {
     - ${SCRIPT_DIR} should always be the script dir.
     - . could be any current directory from where the script is called?
   #>
-  [string]$BACKUP_BASE_DIR      = ".\Backup\"                           # Or "${SCRIPT_DIR}Backup\"?
+  [string]$BACKUP_BASE_DIR = ".\Backup\"                           # Or "${SCRIPT_DIR}Backup\"?
   [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"                # Or "${SCRIPT_DIR}Backup\%Username%\"?"
-  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\" # Or "${SCRIPT_DIR}Backup\%Username%\%Computername%\"?
+  [string]$BACKUP_DIR = ".\Backup\%Username%\%Computername%\" # Or "${SCRIPT_DIR}Backup\%Username%\%Computername%\"?
 
   # Other mandatory directories
   [string]$BACKUP_TEMPLATES_DIR = "${SCRIPT_DIR}templates\"             # Note: Must be ${SCRIPT_DIR} not "."!
-  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"  # Or "${SCRIPT_DIR}Backup\%Username%\robocopy-jobs\"?
+  [string]$BACKUP_JOB_DIR = ".\Backup\%Username%\robocopy-jobs\"  # Or "${SCRIPT_DIR}Backup\%Username%\robocopy-jobs\"?
 
   # Optional directories
   #TODO: Make sure this works as intended!
-  [string]$TRACE_LOG_DIR        = "%Temp%"
+  [string]$TRACE_LOG_DIR = "%Temp%"
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
@@ -133,17 +133,17 @@ class DirectorySettings {
 class FileSettings {
   # Files for the backup itself
   [string]$DIRLIST_TEMPLATE = "${SCRIPT_DIR}templates\dir-list-template.conf"
-  [string]$BACKUP_DIRLIST   = "dir-list.conf"     # e.g. .\Backup\<username>\<Computername>\dir-list.conf
+  [string]$BACKUP_DIRLIST = "dir-list.conf"     # e.g. .\Backup\<username>\<Computername>\dir-list.conf
 
   # Templates for jobtype
-  [string]$JOB_TEMPLATE_INCR    = "${SCRIPT_DIR}templates\incr_backup.RCJ"
-  [string]$JOB_TEMPLATE_FULL    = "${SCRIPT_DIR}templates\full_backup.RCJ"
-  [string]$JOB_TEMPLATE_PURGE   = "${SCRIPT_DIR}templates\purge.RCJ"
+  [string]$JOB_TEMPLATE_INCR = "${SCRIPT_DIR}templates\incr_backup.RCJ"
+  [string]$JOB_TEMPLATE_FULL = "${SCRIPT_DIR}templates\full_backup.RCJ"
+  [string]$JOB_TEMPLATE_PURGE = "${SCRIPT_DIR}templates\purge.RCJ"
   [string]$JOB_TEMPLATE_ARCHIVE = "${SCRIPT_DIR}templates\only_archive_attr.RCJ"
 
   # Template for job settings
   [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS = "${SCRIPT_DIR}templates\global_exclusions.RCJ"
-  [string]$JOB_TEMPLATE_LOGGING           = "${SCRIPT_DIR}templates\logging.RCJ"
+  [string]$JOB_TEMPLATE_LOGGING = "${SCRIPT_DIR}templates\logging.RCJ"
 
   # Optional files
   [string]$ROBOCOPY = "robocopy"        # Fallback: Windows' own robocopy
@@ -188,12 +188,12 @@ class ArchivingSettings {
 
 # Main container for all settings
 class ScriptConfig {
-  [GeneralSettings]$General       = [GeneralSettings]::new()
+  [GeneralSettings]$General = [GeneralSettings]::new()
   [DirectorySettings]$Directories = [DirectorySettings]::new()
-  [FileSettings]$Files            = [FileSettings]::new()
-  [LoggingSettings]$Logging       = [LoggingSettings]::new()
-  [JobSettings]$Jobs              = [JobSettings]::new()
-  [ArchivingSettings]$Archiving   = [ArchivingSettings]::new()
+  [FileSettings]$Files = [FileSettings]::new()
+  [LoggingSettings]$Logging = [LoggingSettings]::new()
+  [JobSettings]$Jobs = [JobSettings]::new()
+  [ArchivingSettings]$Archiving = [ArchivingSettings]::new()
 
   #TODO: You can still have "top-level" settings here if needed
   # [string]$Version = "1.0.0"

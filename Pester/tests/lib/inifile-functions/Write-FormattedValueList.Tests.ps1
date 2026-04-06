@@ -24,7 +24,7 @@ Describe 'Write-FormattedValueList' {
 #    }
 #  }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with missing parameters.' {
       <# Note: the function must not specify
         - [Parameter(Mandatory=$true)] and

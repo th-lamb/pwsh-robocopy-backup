@@ -20,31 +20,35 @@ BeforeAll {
 
 
 Describe 'Write-QuietMessage' {
-  It 'Calls Write-WarningMsg with the specified message.' {
-    $test_message = "Test message"
+  Context 'Correctly used' {
+    It 'Calls Write-WarningMsg with the specified message.' {
+      $test_message = "Test message"
 
-    Mock Write-WarningMsg {} -Verifiable
+      Mock Write-WarningMsg {} -Verifiable
 
-    $config.General.__VERBOSE = 4
-    Write-QuietMessage -Message "${test_message}"
+      $config.General.__VERBOSE = 4
+      Write-QuietMessage -Message "${test_message}"
 
-    Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
-      $Message -eq "${test_message}"
+      Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
+        $Message -eq "${test_message}"
+      }
     }
   }
 
-  It 'Throws an exception when called with an empty message.' {
-    {
-      Write-QuietMessage ""
-    } | Should -Throw
+  Context 'Invalid Parameters' {
+    It 'Throws an exception when called with an empty message.' {
+      {
+        Write-QuietMessage ""
+      } | Should -Throw
+    }
   }
 }
 
 Describe 'Write-NormalMessage' {
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with an INFO if $__VERBOSE >= 5 (notice).' {
-      $test_message     = "Test message"
-      $test_severity    = "info"
+      $test_message = "Test message"
+      $test_severity = "info"
       $expected_message = "[INFO   ] ${test_message}"
 
       $config.General.__VERBOSE = 5
@@ -63,7 +67,7 @@ Describe 'Write-NormalMessage' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty message.' {
       {
         Write-NormalMessage ""
@@ -88,8 +92,8 @@ Describe 'Write-NormalMessage' {
 Describe 'Write-VerboseMessage' {
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with an INFO only if $__VERBOSE = 7 (debug).' {
-      $test_message     = "Test message"
-      $test_severity    = "info"
+      $test_message = "Test message"
+      $test_severity = "info"
       $expected_message = "[INFO   ] ${test_message}"
 
       $config.General.__VERBOSE = 7
@@ -108,7 +112,7 @@ Describe 'Write-VerboseMessage' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called with an empty message.' {
       {
         Write-VerboseMessage ""

@@ -176,7 +176,7 @@ Describe 'Export-PreviousJobsArchive' {
     }
   }
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     #TODO: Export-PreviousJobsArchive "${workingFolder}" "${JOB_FILE_NAME_SCHEME}" "${JOB_LOGFILE_NAME_SCHEME}" "${ARCHIVE_NAME_SCHEME}" $MAX_ARCHIVES_COUNT
 
     It 'Throws an exception when called with an empty backup_job_dir.' {

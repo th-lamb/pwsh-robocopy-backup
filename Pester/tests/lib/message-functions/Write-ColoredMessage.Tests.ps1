@@ -242,7 +242,7 @@ Describe 'Write-ColoredMessage' {
     if a message was written to the error stream.
   #>
 
-  Context 'Wrong Usage' {
+  Context 'Invalid Parameters' {
     It 'Throws an exception when called without severity.' {
       {
         Write-ColoredMessage ""

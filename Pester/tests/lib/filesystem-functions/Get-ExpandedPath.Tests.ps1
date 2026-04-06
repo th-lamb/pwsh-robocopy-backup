@@ -99,7 +99,7 @@ Describe 'Get-ExpandedPath' {
     }
   }
 
-  # Context 'Wrong Usage' {
+  # Context 'Invalid Parameters' {
   #   Empty String is allowed because the dir-list may contain empty lines.
   #   It 'Throws an exception when called with an empty String.' {
   #    {
