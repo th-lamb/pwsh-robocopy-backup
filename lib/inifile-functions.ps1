@@ -82,6 +82,8 @@ function Test-IsNumeric ($Value) {
 
 
 
+#TODO: Add Pester tests to test the default values!
+
 # Container for general settings
 class GeneralSettings {
   [int]$__VERBOSE = 6         # Info
@@ -90,22 +92,30 @@ class GeneralSettings {
 # Container for directory-related settings
 class DirectorySettings {
   # Directories for the backup itself
-  [string]$BACKUP_BASE_DIR              # e.g. C:\Backup\
-  [string]$BACKUP_USER_BASE_DIR         # e.g. C:\Backup\<username>\
-  [string]$BACKUP_DIR                   # e.g. C:\Backup\<username>\<Computername>\
+  <#TODO: Define default values for these 3? Example:
+    - Base Dir            : .\Backup\   (relative path below the script dir)
+    - User Base Dir       : .\Backup\%Username%
+    - (actual) Backup Dir : .\Backup\%Username%\%Computername%
+  #>
+  <#TODO: Use . or ${SCRIPT_DIR}?
+    - ${SCRIPT_DIR} should always be the script dir.
+    - . could be any current directory from where the script is called?
+  #>
+  [string]$BACKUP_BASE_DIR      = ".\Backup\"                           # Or "${SCRIPT_DIR}Backup\"?
+  [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"                # Or "${SCRIPT_DIR}Backup\%Username%\"?"
+  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\" # Or "${SCRIPT_DIR}Backup\%Username%\%Computername%\"?
 
   # Other mandatory directories
-  [string]$BACKUP_TEMPLATES_DIR = "${SCRIPT_DIR}templates\"
-  [string]$BACKUP_JOB_DIR               #TODO: Can we find a standard in case the user doesn't specify this?
+  [string]$BACKUP_TEMPLATES_DIR = "${SCRIPT_DIR}templates\"             # Note: Must be ${SCRIPT_DIR} not "."!
+  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"  # Or "${SCRIPT_DIR}Backup\%Username%\robocopy-jobs\"?
 
   # Optional directories
   #TODO: Make sure this works as intended!
-  [string]$TRACE_LOG_DIR = "%Temp%"
+  [string]$TRACE_LOG_DIR        = "%Temp%"
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
     # List of properties that are definitely directories
-    #TODO: Update list
     #TODO: Make this automatic? Adding values manually is error-prone!
     $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR', 'TRACE_LOG_DIR')
 
@@ -123,17 +133,17 @@ class DirectorySettings {
 class FileSettings {
   # Files for the backup itself
   [string]$DIRLIST_TEMPLATE = "${SCRIPT_DIR}templates\dir-list-template.conf"
-  [string]$BACKUP_DIRLIST   # e.g. C:\Backup\<username>\<Computername>\dir-list.conf
+  [string]$BACKUP_DIRLIST   = "dir-list.conf"     # e.g. .\Backup\<username>\<Computername>\dir-list.conf
 
   # Templates for jobtype
-  [string]$JOB_TEMPLATE_INCR = "${SCRIPT_DIR}templates\incr_backup.RCJ"
-  [string]$JOB_TEMPLATE_FULL = "${SCRIPT_DIR}templates\full_backup.RCJ"
-  [string]$JOB_TEMPLATE_PURGE = "${SCRIPT_DIR}templates\purge.RCJ"
+  [string]$JOB_TEMPLATE_INCR    = "${SCRIPT_DIR}templates\incr_backup.RCJ"
+  [string]$JOB_TEMPLATE_FULL    = "${SCRIPT_DIR}templates\full_backup.RCJ"
+  [string]$JOB_TEMPLATE_PURGE   = "${SCRIPT_DIR}templates\purge.RCJ"
   [string]$JOB_TEMPLATE_ARCHIVE = "${SCRIPT_DIR}templates\only_archive_attr.RCJ"
 
   # Template for job settings
   [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS = "${SCRIPT_DIR}templates\global_exclusions.RCJ"
-  [string]$JOB_TEMPLATE_LOGGING = "${SCRIPT_DIR}templates\logging.RCJ"
+  [string]$JOB_TEMPLATE_LOGGING           = "${SCRIPT_DIR}templates\logging.RCJ"
 
   # Optional files
   [string]$ROBOCOPY = "robocopy"        # Fallback: Windows' own robocopy
@@ -142,10 +152,12 @@ class FileSettings {
 # Container for logging-related settings
 class LoggingSettings {
   # Standard logfile
-  [string]$BACKUP_LOGFILE = "Backup.log"          # e.g. C:\Backup\<username>\<Computername>\Backup.log
+  #TODO: Rename to BACKUP_LOGFILE_NAME?
+  [string]$BACKUP_LOGFILE = "Backup.log"          # e.g. .\Backup\<username>\<Computername>\Backup.log
 
   # Error log
-  [string]$ERROR_LOGFILE = "Error.log"            # e.g. C:\Backup\<username>\<Computername>\Error.log
+  #TODO: Rename to ERROR_LOGFILE_NAME?
+  [string]$ERROR_LOGFILE = "Error.log"            # e.g. .\Backup\<username>\<Computername>\Error.log
 
   # Trace log
   [bool]$ENABLE_TRACE_LOG = $true
@@ -195,6 +207,7 @@ class ScriptConfig {
 
 function Get-Container {
   # Returns the container (inside the Configuration Object) for the specified section in the INI file.
+  # Returns $null if the section is unrecognized.
   [CmdletBinding()]
   [OutputType([string])]
   param (
@@ -203,13 +216,9 @@ function Get-Container {
   )
 
   # Translation (INI Header -> Class Property)
-  #FIXME: Handle wrong/unexpected INI sections
-  #TODO: Add Pester test for wrong/unexpected INI sections
   $SectionMap = @{
     "General"               = "General"
-    #TODO: Is this case-sensitive: "Mandatory Directories" matches [Mandatory directories]?
     "Mandatory Directories" = "Directories"
-    #TODO: The INI file has [Mandatory directories] and [Directories] <-- 2x directories!
     "Directories"           = "Directories"
     "Files"                 = "Files"
     "Logging Settings"      = "Logging"
@@ -233,7 +242,7 @@ function Read-Config {
   if (-not (Test-Path $IniFile)) { return $Config }
 
   $IniFileContent = Get-Content "${IniFile}"
-  $TargetProperty = $null
+  $TargetContainer = $null
 
   # Temporarily disable -WhatIf to ensure the configuration is loaded into the script scope (PowerShell 5.1 workaround).
   $oldWhatIfPreference = $WhatIfPreference
@@ -244,17 +253,17 @@ function Read-Config {
     if ($Line -match '^\[(.+)\]$') {
       # Look up the code-friendly name using the human-friendly header
       $IniHeader = $Matches[1].Trim()
-      <#TODO: Find a better name for "TargetProperty"?
-        - The structure of the Config Object is like $Config.Container.Property = Value
-        - Maybe we should name $TargetProperty as $TargetContainer?
-      #>
-      $TargetProperty = Get-Container -IniHeader "${IniHeader}"
+      $TargetContainer = Get-Container -IniHeader "${IniHeader}"
+
+      if ($null -eq $TargetContainer) {
+        Write-WarningMsg "Unrecognized section in INI file: [$IniHeader]"
+      }
     }
-    elseif ($Line -match '^(.+?)=(.+)$' -and $TargetProperty) {
+    elseif ($Line -match '^(.+?)=(.+)$' -and $TargetContainer) {
       $key = $Matches[1].Trim()
       $val = $Matches[2].Trim()
 
-      $SubObject = $Config.$TargetProperty
+      $SubObject = $Config.$TargetContainer
 
       # Use PowerShell's hidden 'PSObject' to check if the property exists
       if ($SubObject.PSObject.Properties[$key] -and -not [string]::IsNullOrWhiteSpace($val)) {
