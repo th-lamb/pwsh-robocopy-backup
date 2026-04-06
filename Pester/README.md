@@ -2,13 +2,20 @@
 
 Test files for the [Pester test framework](https://pester.dev/).
 
-Call tests using:
+Call tests from the project root folder using:
 
-    Invoke-Pester .
+```PowerShell
+Invoke-Pester .
+Invoke-Pester -Output Detailed .
+# Individual test file
+Invoke-Pester -Output Detailed '.\Pester\tests\lib\inifile-functions\Get-Container.Tests.ps1'
+```
 
-or
+Or use the utility script:
 
-    Invoke-Pester -Output Detailed .
+```PowerShell
+.\scripts\run-tests.ps1
+```
 
 Example output:
 
