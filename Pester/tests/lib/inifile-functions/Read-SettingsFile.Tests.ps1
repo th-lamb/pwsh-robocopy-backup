@@ -19,24 +19,26 @@ BeforeAll {
 
 
 Describe 'Read-SettingsFile' {
-  It 'Reads strings as string.' {
-    $var_name = "STRING_VALUE_1"
-    $expected = "String"
+  Context 'Correct Usage' {
+    It 'Reads strings as string.' {
+      $var_name = "STRING_VALUE_1"
+      $expected = "String"
 
-    Read-SettingsFile "${ini_file}"
+      Read-SettingsFile "${ini_file}"
 
-    $result = $( Get-Variable "${var_name}" -ValueOnly ).GetType().Name
-    $result | Should -Be "${expected}"
-  }
+      $result = $( Get-Variable "${var_name}" -ValueOnly ).GetType().Name
+      $result | Should -Be "${expected}"
+    }
 
-  It 'Reads int values as Int32.' {
-    $var_name = "INT_VALUE_1"
-    $expected = "Int32"
+    It 'Reads int values as Int32.' {
+      $var_name = "INT_VALUE_1"
+      $expected = "Int32"
 
-    Read-SettingsFile "${ini_file}"
+      Read-SettingsFile "${ini_file}"
 
-    $result = $( Get-Variable "${var_name}" -ValueOnly ).GetType().Name
-    $result | Should -Be "${expected}"
+      $result = $( Get-Variable "${var_name}" -ValueOnly ).GetType().Name
+      $result | Should -Be "${expected}"
+    }
   }
 
   Context 'Wrong Usage' {
