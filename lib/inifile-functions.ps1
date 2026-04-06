@@ -157,15 +157,11 @@ class DirectorySettings {
   [string]$BACKUP_TEMPLATES_DIR = "${SCRIPT_DIR}templates\"             # Note: Must be ${SCRIPT_DIR} not "."!
   [string]$BACKUP_JOB_DIR = ".\Backup\%Username%\robocopy-jobs\"  # Or "${SCRIPT_DIR}Backup\%Username%\robocopy-jobs\"?
 
-  # Optional directories
-  #TODO: Make sure this works as intended!
-  [string]$TRACE_LOG_DIR = "%Temp%"
-
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
     # List of properties that are definitely directories
     #TODO: Make this automatic? Adding values manually is error-prone!
-    $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR', 'TRACE_LOG_DIR')
+    $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR')
 
     foreach ($Prop in $DirProperties) {
       if (-not [string]::IsNullOrWhiteSpace($this.$Prop)) {
@@ -213,6 +209,18 @@ class LoggingSettings {
   [string]$TRACE_LOGFILE_NAME = "Trace.log"       # e.g. C:\Windows\Temp\Trace.log
   [bool]$UPLOAD_TRACE_TO_BACKUP_DIR = $true
 
+  # Method to ensure all paths are formatted correctly.
+  [void] Normalize() {
+    # List of properties that are definitely directories
+    $DirProperties = @('TRACE_LOG_LOCAL_DIR')
+
+    foreach ($Prop in $DirProperties) {
+      if (-not [string]::IsNullOrWhiteSpace($this.$Prop)) {
+        $this.$Prop = (Join-Path $this.$Prop "").TrimEnd('\') + '\'
+      }
+    }
+  }
+
   #TODO: Log rotation?
   # [int]$MaxAgeDays = 14
 }
@@ -242,6 +250,12 @@ class ScriptConfig {
   [LoggingSettings]$Logging = [LoggingSettings]::new()
   [JobSettings]$Jobs = [JobSettings]::new()
   [ArchivingSettings]$Archiving = [ArchivingSettings]::new()
+
+  # Method to ensure all paths in all sub-containers are formatted correctly.
+  [void] Normalize() {
+    $this.Directories.Normalize()
+    $this.Logging.Normalize()
+  }
 
   #TODO: You can still have "top-level" settings here if needed
   # [string]$Version = "1.0.0"
@@ -345,13 +359,13 @@ function Read-Config {
     }
 
     # Ensure paths are normalized
-    <# FIXME: Final call of `$Config.Directories.Normalize()` might be too late for combined variables!
+    <# FIXME: Final call of `$Config.Normalize()` might be too late for combined variables!
       Example: the user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and re-uses
       this variable to for in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
-      When `$Config.Directories.Normalize()` is called, the expanded paths are already assembled and
+      When `$Config.Normalize()` is called, the expanded paths are already assembled and
       the *missing "\" is in the middle* of the string!
     #>
-    $Config.Directories.Normalize()
+    $Config.Normalize()
   }
   finally {
     $WhatIfPreference = $oldWhatIfPreference
