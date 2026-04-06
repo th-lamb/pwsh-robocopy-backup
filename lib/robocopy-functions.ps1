@@ -6,6 +6,7 @@
 
 
 
+#TODO: What does "Flags() ..." do?
 # https://pshirwin.wordpress.com/2016/03/18/robocopy-exitcodes-the-powershell-way/
 [Flags()] Enum RoboCopyExitCodes {
   NoChange = 0

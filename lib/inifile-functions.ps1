@@ -1,5 +1,6 @@
 #region Helper functions
 
+#TODO: Use for new function Read-Config
 function Write-FormattedValueList {
   [CmdletBinding()]
   param (
@@ -58,6 +59,28 @@ function Test-IsNumeric ($Value) {
 
 
 #region Configuration Object
+
+<# TODO: Create enum for all the containers?
+  GeneralSettings -> General,
+  DirectorySettings -> Directories,
+  ...,
+  ArchivingSettings -> Archiving
+
+  To be used for correctness **and consistency** in:
+  - class ScriptConfig?
+  - function Get-Container?
+  - more?
+#>
+# enum ConfigContainers {
+#   GeneralSettings = "General"
+#   DirectorySettings = "Directories"
+#   FileSettings = "Files"
+#   LoggingSettings = "Logging"
+#   JobSettings = "Jobs"
+#   ArchivingSettings = "Archiving"
+# }
+
+
 
 # Container for general settings
 class GeneralSettings {
@@ -168,20 +191,20 @@ class ScriptConfig {
 
 
 
-function Read-Config {
+#region Read-Config
+
+function Get-Container {
+  # Returns the container (inside the Configuration Object) for the specified section in the INI file.
   [CmdletBinding()]
+  [OutputType([string])]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$IniFile
+    [string]$IniHeader
   )
 
-  #FIXME: Consider $WhatIfPreference = $oldWhatIfPreference as in the old "Read-SettingsFile" function?
-
-  $Config = [ScriptConfig]::new()
-  #TODO: Do we want to return the (non-populated) container with standard values?
-  if (-not (Test-Path $IniFile)) { return $Config }
-
-  # 3. The Translation Book (INI Header -> Class Property)
+  # Translation (INI Header -> Class Property)
+  #FIXME: Handle wrong/unexpected INI sections
+  #TODO: Add Pester test for wrong/unexpected INI sections
   $SectionMap = @{
     "General"               = "General"
     #TODO: Is this case-sensitive: "Mandatory Directories" matches [Mandatory directories]?
@@ -190,45 +213,68 @@ function Read-Config {
     "Directories"           = "Directories"
     "Files"                 = "Files"
     "Logging Settings"      = "Logging"
-    "Job settings"          = "Jobs"
-    "Archiving settings"    = "Archiving"
+    "Job Settings"          = "Jobs"
+    "Archiving Settings"    = "Archiving"
   }
 
-  $content = Get-Content $IniFile
-  $targetProperty = $null
+  return $SectionMap[$iniHeader]
+}
 
-  foreach ($line in $content) {
-    $line = $line.Trim()
-    if ($line -match '^\[(.+)\]$') {
+function Read-Config {
+  #TODO: Check $WhatIfPreference handling in this function
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [String]$IniFile
+  )
+
+  $Config = [ScriptConfig]::new()
+  #TODO: Do we want to return the (non-populated) container with standard values?
+  if (-not (Test-Path $IniFile)) { return $Config }
+
+  $IniFileContent = Get-Content "${IniFile}"
+  $TargetProperty = $null
+
+  # Temporarily disable -WhatIf to ensure the configuration is loaded into the script scope (PowerShell 5.1 workaround).
+  $oldWhatIfPreference = $WhatIfPreference
+  $WhatIfPreference = $false
+
+  foreach ($Line in $IniFileContent) {
+    $Line = $Line.Trim()
+    if ($Line -match '^\[(.+)\]$') {
       # Look up the code-friendly name using the human-friendly header
-      $iniHeader = $Matches[1].Trim()
-      $targetProperty = $SectionMap[$iniHeader]
+      $IniHeader = $Matches[1].Trim()
+      <#TODO: Find a better name for "TargetProperty"?
+        - The structure of the Config Object is like $Config.Container.Property = Value
+        - Maybe we should name $TargetProperty as $TargetContainer?
+      #>
+      $TargetProperty = Get-Container -IniHeader "${IniHeader}"
     }
-    elseif ($line -match '^(.+?)=(.+)$' -and $targetProperty) {
+    elseif ($Line -match '^(.+?)=(.+)$' -and $TargetProperty) {
       $key = $Matches[1].Trim()
       $val = $Matches[2].Trim()
 
-      $subObject = $Config.$targetProperty
+      $SubObject = $Config.$TargetProperty
 
       # Use PowerShell's hidden 'PSObject' to check if the property exists
-      if ($subObject.PSObject.Properties[$key] -and -not [string]::IsNullOrWhiteSpace($val)) {
-        $prop = $subObject.PSObject.Properties[$key]
+      if ($SubObject.PSObject.Properties[$key] -and -not [string]::IsNullOrWhiteSpace($val)) {
+        $prop = $SubObject.PSObject.Properties[$key]
 
         # Handle Booleans correctly
         if ($prop.TypeNameOfValue -eq 'System.Boolean') {
-          if ($val -match '^(true|1|yes|on)$') { $subObject.$key = $true }
-          elseif ($val -match '^(false|0|no|off)$') { $subObject.$key = $false }
+          if ($val -match '^(true|1|yes|on)$') { $SubObject.$key = $true }
+          elseif ($val -match '^(false|0|no|off)$') { $SubObject.$key = $false }
         }
         # Expand paths for strings
         elseif ($prop.TypeNameOfValue -eq 'System.String') {
           # Temporarily set a local variable so that cross-references in the INI file
           # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
-          $subObject.$key = Get-ExpandedPath $val
-          Set-Variable -Name $key -Value $subObject.$key -Scope Local
+          $SubObject.$key = Get-ExpandedPath $val
+          Set-Variable -Name $key -Value $SubObject.$key -Scope Local
         }
         else {
-          $subObject.$key = $val
-          Set-Variable -Name $key -Value $subObject.$key -Scope Local
+          $SubObject.$key = $val
+          Set-Variable -Name $key -Value $SubObject.$key -Scope Local
         }
       }
     }
@@ -243,11 +289,24 @@ function Read-Config {
   #>
   $Config.Directories.Normalize()
 
+  $WhatIfPreference = $oldWhatIfPreference
+
+  <# TODO: Output new settings
+    - As in old function Read-SettingsFile?
+    - Just "print" the Configuration Object?
+  #>
+  # if ($VarNames.Count -gt 0) {
+  #   Write-FormattedValueList $VarNames $VarValues
+  # }
+
   return $Config
 }
 
+#endregion Read-Config #########################################################
 
 
+
+#TODO: Remove the old function
 function Read-SettingsFile {
   [CmdletBinding()]
   param (
