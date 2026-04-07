@@ -305,7 +305,7 @@ function Read-Config {
   $Config = [ScriptConfig]::new()
 
   if (-not (Test-Path $IniFile)) {
-    Write-WarningMsg "Settings file not found: [$IniFile]. Using default values."
+    Write-WarningMsg "Settings file not found: [${IniFile}]. Using default values."
     return $Config
   }
 
@@ -361,9 +361,9 @@ function Read-Config {
     # Ensure paths are normalized
     <# FIXME: Final call of `$Config.Normalize()` might be too late for combined variables!
       Example: the user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and re-uses
-      this variable to for in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
-      When `$Config.Normalize()` is called, the expanded paths are already assembled and
-      the *missing "\" is in the middle* of the string!
+      this variable in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
+      When `$Config.Normalize()` is called, the expanded paths are already assembled and the
+      *missing "\" is in the middle* of the string!
     #>
     $Config.Normalize()
   }
