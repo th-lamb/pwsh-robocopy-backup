@@ -348,6 +348,10 @@ function Read-Config {
             # Temporarily set a local variable so that cross-references in the INI file
             # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
             $SubObject.$key = Get-ExpandedPath $val
+
+            # Fix missing backslashes BEFORE the variable is used for further expansion
+            $Config.Normalize()
+
             Set-Variable -Name $key -Value $SubObject.$key -Scope Local
           }
           else {
@@ -358,13 +362,7 @@ function Read-Config {
       }
     }
 
-    # Ensure paths are normalized
-    <# FIXME: Final call of `$Config.Normalize()` might be too late for combined variables!
-      Example: the user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and re-uses
-      this variable in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
-      When `$Config.Normalize()` is called, the expanded paths are already assembled and the
-      *missing "\" is in the middle* of the string!
-    #>
+    # Ensure paths are finally normalized (in case no strings were updated in the last iterations)
     $Config.Normalize()
   }
   finally {
