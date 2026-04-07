@@ -47,23 +47,21 @@ Describe 'Read-Config' {
       $Config.Directories.BACKUP_BASE_DIR | Should -Be "${ExpectedBackupBaseDir}"
     }
 
-    <#TODO: Test missing backslash in the middle. Example:
-      - The user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and
-      - re-uses this variable in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
-      - When `$Config.Normalize()` is called, the expanded paths are already assembled and
-        the *missing "\" is in the middle* of the string!
-    #>
-    # It 'Normalizes combined paths with missing "\" in the middle' {
-    #   $ResourcesDir = "${ProjectRoot}\Pester\resources\lib\inifile-functions\Read-Config"
-    #   $IniFile = "${ResourcesDir}\INI-without-backslash-in-middle.ini"
+    It 'Normalizes combined paths with missing backslash in the middle' {
+      <# Tests missing backslash in the middle. Example:
+        - The user defines `BACKUP_BASE_DIR=C:\Backups` (without trailing backslash) and
+        - re-uses this variable in `BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}%USERNAME%\`.
+      #>
+      $ResourcesDir = "${ProjectRoot}\Pester\resources\lib\inifile-functions\Read-Config"
+      $IniFile = "${ResourcesDir}\INI-without-backslash-in-middle.ini"
 
-    #   $ExpectedBackupUserBaseDir = "C:\Backups\testuser\"
+      $ExpectedBackupUserBaseDir = "C:\Backups\testuser\"
 
-    #   $Config = Read-Config -IniFile $IniFile
-    #   $Config.Normalize()
+      $Config = Read-Config -IniFile $IniFile
+      $Config.Normalize()
 
-    #   $Config.Directories.BACKUP_USER_BASE_DIR | Should -Be "${ExpectedBackupUserBaseDir}"
-    # }
+      $Config.Directories.BACKUP_USER_BASE_DIR | Should -Be "${ExpectedBackupUserBaseDir}"
+    }
   }
 
   Context 'Invalid Parameters' {
