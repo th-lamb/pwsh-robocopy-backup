@@ -60,10 +60,6 @@ function Write-FormattedConfigObject {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    <#FIXME: Pester tests fail with [ScriptConfig]$ConfigObject
-      - While running `Invoke-Pester -Output Detailed '.\Pester\tests\lib\inifile-functions\Write-FormattedConfigObject.Tests.ps1'` still works,
-      - Running *all* Pester tests using `scripts\run-tests.ps1 -CI` doesn't. See 'test-results\testResults.xml'.
-    #>
     [ScriptConfig]$ConfigObject
   )
 

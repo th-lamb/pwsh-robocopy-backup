@@ -1,31 +1,26 @@
 #region Configuration Object
 
-#TODO: Add Pester tests to test the default values!
+#TODO: Add Pester tests to test the default values?
 
 # Container for general settings
 class GeneralSettings {
-  [int]$__VERBOSE = 6         # Info
+  [int]$__VERBOSE = 6 # Info
 }
 
 # Container for directory-related settings
 class DirectorySettings {
   # Directories for the backup itself
-  <#TODO: Define default values for these 3? Example:
-    - Base Dir            : .\Backup\   (relative path below the script dir)
-    - User Base Dir       : .\Backup\%Username%
-    - (actual) Backup Dir : .\Backup\%Username%\%Computername%
-  #>
   <#TODO: Use . or ${SCRIPT_DIR}?
     - ${SCRIPT_DIR} should always be the script dir.
     - . could be any current directory from where the script is called?
   #>
-  [string]$BACKUP_BASE_DIR = ".\Backup\"                           # Or "${SCRIPT_DIR}Backup\"?
+  [string]$BACKUP_BASE_DIR      = ".\Backup\"                           # Or "${SCRIPT_DIR}Backup\"?
   [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"                # Or "${SCRIPT_DIR}Backup\%Username%\"?"
-  [string]$BACKUP_DIR = ".\Backup\%Username%\%Computername%\" # Or "${SCRIPT_DIR}Backup\%Username%\%Computername%\"?
+  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\" # Or "${SCRIPT_DIR}Backup\%Username%\%Computername%\"?
 
   # Other mandatory directories
   [string]$BACKUP_TEMPLATES_DIR = "${SCRIPT_DIR}templates\"             # Note: Must be ${SCRIPT_DIR} not "."!
-  [string]$BACKUP_JOB_DIR = ".\Backup\%Username%\robocopy-jobs\"  # Or "${SCRIPT_DIR}Backup\%Username%\robocopy-jobs\"?
+  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"  # Or "${SCRIPT_DIR}Backup\%Username%\robocopy-jobs\"?
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
@@ -46,13 +41,14 @@ class DirectorySettings {
 # Container for file-related settings
 class FileSettings {
   # Files for the backup itself
-  [string]$DIRLIST_TEMPLATE = "${SCRIPT_DIR}templates\dir-list-template.conf"
-  [string]$BACKUP_DIRLIST = "dir-list.conf"     # e.g. .\Backup\<username>\<Computername>\dir-list.conf
+  [string]$DIRLIST_TEMPLATE     = "${SCRIPT_DIR}templates\dir-list-template.conf"
+  #TODO: rename to "BACKUP_DIRLIST_NAME" to be more consistent?
+  [string]$BACKUP_DIRLIST       = "dir-list.conf" # e.g. .\Backup\<username>\<Computername>\dir-list.conf
 
   # Templates for jobtype
-  [string]$JOB_TEMPLATE_INCR = "${SCRIPT_DIR}templates\incr_backup.RCJ"
-  [string]$JOB_TEMPLATE_FULL = "${SCRIPT_DIR}templates\full_backup.RCJ"
-  [string]$JOB_TEMPLATE_PURGE = "${SCRIPT_DIR}templates\purge.RCJ"
+  [string]$JOB_TEMPLATE_INCR    = "${SCRIPT_DIR}templates\incr_backup.RCJ"
+  [string]$JOB_TEMPLATE_FULL    = "${SCRIPT_DIR}templates\full_backup.RCJ"
+  [string]$JOB_TEMPLATE_PURGE   = "${SCRIPT_DIR}templates\purge.RCJ"
   [string]$JOB_TEMPLATE_ARCHIVE = "${SCRIPT_DIR}templates\only_archive_attr.RCJ"
 
   # Template for job settings
@@ -60,7 +56,7 @@ class FileSettings {
   [string]$JOB_TEMPLATE_LOGGING = "${SCRIPT_DIR}templates\logging.RCJ"
 
   # Optional files
-  [string]$ROBOCOPY = "robocopy"        # Fallback: Windows' own robocopy
+  [string]$ROBOCOPY = "robocopy"  # Fallback: Windows' own robocopy
 }
 
 # Container for logging-related settings
@@ -99,27 +95,27 @@ class LoggingSettings {
 class JobSettings {
   # Jobtype selection by the user
   [int]$JOB_TYPE_SELECTION_MAX_WAITING_TIME_S = 30
-  [string]$DEFAULT_JOB_TYPE = "Incremental"
+  [string]$DEFAULT_JOB_TYPE                   = "Incremental"
 
   # Filename schemes
-  [string]$JOB_FILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.RCJ"
-  [string]$JOB_LOGFILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.log"
+  [string]$JOB_FILE_NAME_SCHEME     = "${COMPUTERNAME}-Job*.RCJ"
+  [string]$JOB_LOGFILE_NAME_SCHEME  = "${COMPUTERNAME}-Job*.log"
 }
 
 # Container for archiving-related settings
 class ArchivingSettings {
-  [string]$ARCHIVE_NAME_SCHEME = "${COMPUTERNAME}-Jobs-*.zip"
-  [int]$MAX_ARCHIVES_COUNT = 10
+  [string]$ARCHIVE_NAME_SCHEME      = "${COMPUTERNAME}-Jobs-*.zip"
+  [int]$MAX_ARCHIVES_COUNT          = 10
 }
 
 # Main container for all settings
 class ScriptConfig {
-  [GeneralSettings]$General = [GeneralSettings]::new()
+  [GeneralSettings]$General       = [GeneralSettings]::new()
   [DirectorySettings]$Directories = [DirectorySettings]::new()
-  [FileSettings]$Files = [FileSettings]::new()
-  [LoggingSettings]$Logging = [LoggingSettings]::new()
-  [JobSettings]$Jobs = [JobSettings]::new()
-  [ArchivingSettings]$Archiving = [ArchivingSettings]::new()
+  [FileSettings]$Files            = [FileSettings]::new()
+  [LoggingSettings]$Logging       = [LoggingSettings]::new()
+  [JobSettings]$Jobs              = [JobSettings]::new()
+  [ArchivingSettings]$Archiving   = [ArchivingSettings]::new()
 
   # Method to ensure all paths in all sub-containers are formatted correctly.
   [void] Normalize() {
@@ -127,7 +123,7 @@ class ScriptConfig {
     $this.Logging.Normalize()
   }
 
-  #TODO: You can still have "top-level" settings here if needed
+  # "top-level" settings if needed
   # [string]$Version = "1.0.0"
 }
 
