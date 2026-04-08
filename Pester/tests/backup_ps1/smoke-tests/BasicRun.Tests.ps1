@@ -1,13 +1,35 @@
-﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
+﻿param(
+    [ValidateSet("powershell.exe", "pwsh.exe")]
+    [string]$PowerShellExecutable = "powershell.exe"
+)
+
+$script:PowerShellExecutableToUse = if ([string]::IsNullOrWhiteSpace($PowerShellExecutable)) {
+    "powershell.exe"
+} else {
+    $PowerShellExecutable
+}
+
+# Pester can execute test blocks in scopes where script parameters are not directly visible.
+# Mirror the selected executable into an environment variable for robust access in test blocks.
+$env:BASICRUN_TEST_ENGINE = $script:PowerShellExecutableToUse
+
+$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
+
+try {
+    Import-Module Pester -MinimumVersion 5.0 -ErrorAction Stop
+}
+catch {
+    throw "Pester v5.0+ is required to run this test file. Install with: Install-Module Pester -MinimumVersion 5.0 -Scope CurrentUser -Force"
+}
 
 # Smoke Test for backup.ps1
 # This test executes the script in a sandbox and verifies its behavior using -WhatIf.
 
 Describe "backup.ps1 Smoke Test" {
-    $SandboxRoot = $null
-    $smokeTestPs1 = $null
-    $smokeTestIni = $null
-    $smokeTestConf = $null
+    $script:SandboxRoot = $null
+    $script:smokeTestPs1 = $null
+    $script:smokeTestIni = $null
+    $script:smokeTestConf = $null
 
     #TODO: Extract functions like "path-resolution" to be re-used by all smoke tests?
     BeforeAll {
@@ -25,33 +47,33 @@ Describe "backup.ps1 Smoke Test" {
             throw "Could not find ProjectRoot (searching for backup.ps1 upwards from $PSScriptRoot)"
         }
 
-        $SandboxRoot = Join-Path $ProjectRoot "Pester\resources\backup_ps1\smoke-tests\BasicRun"
-        if (-not (Test-Path $SandboxRoot)) {
-            throw "Sandbox directory not found: $SandboxRoot"
+        $script:SandboxRoot = Join-Path $ProjectRoot "Pester\resources\backup_ps1\smoke-tests\BasicRun"
+        if (-not (Test-Path $script:SandboxRoot)) {
+            throw "Sandbox directory not found: $script:SandboxRoot"
         }
-        $SandboxRoot = (Get-Item $SandboxRoot).FullName
+        $script:SandboxRoot = (Get-Item $script:SandboxRoot).FullName
 
         # --- CRITICAL SAFETY CHECK ---
-        if ($SandboxRoot -eq "C:\" -or $SandboxRoot -eq "C:\Windows" -or -not $SandboxRoot.StartsWith($ProjectRoot)) {
-            throw "SandboxRoot resolution failed or is outside ProjectRoot: $SandboxRoot"
+        if ($script:SandboxRoot -eq "C:\" -or $script:SandboxRoot -eq "C:\Windows" -or -not $script:SandboxRoot.StartsWith($ProjectRoot)) {
+            throw "SandboxRoot resolution failed or is outside ProjectRoot: $script:SandboxRoot"
         }
 
-        Write-Host "Sandbox Root: $SandboxRoot"
+        Write-Host "Sandbox Root: $script:SandboxRoot"
 
-        $smokeTestPs1 = Join-Path $SandboxRoot "smoke-test.ps1"
-        $smokeTestIni = Join-Path $SandboxRoot "smoke-test.ini"
+        $script:smokeTestPs1 = Join-Path $script:SandboxRoot "smoke-test.ps1"
+        $script:smokeTestIni = Join-Path $script:SandboxRoot "smoke-test.ini"
         #TODO: Read $smokeTestConf from the inifile, not hardcoded?
-        $smokeTestConf = Join-Path $SandboxRoot "smoke-test-dir-list.conf"
+        $script:smokeTestConf = Join-Path $script:SandboxRoot "smoke-test-dir-list.conf"
 
         # --- PRE-TEST CLEANUP ---
         # Remove artifacts from previous runs so we start fresh,
         # but they remain available for inspection after a test.
         $artifacts = @(
-            $smokeTestPs1,
-            $smokeTestIni,
-            $smokeTestConf,
-            (Join-Path $SandboxRoot "destination"),
-            (Join-Path $SandboxRoot "stdout.txt")
+            $script:smokeTestPs1,
+            $script:smokeTestIni,
+            $script:smokeTestConf,
+            (Join-Path $script:SandboxRoot "destination"),
+            (Join-Path $script:SandboxRoot "stdout.txt")
         )
         foreach ($path in $artifacts) {
             if (Test-Path $path) {
@@ -60,30 +82,30 @@ Describe "backup.ps1 Smoke Test" {
         }
 
         # 1. Prepare the sandbox script
-        Copy-Item (Join-Path $ProjectRoot "backup.ps1") -Destination $smokeTestPs1 -Force
+        Copy-Item (Join-Path $ProjectRoot "backup.ps1") -Destination $script:smokeTestPs1 -Force
 
         # 2. Prepare the sandbox ini file
-        $iniSource = Join-Path $SandboxRoot "test-backup.ini"
+        $iniSource = Join-Path $script:SandboxRoot "test-backup.ini"
         if (Test-Path $iniSource) {
-            Copy-Item $iniSource -Destination $smokeTestIni -Force
+            Copy-Item $iniSource -Destination $script:smokeTestIni -Force
         } else {
-            throw "test-backup.ini not found in $SandboxRoot"
+            throw "test-backup.ini not found in $script:SandboxRoot"
         }
 
         # 3. Prepare the sandbox dir-list
-        $dirListSource = Join-Path $SandboxRoot "test-dir-list.conf"
+        $dirListSource = Join-Path $script:SandboxRoot "test-dir-list.conf"
         if (Test-Path $dirListSource) {
-            Copy-Item $dirListSource -Destination $smokeTestConf -Force
+            Copy-Item $dirListSource -Destination $script:smokeTestConf -Force
         } else {
-            throw "test-dir-list.conf not found in $SandboxRoot"
+            throw "test-dir-list.conf not found in $script:SandboxRoot"
         }
 
         # 4. Prepare the sandbox lib/ and templates/ folder.
-        $libPath = Join-Path $SandboxRoot "lib"
+        $libPath = Join-Path $script:SandboxRoot "lib"
         $null = New-Item -ItemType Directory -Path $libPath -Force
         Remove-Item -Path "$libPath\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-        $templatesPath = Join-Path $SandboxRoot "templates"
+        $templatesPath = Join-Path $script:SandboxRoot "templates"
         $null = New-Item -ItemType Directory -Path $templatesPath -Force
         Remove-Item -Path "$templatesPath\*" -Recurse -Force -ErrorAction SilentlyContinue
 
@@ -103,7 +125,7 @@ Describe "backup.ps1 Smoke Test" {
             Copy-Item -Destination $templatesPath -Force
 
         # 5. Create the sandbox source/ folder and some dummy files.
-        $sourcePath = Join-Path $SandboxRoot "source"
+        $sourcePath = Join-Path $script:SandboxRoot "source"
         $sourceDir = New-Item -ItemType Directory -Path $sourcePath -Force
         Remove-Item -Path "$sourcePath\*" -Recurse -Force -ErrorAction SilentlyContinue
 
@@ -114,16 +136,24 @@ Describe "backup.ps1 Smoke Test" {
     }
 
     It "Runs successfully with -SkipExecution and simulates the workflow" {
-        $stdoutFile = Join-Path $SandboxRoot "stdout.txt"
-        $stderrFile = Join-Path $SandboxRoot "stderr.txt"
+        $projectRootForIt = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
+        $sandboxRootForIt = Join-Path $projectRootForIt "Pester\resources\backup_ps1\smoke-tests\BasicRun"
+        $smokeTestPs1ForIt = Join-Path $sandboxRootForIt "smoke-test.ps1"
+        $stdoutFile = Join-Path $sandboxRootForIt "stdout.txt"
+        $stderrFile = Join-Path $sandboxRootForIt "stderr.txt"
 
-        # Act: Run the script as a separate process and capture output
+        # Act: Run the script as a separate process and capture output.
         # We use -SkipExecution instead of -WhatIf to allow the script to actually create job files in the sandbox.
-        # Note: The smoke test currently uses "powershell.exe" (Windows PowerShell 5.1) for execution,
-        # but the script is designed to be compatible with "pwsh.exe" (PowerShell 7+) as well.
-        $process = Start-Process -FilePath "powershell.exe" `
-            -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$smokeTestPs1`"", "-SkipExecution", "-NonInteractive" `
-            -WorkingDirectory $SandboxRoot `
+        # The executable is configurable to validate Windows PowerShell 5.1 and PowerShell 7+.
+        $powerShellExecutableForIt = if ([string]::IsNullOrWhiteSpace($env:BASICRUN_TEST_ENGINE)) {
+            "powershell.exe"
+        } else {
+            $env:BASICRUN_TEST_ENGINE
+        }
+
+        $process = Start-Process -FilePath $powerShellExecutableForIt `
+            -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$smokeTestPs1ForIt`"", "-SkipExecution", "-NonInteractive" `
+            -WorkingDirectory $sandboxRootForIt `
             -Wait -PassThru -NoNewWindow `
             -RedirectStandardOutput $stdoutFile `
             -RedirectStandardError $stderrFile

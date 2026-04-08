@@ -59,8 +59,26 @@ If you add new command-line parameters to `backup.ps1`, consider adding a new `I
 To run only the smoke test:
 
 ```powershell
-Invoke-Pester -Path "Pester\tests\backup_ps1\SmokeTest.Tests.ps1"
+Invoke-Pester -Path "Pester\tests\backup_ps1\smoke-tests\BasicRun.Tests.ps1"
 ```
+
+To explicitly validate both engines, run the test script twice and pass the executable used by `Start-Process`:
+
+```powershell
+# Windows PowerShell 5.1 host + execution engine
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\Pester\tests\backup_ps1\smoke-tests\BasicRun.Tests.ps1" -PowerShellExecutable "powershell.exe"
+
+# PowerShell 7+ host + execution engine
+pwsh.exe -NoProfile -ExecutionPolicy Bypass -File ".\Pester\tests\backup_ps1\smoke-tests\BasicRun.Tests.ps1" -PowerShellExecutable "pwsh.exe"
+```
+
+Note: This test file requires **Pester 5+** in the host shell. If Windows PowerShell 5.1 only has the built-in Pester 3.x, install/update Pester in that shell first:
+
+```powershell
+Install-Module Pester -MinimumVersion 5.0 -Scope CurrentUser -Force -SkipPublisherCheck
+```
+
+`-SkipPublisherCheck` is needed on some Windows PowerShell 5.1 systems because the built-in Microsoft-signed Pester 3.4.0 and newer Pester 5.x have different publishers.
 
 To run all tests (including unit tests):
 
