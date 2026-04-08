@@ -1,134 +1,4 @@
-#region Helper functions
-
-#TODO: Use for new function Read-Config
-function Write-FormattedValueList {
-  [CmdletBinding()]
-  param (
-    [System.Collections.Generic.List[string]]$VarNames,
-    [System.Collections.Generic.List[string]]$VarValues
-  )
-
-  #region Check parameters
-  if ($PSBoundParameters.Count -ne 2) {
-    Write-Error "Write-FormattedValueList(): Wrong number of parameters provided!"
-    Throw "Wrong number of parameters provided!"
-  }
-
-  if ( $VarNames.Count -eq 0 ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter VarNames is an empty collection!"
-    return
-  }
-
-  if ( $VarValues.Count -eq 0 ) {
-    Write-WarningMsg "Write-FormattedValueList(): Parameter VarValues is an empty collection!"
-    return
-  }
-  #endregion Check parameters
-
-  $VarNamesSameLength = [System.Collections.Generic.List[string]]::new()
-
-  # Determine the longest variable name.
-  $MaxLength = $( $VarNames | Sort-Object length -desc | Select-Object -first 1 ).Length
-
-  # Make shorter variable names longer.
-  for ($i = 0; $i -lt $VarNames.Count; $i++) {
-    $VarName = $($VarNames[$i])
-    $NumSpacesToAdd = $( $MaxLength - $VarName.Length )
-    $VarNameWithSpaces = "${VarName}" + (" " * $NumSpacesToAdd)
-    $VarNamesSameLength.Add("${VarNameWithSpaces}")
-
-  }
-
-  # Show debug messages.
-  Write-DebugMsg "--------------------------------------------------------------------------------"
-  Write-DebugMsg "Values from the settings file:"
-  for ($i = 0; $i -lt $VarNames.Count; $i++) {
-    Write-DebugMsg "$($VarNamesSameLength[$i]): $($VarValues[$i])"
-  }
-  Write-DebugMsg "--------------------------------------------------------------------------------"
-
-}
-
-function Write-FormattedConfigObject {
-  <# Formats and writes the contents of a ScriptConfig object to the debug stream.
-    Iterates through all containers and their properties to show the final values.
-  #>
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    $ConfigObject
-  )
-
-  $VarNames = [System.Collections.Generic.List[string]]::new()
-  $VarValues = [System.Collections.Generic.List[string]]::new()
-
-  # Iterate through the containers (General, Directories, Files, etc.)
-  foreach ($ContainerProp in $ConfigObject.PSObject.Properties) {
-    $Container = $ContainerProp.Value
-    if ($null -ne $Container -and $Container.PSObject.Properties) {
-      foreach ($SettingProp in $Container.PSObject.Properties) {
-        $VarNames.Add($SettingProp.Name)
-        $VarValues.Add($SettingProp.Value -as [string])
-      }
-    }
-  }
-
-  if ($VarNames.Count -eq 0) {
-    Write-WarningMsg "Write-FormattedConfigObject(): No settings found in ConfigObject!"
-    return
-  }
-
-  # Determine the longest variable name for padding.
-  $MaxLength = 0
-  foreach ($Name in $VarNames) {
-    if ($Name.Length -gt $MaxLength) { $MaxLength = $Name.Length }
-  }
-
-  # Show debug messages.
-  Write-DebugMsg "--------------------------------------------------------------------------------"
-  Write-DebugMsg "Values from the configuration object:"
-  for ($i = 0; $i -lt $VarNames.Count; $i++) {
-    $VarName = $VarNames[$i]
-    $Value = $VarValues[$i]
-    $Padding = " " * ($MaxLength - $VarName.Length)
-    Write-DebugMsg "$($VarName)$($Padding): $($Value)"
-  }
-  Write-DebugMsg "--------------------------------------------------------------------------------"
-
-}
-
-# https://stackoverflow.com/a/10939609/5944475
-function Test-IsNumeric ($Value) {
-  return $Value -match "^[\d\.]+$"
-}
-
-#endregion Helper functions ####################################################
-
-
-
 #region Configuration Object
-
-<# TODO: Create enum for all the containers?
-  GeneralSettings -> General,
-  DirectorySettings -> Directories,
-  ...,
-  ArchivingSettings -> Archiving
-
-  To be used for correctness **and consistency** in:
-  - class ScriptConfig?
-  - function Get-Container?
-  - more?
-#>
-# enum ConfigContainers {
-#   GeneralSettings = "General"
-#   DirectorySettings = "Directories"
-#   FileSettings = "Files"
-#   LoggingSettings = "Logging"
-#   JobSettings = "Jobs"
-#   ArchivingSettings = "Archiving"
-# }
-
-
 
 #TODO: Add Pester tests to test the default values!
 
@@ -265,6 +135,118 @@ class ScriptConfig {
 
 
 
+#region Helper functions
+
+#TODO: Use for new function Read-Config
+function Write-FormattedValueList {
+  [CmdletBinding()]
+  param (
+    [System.Collections.Generic.List[string]]$VarNames,
+    [System.Collections.Generic.List[string]]$VarValues
+  )
+
+  #region Check parameters
+  if ($PSBoundParameters.Count -ne 2) {
+    Write-Error "Write-FormattedValueList(): Wrong number of parameters provided!"
+    Throw "Wrong number of parameters provided!"
+  }
+
+  if ( $VarNames.Count -eq 0 ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter VarNames is an empty collection!"
+    return
+  }
+
+  if ( $VarValues.Count -eq 0 ) {
+    Write-WarningMsg "Write-FormattedValueList(): Parameter VarValues is an empty collection!"
+    return
+  }
+  #endregion Check parameters
+
+  $VarNamesSameLength = [System.Collections.Generic.List[string]]::new()
+
+  # Determine the longest variable name.
+  $MaxLength = $( $VarNames | Sort-Object length -desc | Select-Object -first 1 ).Length
+
+  # Make shorter variable names longer.
+  for ($i = 0; $i -lt $VarNames.Count; $i++) {
+    $VarName = $($VarNames[$i])
+    $NumSpacesToAdd = $( $MaxLength - $VarName.Length )
+    $VarNameWithSpaces = "${VarName}" + (" " * $NumSpacesToAdd)
+    $VarNamesSameLength.Add("${VarNameWithSpaces}")
+
+  }
+
+  # Show debug messages.
+  Write-DebugMsg "--------------------------------------------------------------------------------"
+  Write-DebugMsg "Values from the settings file:"
+  for ($i = 0; $i -lt $VarNames.Count; $i++) {
+    Write-DebugMsg "$($VarNamesSameLength[$i]): $($VarValues[$i])"
+  }
+  Write-DebugMsg "--------------------------------------------------------------------------------"
+
+}
+
+function Write-FormattedConfigObject {
+  <# Formats and writes the contents of a ScriptConfig object to the debug stream.
+    Iterates through all containers and their properties to show the final values.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    <#FIXME: Pester tests fail with [ScriptConfig]$ConfigObject
+      - While running `Invoke-Pester -Output Detailed '.\Pester\tests\lib\inifile-functions\Write-FormattedConfigObject.Tests.ps1'` still works,
+      - Running *all* Pester tests using `scripts\run-tests.ps1 -CI` doesn't. See 'test-results\testResults.xml'.
+    #>
+    [ScriptConfig]$ConfigObject
+  )
+
+  $VarNames = [System.Collections.Generic.List[string]]::new()
+  $VarValues = [System.Collections.Generic.List[string]]::new()
+
+  # Iterate through the containers (General, Directories, Files, etc.)
+  foreach ($ContainerProp in $ConfigObject.PSObject.Properties) {
+    $Container = $ContainerProp.Value
+    if ($null -ne $Container -and $Container.PSObject.Properties) {
+      foreach ($SettingProp in $Container.PSObject.Properties) {
+        $VarNames.Add($SettingProp.Name)
+        $VarValues.Add($SettingProp.Value -as [string])
+      }
+    }
+  }
+
+  if ($VarNames.Count -eq 0) {
+    Write-WarningMsg "Write-FormattedConfigObject(): No settings found in ConfigObject!"
+    return
+  }
+
+  # Determine the longest variable name for padding.
+  $MaxLength = 0
+  foreach ($Name in $VarNames) {
+    if ($Name.Length -gt $MaxLength) { $MaxLength = $Name.Length }
+  }
+
+  # Show debug messages.
+  Write-DebugMsg "--------------------------------------------------------------------------------"
+  Write-DebugMsg "Values from the configuration object:"
+  for ($i = 0; $i -lt $VarNames.Count; $i++) {
+    $VarName = $VarNames[$i]
+    $Value = $VarValues[$i]
+    $Padding = " " * ($MaxLength - $VarName.Length)
+    Write-DebugMsg "$($VarName)$($Padding): $($Value)"
+  }
+  Write-DebugMsg "--------------------------------------------------------------------------------"
+
+}
+
+# https://stackoverflow.com/a/10939609/5944475
+function Test-IsNumeric ($Value) {
+  return $Value -match "^[\d\.]+$"
+}
+
+#endregion Helper functions ####################################################
+
+
+
 #region Read-Config
 
 function Get-Container {
@@ -291,7 +273,7 @@ function Get-Container {
   return $SectionMap[$iniHeader]
 }
 
-#TODO: Add Pester tests for Read-Config (as the old ones for Read-SettingsFile)
+#TODO: Add Pester tests for Read-Config (as the order ones for Read-SettingsFile)
 function Read-Config {
   <# Reads the specified INI file and returns a Configuration Object with all settings.
     The structure of the Config Object is like $Config.Container.Property = Value
