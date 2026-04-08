@@ -5,6 +5,7 @@
 . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
+  Import-Module Microsoft.PowerShell.Utility
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../..").ProviderPath
   . "${ProjectRoot}\lib\job-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
@@ -67,10 +68,10 @@ Describe 'Add-JobFile' {
     $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
-    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
-    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+    $created_jobfile_content = Get-Content -Path "${created_jobfile}"
+    $expected_jobfile_content = Get-Content -Path "${expected_jobfile}"
 
-    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+    Compare-Object $created_jobfile_content $expected_jobfile_content | Should -BeNullOrEmpty
   }
 
   It 'Writes a correct job file for line type: source-file.' {
@@ -99,10 +100,10 @@ Describe 'Add-JobFile' {
     $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
-    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
-    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+    $created_jobfile_content = Get-Content -Path "${created_jobfile}"
+    $expected_jobfile_content = Get-Content -Path "${expected_jobfile}"
 
-    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+    Compare-Object $created_jobfile_content $expected_jobfile_content | Should -BeNullOrEmpty
   }
 
   It 'Writes a correct job file for line type: source-file-pattern.' {
@@ -131,10 +132,10 @@ Describe 'Add-JobFile' {
     $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
-    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
-    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+    $created_jobfile_content = Get-Content -Path "${created_jobfile}"
+    $expected_jobfile_content = Get-Content -Path "${expected_jobfile}"
 
-    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+    Compare-Object $created_jobfile_content $expected_jobfile_content | Should -BeNullOrEmpty
   }
 
   It 'Writes a correct job file for line type: incl-files-pattern.' {
@@ -164,10 +165,10 @@ Describe 'Add-JobFile' {
     $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
-    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
-    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+    $created_jobfile_content = Get-Content -Path "${created_jobfile}"
+    $expected_jobfile_content = Get-Content -Path "${expected_jobfile}"
 
-    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+    Compare-Object $created_jobfile_content $expected_jobfile_content | Should -BeNullOrEmpty
   }
 
   It 'Writes a correct job file for line type: excl-files-pattern.' {
@@ -197,10 +198,10 @@ Describe 'Add-JobFile' {
     $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
-    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
-    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+    $created_jobfile_content = Get-Content -Path "${created_jobfile}"
+    $expected_jobfile_content = Get-Content -Path "${expected_jobfile}"
 
-    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+    Compare-Object $created_jobfile_content $expected_jobfile_content | Should -BeNullOrEmpty
   }
 
   It 'Writes a correct job file for line type: excl-dirs-pattern.' {
@@ -230,10 +231,10 @@ Describe 'Add-JobFile' {
     $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
     $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
-    $created_jobfile_hash = (Get-FileHash "${created_jobfile}").Hash
-    $expected_jobfile_hash = (Get-FileHash "${expected_jobfile}").Hash
+    $created_jobfile_content = Get-Content -Path "${created_jobfile}"
+    $expected_jobfile_content = Get-Content -Path "${expected_jobfile}"
 
-    "${created_jobfile_hash}" | Should -Be "${expected_jobfile_hash}"
+    Compare-Object $created_jobfile_content $expected_jobfile_content | Should -BeNullOrEmpty
   }
 }
 
