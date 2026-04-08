@@ -8,13 +8,24 @@
 
 # https://stackoverflow.com/a/2688572/5944475
 function Write-Color([String[]]$Text, [ConsoleColor[]]$Color) {
-    for ($i = 0; $i -lt $Text.Length; $i++) {
-        Write-Host $Text[$i] -Foreground $Color[$i] -NoNewLine
-    }
-    Write-Host
+  for ($i = 0; $i -lt $Text.Length; $i++) {
+    Write-Host $Text[$i] -Foreground $Color[$i] -NoNewLine
+  }
+  Write-Host
 }
 
 #Write-Color -Text Red,White,Blue -Color Red,White,Blue
+
+function Get-ConsoleKeyInfo {
+  <# This is the only place using the non-mockable .NET methods.
+    But we can mock Get-ConsoleKeyInfo in Pester tests.
+  #>
+  # https://powershell.one/tricks/input-devices/detect-key-press
+  if ([Console]::KeyAvailable) {
+    return [Console]::ReadKey($true)
+  }
+  return $null
+}
 
 #endregion Helper functions ####################################################
 
@@ -37,22 +48,26 @@ function _showJobTypeList {
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  } elseif ( "${DefaultJobType}" -eq "Full") {
+  }
+  elseif ( "${DefaultJobType}" -eq "Full") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  } elseif ( "${DefaultJobType}" -eq "Purge") {
+  }
+  elseif ( "${DefaultJobType}" -eq "Purge") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files) (", "default", ")" -Color White, Yellow, White, Green, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  } elseif ( "${DefaultJobType}" -eq "Archive") {
+  }
+  elseif ( "${DefaultJobType}" -eq "Archive") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
     Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute) (", "default", ")" -Color White, Red, White, Yellow, White, Green, White
-  } elseif ( "${DefaultJobType}" -eq "Cancel") {
+  }
+  elseif ( "${DefaultJobType}" -eq "Cancel") {
     Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
     Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
     Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
@@ -98,19 +113,13 @@ function Get-UserSelectedJobType {
   _showJobTypeList "${DefaultJobType}"
   Write-Host "Automatic start in ${MaxWaitingTimeS} seconds."
 
-  # https://powershell.one/tricks/input-devices/detect-key-press
   :waitForKey do {
-    # Wait for a key to be available:
-    if ([Console]::KeyAvailable) {
-      # Read the key, and consume it so it won't be echoed to the console:
-      $keyInfo = [Console]::ReadKey($true)
+    $keyInfo = Get-ConsoleKeyInfo
 
-      # Ignore some keys.
-      switch($keyInfo.Key) {
-        'LeftWindows' { $keyInfo = "" }
-        'Tab' { $keyInfo = "" }
-        'VolumeDown' { $keyInfo = "" }
-        'VolumeUp' { $keyInfo = "" }
+    # Ignore some keys.
+    if ($null -ne $keyInfo) {
+      switch ($keyInfo.Key) {
+        { $_ -in 'LeftWindows', 'Tab', 'VolumeDown', 'VolumeUp' } { $keyInfo = "" }
         Default { break waitForKey }
       }
     }
@@ -129,7 +138,11 @@ function Get-UserSelectedJobType {
   # Emit a new line
   Write-Host
 
-  switch($keyInfo.Key) {
+  <#FIXME: Variable '$keyInfo' cannot be retrieved
+    - When the user does not select anything.
+    - See "TODO\Bugs\Variable '$keyInfo' cannot be retrieved\Info.md"
+  #>
+  switch ($keyInfo.Key) {
     'i' {
       $result = "Incremental"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "Incremental selected."
