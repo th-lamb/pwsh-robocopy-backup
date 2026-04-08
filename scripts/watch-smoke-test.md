@@ -17,7 +17,7 @@ To stop the watcher, press `Ctrl+C` in the terminal.
 By default, the script watches for changes in:
 
 - `backup.ps1`
-- `lib\*.ps1` (all library functions)
+- `lib\*.ps1`, `lib\*.psm1` (all library functions)
 - `Pester\tests\backup_ps1\smoke-tests\BasicRun.Tests.ps1` (the smoke test itself)
 
 ## Customization

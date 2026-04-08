@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$TestPath = "Pester/tests/backup_ps1/smoke-tests/BasicRun.Tests.ps1",
-    [string[]]$WatchPatterns = @("backup.ps1", "lib/*.ps1", "Pester/tests/backup_ps1/smoke-tests/BasicRun.Tests.ps1")
+    [string[]]$WatchPatterns = @("backup.ps1", "lib/*.ps1", "lib/*.psm1", "Pester/tests/backup_ps1/smoke-tests/BasicRun.Tests.ps1")
 )
 
 $TestFullPath = Resolve-Path $TestPath -ErrorAction SilentlyContinue

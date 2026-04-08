@@ -1,10 +1,8 @@
-#region Object types
+using module '.\config-classes.psm1'
 
-class FsObjectResult {
-  [bool]$Exists   # $true or $false
-  [String]$Type   # "directory", "file", ..., or $null if unknown
-  [String]$Path   # The actual path of the found filesystem object
-}
+
+
+#region Object types
 
 function Get-RealFsObjectType {
   <# Returns an object of class FsObjectResult. This reports whether

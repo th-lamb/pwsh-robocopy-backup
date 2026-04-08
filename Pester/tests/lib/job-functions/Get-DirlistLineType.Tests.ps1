@@ -1,4 +1,6 @@
-﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+﻿using module '..\..\..\..\lib\config-classes.psm1'
+
+$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\job-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
 . "${ProjectRoot}\lib\message-functions.ps1"
@@ -13,14 +15,13 @@ BeforeAll {
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
-
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
 
   # For logging in tested functions
   $Script:logfile = "${workingFolder}Get-DirlistLineType.Tests.log"
 
   # For messages in tested functions
+  $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 
   # Other functions

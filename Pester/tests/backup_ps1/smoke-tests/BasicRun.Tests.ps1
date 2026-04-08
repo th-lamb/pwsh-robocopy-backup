@@ -92,6 +92,11 @@ Describe "backup.ps1 Smoke Test" {
         Get-ChildItem -Path (Join-Path $ProjectRoot "lib") -Filter "*.ps1" |
             Copy-Item -Destination $libPath -Force
 
+        # Copy .psm1 files to the lib/ folder.
+        # Note: we use the -Filter parameter
+        Get-ChildItem -Path (Join-Path $ProjectRoot "lib") -Filter "*.psm1" |
+            Copy-Item -Destination $libPath -Force
+
         # Copy "dir-list-template.conf" and .RCJ files to the templates/ folder.
         # Note: we use the -Include parameter
         Get-ChildItem -Path (Join-Path $ProjectRoot "templates\*") -Include "*.RCJ", "dir-list-template.conf" |
