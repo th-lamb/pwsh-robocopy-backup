@@ -1,16 +1,20 @@
-﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+﻿Set-StrictMode -Version Latest
+
+$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\job-type-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
+. "${ProjectRoot}\lib\message-functions.ps1"
 
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\job-type-functions.ps1"
   . "${ProjectRoot}\lib\logging-functions.ps1"
+  . "${ProjectRoot}\lib\message-functions.ps1"
 
   $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
 
   $Script:DefaultJob = "Incremental"
-  # For logging in tested functions (mandatory parameter)
+  # For logging in tested functions (mandatory parameter) - but should not be written to because we use Mocks.
   $Script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
 
   Mock _showJobTypeList {}
@@ -23,6 +27,8 @@ BeforeAll {
 
 
 Describe 'Get-UserSelectedJobType' {
+  #TODO: Do we need this 2nd Set-StrictMode?
+  Set-StrictMode -Version Latest
   Context 'User selects a job type' {
     It 'User selects: [I]    Incremental' {
       $KeyToPress     = "I"
@@ -125,8 +131,8 @@ Describe 'Get-UserSelectedJobType' {
 
       # Simulate no key ever being pressed.
       # Mock Get-ConsoleKeyInfo { return $null }
-      # Mock Start-Sleep {} # Still mock this so the test is fast!
-      # Mock Write-Host {}
+      Mock Start-Sleep {} # Still mock this so the test is fast!
+      Mock Write-Host {}
 
       $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
       $result | Should -Be "${expected}"

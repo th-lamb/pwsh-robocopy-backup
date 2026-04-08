@@ -109,6 +109,7 @@ function Get-UserSelectedJobType {
   [Int32]$CheckIntervalMilliseconds = 100
   [Int32]$AlreadyWaitedMilliseconds = 0
   [String]$result = ""
+  $keyInfo = $null
 
   _showJobTypeList "${DefaultJobType}"
   Write-Host "Automatic start in ${MaxWaitingTimeS} seconds."
@@ -138,11 +139,21 @@ function Get-UserSelectedJobType {
   # Emit a new line
   Write-Host
 
-  <#FIXME: Variable '$keyInfo' cannot be retrieved
-    - When the user does not select anything.
-    - See "TODO\Bugs\Variable '$keyInfo' cannot be retrieved\Info.md"
-  #>
-  switch ($keyInfo.Key) {
+  # Handle the case where $keyInfo is null (timeout or no key pressed).
+  [String]$pressedKey = ""
+  #TODO: The script now "knows" that it's being tested, but shouldn't it be agnostic?
+  if ($null -ne $keyInfo -and $keyInfo -is [System.Management.Automation.PSCustomObject]) {
+    # If it's a mocked object from Pester
+    $pressedKey = $keyInfo.Key.ToString()
+  }
+  elseif ($null -ne $keyInfo -and $keyInfo -is [System.ConsoleKeyInfo]) {
+    $pressedKey = $keyInfo.Key.ToString()
+  }
+  elseif ($null -ne $keyInfo -and $keyInfo -is [String]) {
+    $pressedKey = $keyInfo
+  }
+
+  switch ($pressedKey) {
     'i' {
       $result = "Incremental"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "Incremental selected."
@@ -190,9 +201,8 @@ function Get-UserSelectedJobType {
       # Illegal choice
       LogAndShowMessage "${logfile}" WARNING "Illegal choice. Cancel."
       $result = "Cancel"
-      Add-LogMessage -logfile "${logfile}" -severity DEBUG -message "User clicked: $($keyInfo.Key)"
+      Add-LogMessage -logfile "${logfile}" -severity DEBUG -message "User clicked: ${pressedKey}"
     }
-
   }
 
   Write-Host "${result}"
