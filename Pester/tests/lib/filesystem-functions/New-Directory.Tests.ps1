@@ -50,7 +50,10 @@ Describe 'New-Directory' {
   Context 'Unexpected situations' {
     It 'Fails if there already is a *file* with the same name' {
       $dir_to_create    = "${workingFolder}existing_file"
-      $expected_message = "* a file or directory with the same name already exists.`""  # Using wildcard
+      # The error message varies by system language.
+      # English: "... a file or directory with the same name already exists."
+      # German:  "... da eine Datei oder ein Verzeichnis mit demselben Namen bereits vorhanden ist."
+      $expected_message = "*existing_file*"  # Use only the filename part.
 
       Mock LogAndShowMessage {}
 
