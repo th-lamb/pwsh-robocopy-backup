@@ -57,6 +57,10 @@ param(
   [switch]$SkipExecution
 )
 
+# Set-StrictMode -Version Latest ensures that common coding errors like typos in property names
+# (e.g., $Config.Loging instead of $Config.Logging) are caught immediately.
+Set-StrictMode -Version Latest
+
 
 
 #region Bootstrap Logging
@@ -652,9 +656,8 @@ Write-DebugMsg "-----".PadRight(70, "-")
 [Int32]$JobResultWarningCount = 0
 [Int32]$JobResultErrorCount = 0
 
-$JobFiles = [System.Collections.Generic.List[string]]::new()
-$JobFiles = Get-ChildItem -Path (Join-Path $Config.Directories.BACKUP_JOB_DIR "*") -Include $Config.Jobs.JOB_FILE_NAME_SCHEME -File |
-Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) }
+$JobFiles = @(Get-ChildItem -Path (Join-Path $Config.Directories.BACKUP_JOB_DIR "*") -Include $Config.Jobs.JOB_FILE_NAME_SCHEME -File |
+Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) })
 $JobfilesCount = $JobFiles.Count
 
 if ($JobfilesCount -eq 0) {
