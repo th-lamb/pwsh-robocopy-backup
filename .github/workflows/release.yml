@@ -64,8 +64,11 @@ jobs:
           Copy-Item "example-dir-list.conf" "pwsh-robocopy-backup\"
           Copy-Item "README.md" "pwsh-robocopy-backup\"
 
-          # 3. Copy ONLY .ps1 files into the lib folder
+          # 3.1. Copy ONLY .ps1 files into the lib folder
           Copy-Item "lib\*.ps1" "pwsh-robocopy-backup\lib\"
+
+          # 3.2. Copy ONLY .psm1 files into the lib folder
+          Copy-Item "lib\*.psm1" "pwsh-robocopy-backup\lib\"
 
           # 4. Copy ONLY template files into the templates folder
           Copy-Item "templates\*.RCJ" "pwsh-robocopy-backup\templates\"
