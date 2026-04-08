@@ -71,6 +71,7 @@ function Get-RealFsObjectType {
         Test-Path, Convert-Path, Resolve-Path, Split-Path -Resolve, Join-Path -Resolve, Invoke-Item
     [...]
   #>
+  # Standard check
   if (Test-Path -Path "${PathSpec}" -PathType Container) {
     if ("${SpecifiedType}" -eq "drive letter") {
       return [FsObjectResult]@{
@@ -94,6 +95,19 @@ function Get-RealFsObjectType {
       Path   = $PathSpec
     }
   }
+
+  #TODO: Necessary? The Pester test 'recognizes file defined as folder (trailing \)' succeeds without it.
+  # # Fallback for files defined with trailing slash (e.g. "file.txt\")
+  # $PathWithoutTrailingSlash = "${PathSpec}".TrimEnd('\').TrimEnd('/')
+  # if ("${PathWithoutTrailingSlash}" -ne "${PathSpec}" -and "${PathWithoutTrailingSlash}" -ne "") {
+  #   if (Test-Path -Path "${PathWithoutTrailingSlash}" -PathType Leaf) {
+  #     return [FsObjectResult]@{
+  #       Exists = $true
+  #       Type   = "file"
+  #       Path   = $PathWithoutTrailingSlash
+  #     }
+  #   }
+  # }
 
   <# Fallback for hidden files/folders with patterns.
     Reason: Test-Path doesn't find hidden items with wildcards.

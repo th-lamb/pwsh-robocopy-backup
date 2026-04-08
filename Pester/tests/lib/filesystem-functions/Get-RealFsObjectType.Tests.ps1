@@ -11,6 +11,8 @@ BeforeAll {
 
 
 
+#FIXME: Replace all "/" in filenames with "\" in *all* Pester tests to avoid strange errors with no real-world scenario on Windows?
+
 Describe 'Get-RealFsObjectType' {
   BeforeDiscovery {
     #$available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "Server" -Quiet
@@ -146,6 +148,14 @@ Describe 'Get-RealFsObjectType' {
     }
 
     It 'recognizes file defined as folder (trailing \)      e.g. C:\Users\...\Music\title1.mp3\' {
+      $path_spec  = "${workingFolder}Music\title1.mp3\"
+      $expected   = "file"
+
+      $object_type = Get-RealFsObjectType "${path_spec}"
+      ${object_type}.Type | Should -Be "${expected}"
+    }
+
+    It 'recognizes file defined as folder (trailing /)      e.g. C:\Users\...\Music/title1.mp3/' {
       $path_spec  = "${workingFolder}Music/title1.mp3/"
       $expected   = "file"
 
