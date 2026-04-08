@@ -22,40 +22,41 @@ Set-Location "$CurrentScriptDir\.."
 
 # --- Version Check ---
 if ($lastTag) {
-    # Extract the version from backup.ps1
-    # Example: "SCRIPT_VERSION" -Option ReadOnly -Value "0.2.00"
-    # $versionLine = Get-Content "backup.ps1" | Select-String "SCRIPT_VERSION.*Value\s`"([0-9\.]+)`""
-    $versionLine = Get-Content "backup.ps1" | Select-String "Set-Variable -Name `"SCRIPT_VERSION`""
+  # Extract the version from backup.ps1
+  # Example: "SCRIPT_VERSION" -Option ReadOnly -Value "0.2.00"
+  # $versionLine = Get-Content "backup.ps1" | Select-String "SCRIPT_VERSION.*Value\s`"([0-9\.]+)`""
+  $versionLine = Get-Content "backup.ps1" | Select-String "Set-Variable -Name `"SCRIPT_VERSION`""
 
-    if ($versionLine -match "Value\s`"([0-9\.]+)`"") {
-        $actualVersion = $Matches[1]
-        $expectedTag = "v$actualVersion"
+  if ($versionLine -match "Value\s`"([0-9\.]+)`"") {
+    $actualVersion = $Matches[1]
+    $expectedTag = "v$actualVersion"
 
-        if ($lastTag -eq $expectedTag) {
-            Write-Host "WARNING: The version in 'backup.ps1' ($actualVersion) is the same as the last Git tag ($lastTag)." -ForegroundColor Yellow
-            Write-Host "         Have you forgotten to bump the version for the next release?" -ForegroundColor Yellow
-        } else {
-            Write-Host "Version check: Script version ($actualVersion) is different from last tag ($lastTag)." -ForegroundColor Cyan
-        }
+    if ($lastTag -eq $expectedTag) {
+      Write-Host "WARNING: The version in 'backup.ps1' ($actualVersion) is the same as the last Git tag ($lastTag)." -ForegroundColor Yellow
+      Write-Host "         Have you forgotten to bump the version for the next release?" -ForegroundColor Yellow
     }
+    else {
+      Write-Host "Version check: Script version ($actualVersion) is different from last tag ($lastTag)." -ForegroundColor Cyan
+    }
+  }
 }
 # ---------------------
 
 # Create the dist folder if it doesn't exist
 if (!(Test-Path $distDir)) {
-    New-Item -ItemType Directory -Path $distDir | Out-Null
+  New-Item -ItemType Directory -Path $distDir | Out-Null
 }
 
 Write-Host "--- Starting local build test for version $version ---" -ForegroundColor Cyan
 
 # Clean up previous test runs
 if (Test-Path $stagingDir) {
-    Write-Host "Cleaning up old staging directory..."
-    Remove-Item -Path $stagingDir -Recurse -Force
+  Write-Host "Cleaning up old staging directory..."
+  Remove-Item -Path $stagingDir -Recurse -Force
 }
 if (Test-Path $zipPath) {
-    Write-Host "Removing old test ZIP..."
-    Remove-Item -Path $zipPath -Force
+  Write-Host "Removing old test ZIP..."
+  Remove-Item -Path $zipPath -Force
 }
 
 # 1. Create temporary folder structure
@@ -70,9 +71,13 @@ Copy-Item "example-backup.ini" "$stagingDir\"
 Copy-Item "example-dir-list.conf" "$stagingDir\"
 Copy-Item "README.md" "$stagingDir\"
 
-# 3. Copy ONLY .ps1 files into the lib folder
+# 3.1. Copy ONLY .ps1 files into the lib folder
 Write-Host "Copying library files (.ps1 only)..."
 Copy-Item "lib\*.ps1" "$stagingDir\lib\"
+
+# 3.2. Copy ONLY .psm1 files into the lib folder
+Write-Host "Copying library files (.psm1 only)..."
+Copy-Item "lib\*.psm1" "$stagingDir\lib\"
 
 # 4. Copy ONLY template files into the templates folder
 Write-Host "Copying template files (.RCJ and .conf)..."
