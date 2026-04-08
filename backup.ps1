@@ -118,7 +118,7 @@ $oldWhatIfPreference = $WhatIfPreference
 $WhatIfPreference = $false
 
 #TODO: Make versioning "generic" - using commands like "git tag v0.1.00" and %%SCRIPT_VERSION%% here?
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.3.00"
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.3.01"
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
 Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
 
