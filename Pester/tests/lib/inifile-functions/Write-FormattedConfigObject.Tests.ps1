@@ -21,12 +21,12 @@ Describe 'Write-FormattedConfigObject' {
     It 'Matches the expected output file exactly.' {
       $ResourcesDir = "${ProjectRoot}\Pester\resources\lib\inifile-functions\Write-FormattedConfigObject"
       $ExpectedFile = "${ResourcesDir}\expected_output.txt"
-      $ActualFile = "${ResourcesDir}\actual_output.txt"
+      $ActualFile   = "${ResourcesDir}\actual_output.txt"
 
       $DummyConfig = [ScriptConfig]::new()
-      $DummyConfig.General.__VERBOSE = 7
-      $DummyConfig.Directories.BACKUP_BASE_DIR = "C:\TestBackup\"
-      $DummyConfig.Jobs.DEFAULT_JOB_TYPE = "Full"
+      $DummyConfig.General.__VERBOSE            = 7
+      $DummyConfig.Directories.BACKUP_BASE_DIR  = "C:\TestBackup\"
+      $DummyConfig.Jobs.DEFAULT_JOB_TYPE        = "Full"
 
       $DummyConfig.Normalize()
 
@@ -54,15 +54,14 @@ Describe 'Write-FormattedConfigObject' {
     It 'Correctly formats and aligns a ScriptConfig object.' {
       $DummyConfig = [ScriptConfig]::new()
       # Override some values to have predictable output
-      $DummyConfig.General.__VERBOSE = 7
-      $DummyConfig.Directories.BACKUP_BASE_DIR = "C:\TestBackup\"
-      $DummyConfig.Jobs.DEFAULT_JOB_TYPE = "Full"
+      $DummyConfig.General.__VERBOSE            = 7
+      $DummyConfig.Directories.BACKUP_BASE_DIR  = "C:\TestBackup\"
+      $DummyConfig.Jobs.DEFAULT_JOB_TYPE        = "Full"
 
       $DummyConfig.Normalize()
 
-      $Messages = [System.Collections.Generic.List[string]]::new()
-
       # Mock Write-DebugMsg to capture output
+      $Messages = [System.Collections.Generic.List[string]]::new()
       Mock Write-DebugMsg {
         param($message)
         $Messages.Add($message)
@@ -97,13 +96,13 @@ Describe 'Write-FormattedConfigObject' {
 
   Context 'Invalid Parameters' {
     It 'Writes a warning if the ConfigObject has no properties.' {
-      # This is hard to trigger with ScriptConfig because it always has properties,
-      # but we can try with a custom object if the function allows.
-      # Actually, the function specifies [ScriptConfig]$ConfigObject.
+      # This is hard to trigger with [ScriptConfig] because it always has properties.
 
-      $DummyConfig = [ScriptConfig]::new()
+      Mock Write-DebugMsg {}
+
       # We can't easily make it empty without changing the class,
       # so we just test that it works for a default object.
+      $DummyConfig = [ScriptConfig]::new()
       { Write-FormattedConfigObject -ConfigObject $DummyConfig } | Should -Not -Throw
     }
   }
