@@ -133,7 +133,7 @@ Describe 'Get-UserSelectedJobType' {
       $expected = "Incremental"
 
       # Simulate no key ever being pressed.
-      # Mock Get-ConsoleKeyInfo { return $null }
+      Mock Get-ConsoleKeyInfo { return $null }
       Mock Start-Sleep {} # Still mock this so the test is fast!
       Mock Write-Host {}
 
