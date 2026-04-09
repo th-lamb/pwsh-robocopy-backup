@@ -129,6 +129,46 @@ Describe 'Get-UserSelectedJobType' {
   }
 
   Context 'Default values' {
+    It 'Checks for a pressed key every 100 ms' {
+      [int32]$NumberOfSeconds = 10
+      [int32]$NumberOfChecks  = 100
+
+      # Simulate no key being pressed.
+      Mock Get-ConsoleKeyInfo {}
+
+      # Mock Write-Host to suppress output.
+      Mock Write-Host {}
+
+      # Mock Start-Sleep so the test runs instantly.
+      Mock Start-Sleep {}
+
+      # Call with specified number of seconds.
+      Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS $NumberOfSeconds
+
+      # Assert number of checks.
+      Assert-MockCalled Get-ConsoleKeyInfo -Exactly -Times $NumberOfChecks
+    }
+
+    It 'Draws a dot for every second of waiting time' {
+      [int32]$NumberOfSeconds = 10
+      [int32]$NumberOfDots    = 10
+
+      # Simulate no key being pressed.
+      Mock Get-ConsoleKeyInfo {}
+
+      # Mock Write-Host so we can check if dots were drawn.
+      Mock Write-Host {}
+
+      # Mock Start-Sleep so the test runs instantly.
+      Mock Start-Sleep {}
+
+      # Call with specified number of seconds.
+      Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS $NumberOfSeconds
+
+      # Assert number of dots.
+      Assert-MockCalled Write-Host -ParameterFilter { $Object -eq '.' } -Exactly -Times $NumberOfDots
+    }
+
     It 'Returns default if the user does NOT press any key' {
       $expected = "Incremental"
 
