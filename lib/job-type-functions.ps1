@@ -117,10 +117,10 @@ function Get-UserSelectedJobType {
   :waitForKey do {
     $keyInfo = Get-ConsoleKeyInfo
 
-    # Ignore some keys.
+    # Ignore some keys; continue waiting for a meaningful key press.
     if ($null -ne $keyInfo) {
       switch ($keyInfo.Key) {
-        { $_ -in 'LeftWindows', 'Tab', 'VolumeDown', 'VolumeUp' } { $keyInfo = "" }
+        { $_ -in 'LeftWindows', 'Tab', 'VolumeDown', 'VolumeUp' } { continue waitForKey }
         Default { break waitForKey }
       }
     }
@@ -139,18 +139,12 @@ function Get-UserSelectedJobType {
   # Emit a new line
   Write-Host
 
-  # Handle the case where $keyInfo is null (timeout or no key pressed).
+  # Extract the key name as a string.
+  # Works for both real [ConsoleKeyInfo] and Pester mock [PSCustomObject], since both
+  # expose a .Key property of type [ConsoleKey] whose .ToString() yields the key name.
   [String]$pressedKey = ""
-  #TODO: The script now "knows" that it's being tested, but shouldn't it be agnostic?
-  if ($null -ne $keyInfo -and $keyInfo -is [System.Management.Automation.PSCustomObject]) {
-    # If it's a mocked object from Pester
+  if ($null -ne $keyInfo) {
     $pressedKey = $keyInfo.Key.ToString()
-  }
-  elseif ($null -ne $keyInfo -and $keyInfo -is [System.ConsoleKeyInfo]) {
-    $pressedKey = $keyInfo.Key.ToString()
-  }
-  elseif ($null -ne $keyInfo -and $keyInfo -is [String]) {
-    $pressedKey = $keyInfo
   }
 
   switch ($pressedKey) {

@@ -1,5 +1,3 @@
-﻿Set-StrictMode -Version Latest
-
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\job-type-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
@@ -27,8 +25,13 @@ BeforeAll {
 
 
 Describe 'Get-UserSelectedJobType' {
-  #TODO: Do we need this 2nd Set-StrictMode?
-  Set-StrictMode -Version Latest
+  BeforeEach {
+    # Pester 5 runs each It block in an isolated module scope that does not inherit
+    # Set-StrictMode from the enclosing script or Describe block.
+    # BeforeEach is the only place where Set-StrictMode reliably applies inside It blocks.
+    Set-StrictMode -Version Latest
+  }
+
   Context 'User selects a job type' {
     It 'User selects: [I]    Incremental' {
       $KeyToPress     = "I"
