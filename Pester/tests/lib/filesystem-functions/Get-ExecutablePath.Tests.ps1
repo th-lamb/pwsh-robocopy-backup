@@ -6,7 +6,6 @@ $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\logging-functions.ps1"
 . "${ProjectRoot}\lib\inifile-functions.ps1"
 
-
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
