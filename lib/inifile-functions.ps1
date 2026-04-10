@@ -97,10 +97,13 @@ function Update-ConfigProperty {
     [Parameter(Mandatory = $true)]
     [ScriptConfig]$Config,
     [Parameter(Mandatory = $true)]
+    [AllowEmptyString()]            #TODO: Is AllowEmptyString necessary?
     [string]$TargetContainer,
     [Parameter(Mandatory = $true)]
+    [AllowEmptyString()]            #TODO: Is AllowEmptyString necessary?
     [string]$Key,
     [Parameter(Mandatory = $true)]
+    [AllowEmptyString()]            #TODO: Is AllowEmptyString necessary?
     [string]$Val
   )
 
