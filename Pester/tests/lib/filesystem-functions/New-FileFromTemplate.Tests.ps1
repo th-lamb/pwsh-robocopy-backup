@@ -13,15 +13,13 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
-
+  # For logging in tested functions
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
+  $Script:logfile = "${workingFolder}New-FileFromTemplate.Tests.log"
 
   # For messages in tested functions
+  $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 5  # Reduced to 5 because New-FileFromTemplate writes an INFO message.
-
-  # For logging in tested functions
-  $Script:logfile = "${workingFolder}New-FileFromTemplate.Tests.log"
 }
 
 
@@ -42,7 +40,7 @@ Describe 'New-FileFromTemplate' {
       $exists | Should -Be $true
     }
 
-    It 'Returns $true after successful copying' {
+    It 'Returns $true after successful copy' {
       $file_to_be_created = "${workingFolder}file_to_be_created.txt"
       $template_file      = "${workingFolder}template_file.txt"
 

@@ -13,14 +13,14 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
-
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-archive-functions/"
 
   # For messages in tested functions
+  $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 
   # ini-values
+  #TODO: Update with new Config Object!?
   Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
   $JOB_FILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.RCJ"
   $JOB_LOGFILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.log"

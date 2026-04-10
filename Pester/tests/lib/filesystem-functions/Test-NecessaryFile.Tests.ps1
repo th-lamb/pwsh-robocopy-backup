@@ -13,15 +13,13 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
-
+  # For logging in tested functions
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
+  $Script:logfile = "${workingFolder}/Test-NecessaryFile.Tests.log"
 
   # For messages in tested functions
+  $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
-
-  # For logging in tested functions
-  $Script:logfile = "${workingFolder}/Test-NecessaryFile.Tests.log"
 }
 
 

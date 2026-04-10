@@ -11,11 +11,10 @@ BeforeAll {
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
-
   $Script:ini_file = "${ProjectRoot}\Pester\resources\lib\inifile-functions\Read-SettingsFile.Tests.ini"
 
   # For messages in tested functions
+  $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 }
 

@@ -12,6 +12,7 @@ BeforeAll {
   $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
 
   $Script:DefaultJob = "Incremental"
+
   # For logging in tested functions (mandatory parameter) - but should not be written to because we use Mocks.
   $Script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
 

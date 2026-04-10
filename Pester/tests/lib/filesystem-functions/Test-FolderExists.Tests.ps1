@@ -24,7 +24,7 @@ Describe 'Test-FolderExists' {
 
   Context 'Non-existent directory' {
     It 'Returns $false for a non-existent directory' {
-      $path_spec  = "${workingFolder}Test0/"
+      $path_spec  = "${workingFolder}nonexistent_dir/"
       $expected   = $false
 
       $result = Test-FolderExists "${path_spec}"
@@ -40,7 +40,7 @@ Describe 'Test-FolderExists' {
     }
 
     It 'Returns $false for a non-existent file' {
-      $path_spec  = "${workingFolder}Test1/test.xml"
+      $path_spec  = "${workingFolder}Test1/nonexistent.xml"
       $expected   = $false
 
       $result = Test-FolderExists "${path_spec}"

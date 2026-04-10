@@ -13,14 +13,15 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
-  # For messages in tested functions
-  $config.General.__VERBOSE = 6
+  $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-functions\"  # Backslashes for the jobfile!
 
-  $workingFolder = "${ProjectRoot}\Pester\resources\lib\job-functions\"  # Backslashes for the jobfile!
   $Script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
   $Script:expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
   $Script:created_jobfiles_folder = "${workingFolder}created_jobfiles\"
+
+  # For messages in tested functions
+  $script:config = [ScriptConfig]::new()
+  $config.General.__VERBOSE = 6
 }
 
 

@@ -15,10 +15,11 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
+  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/robocopy-functions/"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/robocopy-functions/"
   $Script:logfile = "${workingFolder}LogAndShowRobocopyError.Tests.log"
+
+  $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 
   function Format-RegexString {

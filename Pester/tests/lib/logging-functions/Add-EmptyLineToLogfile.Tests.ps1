@@ -6,6 +6,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
 
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/logging-functions/"
+
   $Script:logfile = "${workingFolder}Add-EmptyLineToLogfile.Tests.log"
 }
 

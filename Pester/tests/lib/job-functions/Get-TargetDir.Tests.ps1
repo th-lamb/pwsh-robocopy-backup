@@ -6,11 +6,6 @@ BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\job-functions.ps1"
   . "${ProjectRoot}\lib\logging-functions.ps1"
-
-  #$Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
-
-  # For logging in tested functions
-  #$Script:logfile = "${workingFolder}Get-TargetDir.Tests.log"
 }
 
 
@@ -48,10 +43,4 @@ Describe 'Get-TargetDir' {
       } | Should -Throw
     }
   }
-}
-
-
-
-AfterAll {
-  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
 }

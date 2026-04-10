@@ -23,8 +23,6 @@ BeforeAll {
   # For messages in tested functions
   $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
-
-  # Other functions
 }
 
 

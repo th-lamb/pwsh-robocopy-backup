@@ -11,9 +11,8 @@ BeforeAll {
   . "${ProjectRoot}\lib\message-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $script:config = [ScriptConfig]::new()
-
   # For messages in tested functions
+  $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 }
 

@@ -4,6 +4,7 @@
 BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\job-archive-functions.ps1"
+
   $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-archive-functions/Get-LastDateTime testfiles/"
 }
 

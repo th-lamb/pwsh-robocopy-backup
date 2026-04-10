@@ -8,6 +8,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
 
   $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\logging-functions\"
+
   $Script:infoLog = "${workingFolder}info.log"
   $Script:errorLog = "${workingFolder}error.log"
 
