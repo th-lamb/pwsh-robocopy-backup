@@ -1,11 +1,13 @@
 using module '..\..\..\..\lib\config-classes.psm1'
 
+# Top level (discovery phase)
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\message-functions.ps1"
 . "${ProjectRoot}\lib\inifile-functions.ps1"
 . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
 BeforeAll {
+  # Run phase
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\message-functions.ps1"
   . "${ProjectRoot}\lib\inifile-functions.ps1"

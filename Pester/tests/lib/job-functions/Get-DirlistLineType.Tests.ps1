@@ -1,5 +1,6 @@
 ﻿using module '..\..\..\..\lib\config-classes.psm1'
 
+# Top level (discovery phase)
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\job-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
@@ -8,6 +9,7 @@ $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\inifile-functions.ps1"
 
 BeforeAll {
+  # Run phase
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\job-functions.ps1"
   . "${ProjectRoot}\lib\logging-functions.ps1"

@@ -1,8 +1,10 @@
-﻿$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+﻿# Top level (discovery phase)
+$ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\job-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
 
 BeforeAll {
+  # Run phase
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\job-functions.ps1"
   . "${ProjectRoot}\lib\logging-functions.ps1"
