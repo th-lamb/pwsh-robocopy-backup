@@ -23,33 +23,6 @@ BeforeAll {
 
 
 Describe 'Read-Config' {
-  Context 'Correct Usage' -Skip {
-    #TODO: It 'Reads strings as string.' {}   <--- Is that even necessary when using Config classes with specified types?
-    It 'Reads strings as string.' {
-      $var_name = "STRING_VALUE_1"
-      $expected = "String"
-
-      $Config = Read-Config -IniFile $IniFile
-
-      #TODO: Get the variable type
-      $result = $( Get-Variable $Config.$var_name -ValueOnly ).GetType().Name
-
-      $result | Should -Be "${expected}"
-    }
-
-    #TODO: It 'Reads int values as Int32.' {}   <--- Is that even necessary when using Config classes with specified types?
-    # See: Pester\tests\lib\inifile-functions\Read-SettingsFile.Tests.ps1
-    # It 'Reads int values as Int32.' {
-    #   $var_name = "INT_VALUE_1"
-    #   $expected = "Int32"
-
-    #   Read-SettingsFile "${ini_file}"
-
-    #   $result = $( Get-Variable "${var_name}" -ValueOnly ).GetType().Name
-    #   $result | Should -Be "${expected}"
-    # }
-  }
-
   Context 'Error Handling' {
     It 'Writes a warning if the INI file is missing.' {
       $IniFile = "NON_EXISTENT_FILE.ini"
@@ -94,6 +67,53 @@ Describe 'Read-Config' {
       $Config.Normalize()
 
       $Config.Directories.BACKUP_USER_BASE_DIR | Should -Be "${ExpectedBackupUserBaseDir}"
+    }
+  }
+
+  Context 'Top-level settings (Finding 5)' {
+    <# These tests create their own INI files in a temporary directory ($env:TEMP)
+      for isolation and automatic cleanup, rather than using $script:workingFolder.
+    #>
+    BeforeAll {
+      $script:tempDir = Join-Path $env:TEMP "Pester-Read-Config-TopLevel"
+      if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+      New-Item $tempDir -ItemType Directory | Out-Null
+    }
+
+    AfterAll {
+      if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+    }
+
+    It 'Assigns settings before any section header to the General container.' {
+      $IniFile = Join-Path $tempDir "TopLevel.ini"
+      @'
+__VERBOSE=3
+[Directories]
+BACKUP_BASE_DIR=C:\MyBackup
+'@ | Set-Content $IniFile
+
+      $Config = Read-Config -IniFile $IniFile
+
+      $Config.General.__VERBOSE | Should -Be 3
+      $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\MyBackup\"
+    }
+
+    It 'Correctly handles cross-references and scope.' {
+      # Note: For cross-references to work across different containers,
+      # the variables must be set in the caller's scope (which Update-ConfigProperty does).
+      $IniFile = Join-Path $tempDir "TopLevelCrossref.ini"
+      @'
+__VERBOSE=1
+[Directories]
+BACKUP_BASE_DIR=C:\TopLevel
+BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}User\
+'@ | Set-Content $IniFile
+
+      $Config = Read-Config -IniFile $IniFile
+
+      $Config.General.__VERBOSE | Should -Be 1
+      $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\TopLevel\"
+      $Config.Directories.BACKUP_USER_BASE_DIR | Should -Be "C:\TopLevel\User\"
     }
   }
 

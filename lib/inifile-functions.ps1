@@ -133,9 +133,8 @@ function Update-ConfigProperty {
   }
 }
 
-
-
 #TODO: Add Pester tests for Read-Config (as the other ones for Read-SettingsFile)
+#TODO: Maybe we can refactor Read-Config even more to make it even easier to read?
 function Read-Config {
   <# Reads the specified INI file and returns a Configuration Object with all settings.
     The structure of the Config Object is like $Config.Container.Property = Value
