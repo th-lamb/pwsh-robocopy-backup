@@ -11,6 +11,10 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
+  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\inifile-functions\"
+
+  $script:IniFile = "${workingFolder}Read-Config.Tests.ini"
+
   # For messages in tested functions
   $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
@@ -19,6 +23,33 @@ BeforeAll {
 
 
 Describe 'Read-Config' {
+  Context 'Correct Usage' -Skip {
+    #TODO: It 'Reads strings as string.' {}   <--- Is that even necessary when using Config classes with specified types?
+    It 'Reads strings as string.' {
+      $var_name = "STRING_VALUE_1"
+      $expected = "String"
+
+      $Config = Read-Config -IniFile $IniFile
+
+      #TODO: Get the variable type
+      $result = $( Get-Variable $Config.$var_name -ValueOnly ).GetType().Name
+
+      $result | Should -Be "${expected}"
+    }
+
+    #TODO: It 'Reads int values as Int32.' {}   <--- Is that even necessary when using Config classes with specified types?
+    # See: Pester\tests\lib\inifile-functions\Read-SettingsFile.Tests.ps1
+    # It 'Reads int values as Int32.' {
+    #   $var_name = "INT_VALUE_1"
+    #   $expected = "Int32"
+
+    #   Read-SettingsFile "${ini_file}"
+
+    #   $result = $( Get-Variable "${var_name}" -ValueOnly ).GetType().Name
+    #   $result | Should -Be "${expected}"
+    # }
+  }
+
   Context 'Error Handling' {
     It 'Writes a warning if the INI file is missing.' {
       $IniFile = "NON_EXISTENT_FILE.ini"
