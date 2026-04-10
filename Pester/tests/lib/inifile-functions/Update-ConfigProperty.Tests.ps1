@@ -35,7 +35,7 @@ Describe 'Update-ConfigProperty' {
       @{ MyInput = 'No';    Expected = $false }
     )
 
-    It "Correctly converts '<Input>' to <Expected>" -TestCases $TestCases {
+    It "Correctly converts '<MyInput>' to <Expected>" -TestCases $TestCases {
       <# We pass all combinations to Update-ConfigProperty and then check
         whether $Config.Logging.ENABLE_TRACE_LOG has the correct value.
       #>
