@@ -15,7 +15,8 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-functions\"  # Backslashes for the jobfile!
+  # $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-functions\"  # Backslashes for the jobfile!
+  $script:workingFolder = "${ProjectRoot}Pester\resources\lib\job-functions\"
 
   $script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
   $script:expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
@@ -39,7 +40,8 @@ Describe 'Add-JobFile' {
       $template_content = (Get-Content -Path "${template}") -join "`r`n"  # See: https://stackoverflow.com/a/15041925/5944475
 
       $new_jobfile = "${template}".Replace("${jobfile_templates_folder}", "${expected_jobfiles_folder}")
-      $updated_content = $template_content.Replace("<ProjectRoot>", "${ProjectRoot}\")
+
+      $updated_content = $template_content.Replace("<ProjectRoot>", "${ProjectRoot}")
 
       Set-Content -Path "${new_jobfile}" -Value "${updated_content}"
     }
