@@ -15,10 +15,11 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
+  # For logging in tested functions
   $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/robocopy-functions/"
-
   $script:logfile = "${workingFolder}LogAndShowRobocopyError.Tests.log"
 
+  # For messages in tested functions
   $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 

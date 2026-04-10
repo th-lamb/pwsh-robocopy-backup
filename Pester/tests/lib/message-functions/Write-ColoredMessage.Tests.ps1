@@ -11,6 +11,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
+  # For messages in tested functions
   $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 

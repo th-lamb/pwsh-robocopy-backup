@@ -15,9 +15,8 @@ BeforeAll {
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
-
   # For logging in tested functions
+  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
   $script:logfile = "${workingFolder}Get-DirlistLineType.Tests.log"
 
   # For messages in tested functions

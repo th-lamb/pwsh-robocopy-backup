@@ -5,13 +5,17 @@ $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\inifile-functions.ps1"
 . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
+BeforeAll {
+  $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
+  . "${ProjectRoot}\lib\message-functions.ps1"
+  . "${ProjectRoot}\lib\inifile-functions.ps1"
+  . "${ProjectRoot}\lib\filesystem-functions.ps1"
+}
+
+
+
 Describe 'Update-ConfigProperty' {
   BeforeAll {
-    $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
-    . "${ProjectRoot}\lib\message-functions.ps1"
-    . "${ProjectRoot}\lib\inifile-functions.ps1"
-    . "${ProjectRoot}\lib\filesystem-functions.ps1"
-
     # We need a mock for Get-ExpandedPath as it's called for String types
     Mock Get-ExpandedPath {
       param($PathSpec)
@@ -81,16 +85,18 @@ Describe 'Update-ConfigProperty' {
     It 'Injects the variable into the caller scope for cross-references.' {
       $Config = [ScriptConfig]::new()
 
+      #TODO: Created by Gemini - Explanation needed!
       # We call it and check if a local variable is created in THIS scope
       # Note: Scope 1 in Update-ConfigProperty refers to its caller, which is this 'It' block.
       Update-ConfigProperty -Config $Config -TargetContainer 'General' -Key 'MY_TEST_VAR' -Val 'SomeValue'
       # MY_TEST_VAR won't be in $Config because it's not a property of GeneralSettings,
       # but it SHOULD be set as a local variable if it WERE a property.
-      # Wait, the code checks if the property exists FIRST.
+      #TODO: Wait, the code checks if the property exists FIRST.
       # Let's use an existing property.
 
       Update-ConfigProperty -Config $Config -TargetContainer 'General' -Key '__VERBOSE' -Val '4'
 
+      #TODO: Explanation: why is $__VERBOSE now defined?
       $__VERBOSE | Should -Be 4
     }
   }

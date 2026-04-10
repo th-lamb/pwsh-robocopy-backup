@@ -12,16 +12,18 @@ BeforeAll {
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
   $script:config = [ScriptConfig]::new()
-
-  Mock Write-ColoredMessage {
-    $script:used_severity = $Severity
-    $script:used_message = $Message
-  } -Verifiable
 }
 
 
 
 Describe 'Write-EmergMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   It 'Calls Write-ColoredMessage with "emerg" and specified message.' {
     $test_severity    = "emerg"
     $test_message     = "Test message"
@@ -42,6 +44,13 @@ Describe 'Write-EmergMsg' {
 }
 
 Describe 'Write-AlertMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   It 'Calls Write-ColoredMessage with "alert" and specified message.' {
     $test_severity    = "alert"
     $test_message     = "Test message"
@@ -62,6 +71,13 @@ Describe 'Write-AlertMsg' {
 }
 
 Describe 'Write-CritMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   It 'Calls Write-ColoredMessage with "crit" and specified message.' {
     $test_severity    = "crit"
     $test_message     = "Test message"
@@ -82,6 +98,13 @@ Describe 'Write-CritMsg' {
 }
 
 Describe 'Write-ErrMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   It 'Calls Write-ColoredMessage with "err" and specified message.' {
     $test_severity    = "err"
     $test_message     = "Test message"
@@ -102,6 +125,13 @@ Describe 'Write-ErrMsg' {
 }
 
 Describe 'Write-WarningMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with "warning" and specified message for $__VERBOSE >= 4.' {
       $test_severity    = "warning"
@@ -147,6 +177,13 @@ Describe 'Write-WarningMsg' {
 }
 
 Describe 'Write-NoticeMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with "notice" and specified message for $__VERBOSE >= 5.' {
       $test_severity    = "notice"
@@ -192,6 +229,13 @@ Describe 'Write-NoticeMsg' {
 }
 
 Describe 'Write-InfoMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with "info" and specified message for $__VERBOSE >= 6.' {
       $test_severity    = "info"
@@ -237,6 +281,13 @@ Describe 'Write-InfoMsg' {
 }
 
 Describe 'Write-DebugMsg' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with "debug" and specified message for $__VERBOSE >= 7.' {
       $test_severity    = "debug"

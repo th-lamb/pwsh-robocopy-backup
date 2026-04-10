@@ -12,16 +12,18 @@ BeforeAll {
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
   $script:config = [ScriptConfig]::new()
-
-  Mock Write-ColoredMessage {
-    $script:used_severity = $Severity
-    $script:used_message = $Message
-  } -Verifiable
 }
 
 
 
 Describe 'Write-QuietMessage' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   Context 'Correctly used' {
     It 'Calls Write-WarningMsg with the specified message.' {
       $test_message = "Test message"
@@ -47,6 +49,13 @@ Describe 'Write-QuietMessage' {
 }
 
 Describe 'Write-NormalMessage' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with an INFO if $__VERBOSE >= 5 (notice).' {
       $test_message = "Test message"
@@ -92,6 +101,13 @@ Describe 'Write-NormalMessage' {
 }
 
 Describe 'Write-VerboseMessage' {
+  BeforeAll {
+    Mock Write-ColoredMessage {
+      $script:used_severity = $Severity
+      $script:used_message = $Message
+    } -Verifiable
+  }
+
   Context 'Correctly used' {
     It 'Calls Write-ColoredMessage with an INFO only if $__VERBOSE = 7 (debug).' {
       $test_message = "Test message"

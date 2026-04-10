@@ -9,18 +9,11 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
 
-  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
-
-  $script:DefaultJob = "Incremental"
-
   # For logging in tested functions (mandatory parameter) - but should not be written to because we use Mocks.
+  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
   $script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
 
-  Mock _showJobTypeList {}
-  Mock Add-LogMessage {
-    # $script:used_severity = $Severity
-    # $script:used_message = $Message
-  } #-Verifiable
+  $script:DefaultJob = "Incremental"
 }
 
 
@@ -31,6 +24,12 @@ Describe 'Get-UserSelectedJobType' {
     # Set-StrictMode from the enclosing script or Describe block.
     # BeforeEach is the only place where Set-StrictMode reliably applies inside It blocks.
     Set-StrictMode -Version Latest
+
+    Mock _showJobTypeList {}
+    Mock Add-LogMessage {
+      # $script:used_severity = $Severity
+      # $script:used_message = $Message
+    } #-Verifiable
   }
 
   Context 'User selects a job type' {

@@ -5,8 +5,8 @@ BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\logging-functions.ps1"
 
+  # For logging in tested functions
   $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/logging-functions/"
-
   $script:logfile = "${workingFolder}Add-EmptyLineToLogfile.Tests.log"
 }
 
