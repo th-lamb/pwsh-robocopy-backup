@@ -87,7 +87,55 @@ function Get-Container {
   return $SectionMap[$iniHeader]
 }
 
-#TODO: Add Pester tests for Read-Config (as the order ones for Read-SettingsFile)
+function Update-ConfigProperty {
+  <# Updates the specified property in the Configuration Object.
+    Handles type conversion (Boolean, String, etc.) and variable expansion.
+  #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [ScriptConfig]$Config,
+    [Parameter(Mandatory = $true)]
+    [string]$TargetContainer,
+    [Parameter(Mandatory = $true)]
+    [string]$Key,
+    [Parameter(Mandatory = $true)]
+    [string]$Val
+  )
+
+  $SubObject = $Config.$TargetContainer
+
+  # Use PowerShell's hidden 'PSObject' to check if the property exists
+  if ($SubObject.PSObject.Properties[$Key] -and -not [string]::IsNullOrWhiteSpace($Val)) {
+    $prop = $SubObject.PSObject.Properties[$Key]
+
+    # Handle Booleans correctly
+    if ($prop.TypeNameOfValue -eq 'System.Boolean') {
+      if ($Val -match '^(true|1|yes|on)$') { $SubObject.$Key = $true }
+      elseif ($Val -match '^(false|0|no|off)$') { $SubObject.$Key = $false }
+    }
+    # Expand paths for strings
+    elseif ($prop.TypeNameOfValue -eq 'System.String') {
+      # Temporarily set a local variable so that cross-references in the INI file
+      # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
+      $SubObject.$Key = Get-ExpandedPath $Val
+
+      # Fix missing backslashes BEFORE the variable is used for further expansion
+      $Config.Normalize()
+    }
+    else {
+      $SubObject.$Key = $Val
+    }
+
+    # Set variable in caller's scope for cross-references
+    Set-Variable -Name $Key -Value $SubObject.$Key -Scope 1
+  }
+}
+
+
+
+#TODO: Add Pester tests for Read-Config (as the other ones for Read-SettingsFile)
 function Read-Config {
   <# Reads the specified INI file and returns a Configuration Object with all settings.
     The structure of the Config Object is like $Config.Container.Property = Value
@@ -107,7 +155,9 @@ function Read-Config {
   }
 
   $IniFileContent = Get-Content "${IniFile}"
-  $TargetContainer = $null
+
+  # Default to 'General' section for top-level settings (Finding 5)
+  $TargetContainer = "General"
 
   # Temporarily disable -WhatIf to ensure the configuration is loaded into the script scope (PowerShell 5.1 workaround).
   $oldWhatIfPreference = $WhatIfPreference
@@ -126,36 +176,10 @@ function Read-Config {
         }
       }
       elseif ($Line -match '^(.+?)=(.+)$' -and $TargetContainer) {
-        $key = $Matches[1].Trim()
-        $val = $Matches[2].Trim()
+        $Key = $Matches[1].Trim()
+        $Val = $Matches[2].Trim()
 
-        $SubObject = $Config.$TargetContainer
-
-        # Use PowerShell's hidden 'PSObject' to check if the property exists
-        if ($SubObject.PSObject.Properties[$key] -and -not [string]::IsNullOrWhiteSpace($val)) {
-          $prop = $SubObject.PSObject.Properties[$key]
-
-          # Handle Booleans correctly
-          if ($prop.TypeNameOfValue -eq 'System.Boolean') {
-            if ($val -match '^(true|1|yes|on)$') { $SubObject.$key = $true }
-            elseif ($val -match '^(false|0|no|off)$') { $SubObject.$key = $false }
-          }
-          # Expand paths for strings
-          elseif ($prop.TypeNameOfValue -eq 'System.String') {
-            # Temporarily set a local variable so that cross-references in the INI file
-            # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
-            $SubObject.$key = Get-ExpandedPath $val
-
-            # Fix missing backslashes BEFORE the variable is used for further expansion
-            $Config.Normalize()
-
-            Set-Variable -Name $key -Value $SubObject.$key -Scope Local
-          }
-          else {
-            $SubObject.$key = $val
-            Set-Variable -Name $key -Value $SubObject.$key -Scope Local
-          }
-        }
+        Update-ConfigProperty -Config $Config -TargetContainer $TargetContainer -Key $Key -Val $Val
       }
     }
 
