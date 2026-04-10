@@ -21,9 +21,9 @@ function LogAndShowRobocopyError {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [String]$logfile,
+    [string]$logfile,
     [Parameter(Mandatory=$true)]
-    [String]$JobName,
+    [string]$JobName,
     [Parameter(Mandatory=$true)]
     [ValidateRange(0,16)]
     [System.Byte]$ExitCode

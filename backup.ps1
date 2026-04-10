@@ -75,9 +75,9 @@ function Write-EarlyMsg {
   param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('EMERG', 'ALERT', 'CRIT', 'ERR', 'WARNING', 'NOTICE', 'INFO', 'DEBUG')]
-    [String]$severity,
+    [string]$severity,
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   # Store the message for later.
@@ -131,7 +131,7 @@ $WhatIfPreference = $oldWhatIfPreference
 
 #region Helpers
 
-[Boolean]$CalledViaRightclick = $false
+[bool]$CalledViaRightclick = $false
 
 if ($MyInvocation.InvocationName.Equals("&")) {
   # Windows PowerShell
@@ -374,25 +374,25 @@ LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "----- Creating job files 
 #>
 
 # Local variables
-[Int32]$SourceDefinitionsCount = 0
+[int32]$SourceDefinitionsCount = 0
 
-[System.Boolean]$StartNewJob = $false
-[Int32]$CurrentJobNum = 0
-[String]$CurrentSourceDefinition = ""  # Last source definition, in case entries consist of more than one line.
-[String]$CurrentSourceType = ""
+[bool]$StartNewJob = $false
+[int32]$CurrentJobNum = 0
+[string]$CurrentSourceDefinition = ""  # Last source definition, in case entries consist of more than one line.
+[string]$CurrentSourceType = ""
 
-[System.Boolean]$FinishPreviousJob = $false
-[System.Boolean]$ContinueCurrentJob = $false
-[System.Boolean]$SingleFileDefinition = $false
-[System.Boolean]$SingleFileJob = $false
+[bool]$FinishPreviousJob = $false
+[bool]$ContinueCurrentJob = $false
+[bool]$SingleFileDefinition = $false
+[bool]$SingleFileJob = $false
 
-[String]$SourceDir = ""
-[String]$TargetDir = ""
+[string]$SourceDir = ""
+[string]$TargetDir = ""
 $IncludedFiles = [System.Collections.Generic.List[string]]::new()
 $ExcludedDirs = [System.Collections.Generic.List[string]]::new()
 $ExcludedFiles = [System.Collections.Generic.List[string]]::new()
 
-[Int32]$JobsCreatedCount = 0
+[int32]$JobsCreatedCount = 0
 
 function Invoke-AddJobFile {
   # Creates the current job using all values collected from the dir-list.
@@ -652,9 +652,9 @@ Write-DebugMsg "-----".PadRight(70, "-")
 
 #region Run jobs
 
-[Int32]$JobResultOkCount = 0
-[Int32]$JobResultWarningCount = 0
-[Int32]$JobResultErrorCount = 0
+[int32]$JobResultOkCount = 0
+[int32]$JobResultWarningCount = 0
+[int32]$JobResultErrorCount = 0
 
 $JobFiles = @(Get-ChildItem -Path (Join-Path $Config.Directories.BACKUP_JOB_DIR "*") -Include $Config.Jobs.JOB_FILE_NAME_SCHEME -File |
 Sort-Object { [int]([regex]::Match($_.Name, 'Job(\d+)\.RCJ').Groups[1].Value) })
@@ -675,7 +675,7 @@ else {
       Write-InfoMsg "Job: ${UserDefinedJob}..."
 
       #TODO: Make sure we don't add an "empty" /job: statement for JOB_LOGFILE_VERBOSITY=none!
-      [Int32]$RobocopyExitCode = 0
+      [int32]$RobocopyExitCode = 0
       if ($PSCmdlet.ShouldProcess("${UserDefinedJob}", "Run Robocopy job")) {
         & "${RobocopyExecutable}" `
           "/job:${RobocopyJobTypeTemplate}" `
@@ -693,9 +693,9 @@ else {
       Write-DebugMsg "Robocopy exit code: $RobocopyExitCode"
 
       # Log errors. Use the jobname (Job1..n) from the filename.
-      [Int32]$JobNamePosition = ("${UserDefinedJob}".LastIndexOf("-") + 1)
-      [Int32]$JobNameLength = ("${UserDefinedJob}".LastIndexOf(".") - $JobNamePosition)
-      [String]$JobName = "${UserDefinedJob}".Substring($JobNamePosition, $JobNameLength)
+      [int32]$JobNamePosition = ("${UserDefinedJob}".LastIndexOf("-") + 1)
+      [int32]$JobNameLength = ("${UserDefinedJob}".LastIndexOf(".") - $JobNamePosition)
+      [string]$JobName = "${UserDefinedJob}".Substring($JobNamePosition, $JobNameLength)
 
       LogAndShowRobocopyError $Config.Logging.BACKUP_LOGFILE "${JobName}" $RobocopyExitCode
 

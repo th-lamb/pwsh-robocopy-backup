@@ -35,7 +35,7 @@ function _showJobTypeList {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
-    [String]$DefaultJobType
+    [string]$DefaultJobType
   )
 
   Write-Host "__________________________________________________"
@@ -88,11 +88,11 @@ function Get-UserSelectedJobType {
   Param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
-    [String]$DefaultJobType,
+    [string]$DefaultJobType,
     [Parameter(Mandatory = $true)]
-    [String]$logfile,
+    [string]$logfile,
     [Parameter(Mandatory = $true)]
-    [Int32]$MaxWaitingTimeS,
+    [int32]$MaxWaitingTimeS,
     # Skip all interactive prompts and pauses (useful for automation/CI).
     [Parameter(Mandatory = $false)]
     [switch]$NonInteractive
@@ -105,10 +105,10 @@ function Get-UserSelectedJobType {
 
   Add-LogMessage -logfile "${logfile}" -severity INFO -message "Asking the user for the job-type..."
 
-  [Int32]$MaxWaitTimeMilliseconds = $MaxWaitingTimeS * 1000
-  [Int32]$CheckIntervalMilliseconds = 100
-  [Int32]$AlreadyWaitedMilliseconds = 0
-  [String]$result = ""
+  [int32]$MaxWaitTimeMilliseconds = $MaxWaitingTimeS * 1000
+  [int32]$CheckIntervalMilliseconds = 100
+  [int32]$AlreadyWaitedMilliseconds = 0
+  [string]$result = ""
   $keyInfo = $null
 
   _showJobTypeList "${DefaultJobType}"
@@ -142,7 +142,7 @@ function Get-UserSelectedJobType {
   # Extract the key name as a string.
   # Works for both real [ConsoleKeyInfo] and Pester mock [PSCustomObject], since both
   # expose a .Key property of type [ConsoleKey] whose .ToString() yields the key name.
-  [String]$pressedKey = ""
+  [string]$pressedKey = ""
   if ($null -ne $keyInfo) {
     $pressedKey = $keyInfo.Key.ToString()
   }

@@ -46,16 +46,16 @@ Describe 'Add-JobFile' {
   Context 'Different line types in dir-list' {
     It 'Writes a correct job file for line type: source-dir.' {
       # Parameters
-      [String]$backup_job_dir = "${created_jobfiles_folder}"
-      [String]$computername   = "MyComputer"
-      [Int32]$current_job_num = 1
-      [String]$dirlist_entry  = "C:\foo\"
-      [String]$source_dir     = "C:\foo\"
-      [String]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir = "${created_jobfiles_folder}"
+      [string]$computername   = "MyComputer"
+      [int32]$current_job_num = 1
+      [string]$dirlist_entry  = "C:\foo\"
+      [string]$source_dir     = "C:\foo\"
+      [string]$target_dir     = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
       $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
-      [System.Boolean]$copy_single_file = $false
+      [bool]$copy_single_file = $false
 
       # Add data to the arrays?
       #$included_files
@@ -78,16 +78,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: source-file.' {
       # Parameters
-      [String]$backup_job_dir = "${created_jobfiles_folder}"
-      [String]$computername   = "MyComputer"
-      [Int32]$current_job_num = 2
-      [String]$dirlist_entry  = "C:\foo\bar.txt"
-      [String]$source_dir     = "C:\foo\"
-      [String]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir = "${created_jobfiles_folder}"
+      [string]$computername   = "MyComputer"
+      [int32]$current_job_num = 2
+      [string]$dirlist_entry  = "C:\foo\bar.txt"
+      [string]$source_dir     = "C:\foo\"
+      [string]$target_dir     = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
       $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
-      [System.Boolean]$copy_single_file = $true
+      [bool]$copy_single_file = $true
 
       # Add data to the arrays?
       $included_files.Add("bar.txt")
@@ -110,16 +110,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: source-file-pattern.' {
       # Parameters
-      [String]$backup_job_dir = "${created_jobfiles_folder}"
-      [String]$computername   = "MyComputer"
-      [Int32]$current_job_num = 3
-      [String]$dirlist_entry  = "C:\foo\*.txt"
-      [String]$source_dir     = "C:\foo\"
-      [String]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir = "${created_jobfiles_folder}"
+      [string]$computername   = "MyComputer"
+      [int32]$current_job_num = 3
+      [string]$dirlist_entry  = "C:\foo\*.txt"
+      [string]$source_dir     = "C:\foo\"
+      [string]$target_dir     = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
       $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
-      [System.Boolean]$copy_single_file = $true
+      [bool]$copy_single_file = $true
 
       # Add data to the arrays?
       $included_files.Add("*.txt")
@@ -142,16 +142,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: incl-files-pattern.' {
       # Parameters
-      [String]$backup_job_dir = "${created_jobfiles_folder}"
-      [String]$computername   = "MyComputer"
-      [Int32]$current_job_num = 4
-      [String]$dirlist_entry  = "C:\foo\"
-      [String]$source_dir     = "C:\foo\"
-      [String]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir = "${created_jobfiles_folder}"
+      [string]$computername   = "MyComputer"
+      [int32]$current_job_num = 4
+      [string]$dirlist_entry  = "C:\foo\"
+      [string]$source_dir     = "C:\foo\"
+      [string]$target_dir     = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
       $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
-      [System.Boolean]$copy_single_file = $false
+      [bool]$copy_single_file = $false
 
       # Add data to the arrays?
       # Explicit cast to [string[]] is needed because AddRange expects IEnumerable[string].
@@ -175,16 +175,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: excl-files-pattern.' {
       # Parameters
-      [String]$backup_job_dir = "${created_jobfiles_folder}"
-      [String]$computername   = "MyComputer"
-      [Int32]$current_job_num = 5
-      [String]$dirlist_entry  = "C:\foo\"
-      [String]$source_dir     = "C:\foo\"
-      [String]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir = "${created_jobfiles_folder}"
+      [string]$computername   = "MyComputer"
+      [int32]$current_job_num = 5
+      [string]$dirlist_entry  = "C:\foo\"
+      [string]$source_dir     = "C:\foo\"
+      [string]$target_dir     = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
       $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
-      [System.Boolean]$copy_single_file = $false
+      [bool]$copy_single_file = $false
 
       # Add data to the arrays?
       #$included_files
@@ -208,16 +208,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: excl-dirs-pattern.' {
       # Parameters
-      [String]$backup_job_dir = "${created_jobfiles_folder}"
-      [String]$computername   = "MyComputer"
-      [Int32]$current_job_num = 6
-      [String]$dirlist_entry  = "C:\foo\"
-      [String]$source_dir     = "C:\foo\"
-      [String]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir = "${created_jobfiles_folder}"
+      [string]$computername   = "MyComputer"
+      [int32]$current_job_num = 6
+      [string]$dirlist_entry  = "C:\foo\"
+      [string]$source_dir     = "C:\foo\"
+      [string]$target_dir     = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
       $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
-      [System.Boolean]$copy_single_file = $false
+      [bool]$copy_single_file = $false
 
       # Add data to the arrays?
       #$included_files

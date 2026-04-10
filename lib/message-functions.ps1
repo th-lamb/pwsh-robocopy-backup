@@ -103,7 +103,7 @@ TODO:
     [Parameter(Mandatory = $true)]
     [SeverityKeyword]$severity,
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   $IsError = $false
@@ -227,7 +227,7 @@ function Write-EmergMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-ColoredMessage ([SeverityKeyword]::EMERG) "[EMERG  ] ${message}"
@@ -241,7 +241,7 @@ function Write-AlertMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-ColoredMessage ([SeverityKeyword]::ALERT) "[ALERT  ] ${message}"
@@ -255,7 +255,7 @@ function Write-CritMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-ColoredMessage ([SeverityKeyword]::CRIT) "[CRIT   ] ${message}"
@@ -269,7 +269,7 @@ function Write-ErrMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-ColoredMessage ([SeverityKeyword]::ERR) "[ERR    ] ${message}"
@@ -281,7 +281,7 @@ function Write-WarningMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   if (! (Test-VerbosityIsDefined) ) {
@@ -300,7 +300,7 @@ function Write-NoticeMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   if (! (Test-VerbosityIsDefined) ) {
@@ -319,7 +319,7 @@ function Write-InfoMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   if (! (Test-VerbosityIsDefined) ) {
@@ -338,7 +338,7 @@ function Write-DebugMsg {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   if (! (Test-VerbosityIsDefined) ) {
@@ -369,9 +369,9 @@ function Exit-WithEmergMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$ExitCode,
+    [int32]$ExitCode,
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-EmergMsg "${message}"
@@ -390,9 +390,9 @@ function Exit-WithAlertMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$ExitCode,
+    [int32]$ExitCode,
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-AlertMsg "${message}"
@@ -411,9 +411,9 @@ function Exit-WithCritMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$ExitCode,
+    [int32]$ExitCode,
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-CritMsg "${message}"
@@ -432,9 +432,9 @@ function Exit-WithErrMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [Int32]$ExitCode,
+    [int32]$ExitCode,
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   Write-ErrMsg "${message}"
@@ -455,7 +455,7 @@ function Write-QuietMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   # Colored warning message if ${__VERBOSE} >= 4.
@@ -473,7 +473,7 @@ function Write-NormalMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?
@@ -496,7 +496,7 @@ function Write-VerboseMessage {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$message
+    [string]$message
   )
 
   # Check: ${__VERBOSE} is defined and between 0..7?

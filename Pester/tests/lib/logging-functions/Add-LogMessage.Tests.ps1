@@ -14,7 +14,7 @@ BeforeAll {
 
   function Format-RegexString {
     Param(
-      [String]$message
+      [string]$message
     )
 
     $temp = "${message}".Replace("[", "\[")

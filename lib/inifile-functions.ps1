@@ -96,7 +96,7 @@ function Read-Config {
   [OutputType([ScriptConfig])]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$IniFile
+    [string]$IniFile
   )
 
   $Config = [ScriptConfig]::new()

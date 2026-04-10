@@ -12,7 +12,7 @@ function Get-RealFsObjectType {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$PathSpec
+    [string]$PathSpec
   )
 
   $SpecifiedType = Get-SpecifiedFsObjectType "${PathSpec}"
@@ -158,7 +158,7 @@ function Get-SpecifiedFsObjectType {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$PathSpec
+    [string]$PathSpec
   )
 
   # Test 1: drive letter
@@ -262,7 +262,7 @@ function Get-SpecifiedBackupBaseDirType {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$PathSpec
+    [string]$PathSpec
   )
 
   $SpecifiedType = Get-SpecifiedFsObjectType "${PathSpec}"
@@ -295,11 +295,11 @@ function Get-SpecifiedBackupBaseDirType {
 function Test-FileExists {
   # Returns $true if the specified file exists; otherwise $false.
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
-  [OutputType([System.Boolean])]
+  [OutputType([bool])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$FileSpec
+    [string]$FileSpec
   )
 
   if (Test-Path -Path "${FileSpec}" -PathType Leaf) {
@@ -313,11 +313,11 @@ function Test-FileExists {
 function Test-FolderExists {
   # Returns $true if the specified folder exists; otherwise $false.
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
-  [OutputType([System.Boolean])]
+  [OutputType([bool])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$FolderSpec
+    [string]$FolderSpec
   )
 
   if (Test-Path -Path "${FolderSpec}" -PathType Container) {
@@ -333,11 +333,11 @@ function Test-NecessaryDirectory {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$DefinitionName,
+    [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
-    [String]$DirectorySpec,
+    [string]$DirectorySpec,
     [Parameter(Mandatory = $true)]
-    [String]$logfile
+    [string]$logfile
   )
 
   if (! (Test-FolderExists "${DirectorySpec}") ) {
@@ -352,11 +352,11 @@ function Test-NecessaryFile {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$DefinitionName,
+    [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
-    [String]$FileSpec,
+    [string]$FileSpec,
     [Parameter(Mandatory = $true)]
-    [String]$logfile
+    [string]$logfile
   )
 
   if (! (Test-FileExists "${FileSpec}") ) {
@@ -375,11 +375,11 @@ function Get-ExecutablePath {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$DefinitionName,
+    [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
-    [String]$FileSpec,
+    [string]$FileSpec,
     [Parameter(Mandatory = $true)]
-    [String]$logfile
+    [string]$logfile
   )
 
   if (Test-FileExists "${FileSpec}") {
@@ -408,15 +408,15 @@ function Get-ExecutablePath {
 function New-Directory {
   # Creates the specified directory and all parent folders if necessary.
   # Returns $true if the directory has been created; otherwise $false.
-  [OutputType([System.Boolean])]
+  [OutputType([bool])]
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$DefinitionName,
+    [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
-    [String]$DirectorySpec,
+    [string]$DirectorySpec,
     [Parameter(Mandatory = $true)]
-    [String]$logfile
+    [string]$logfile
   )
 
   <# https://stackoverflow.com/a/63311340
@@ -449,17 +449,17 @@ function New-FileFromTemplate {
   <# Creates the specified file from the specified template.
     Returns $true if the file has been copied; otherwise $false.
   #>
-  [OutputType([System.Boolean])]
+  [OutputType([bool])]
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$DefinitionName,
+    [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
-    [String]$FileSpec,
+    [string]$FileSpec,
     [Parameter(Mandatory = $true)]
-    [String]$template,
+    [string]$template,
     [Parameter(Mandatory = $true)]
-    [String]$logfile
+    [string]$logfile
   )
 
   if (Test-FileExists "${FileSpec}") {
@@ -680,7 +680,7 @@ function Get-ExpandedPath {
   param (
     [Parameter(Mandatory = $true)]
     [AllowEmptyString()]
-    [String]$PathSpec
+    [string]$PathSpec
   )
 
   # Expand script variables.
@@ -736,7 +736,7 @@ function Get-ParentDir {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$FileSpec
+    [string]$FileSpec
   )
 
   Write-DebugMsg "Get-ParentDir(): FileSpec       : ${FileSpec}"
@@ -759,7 +759,7 @@ function Get-ParentDir {
   Write-DebugMsg "Get-ParentDir(): dots evaluated : ${DotsEvaluated}"
 
   # Avoid ParameterBindingValidationException with "" for example when FileSpec is "C:\..".
-  if ([String]::IsNullOrEmpty($DotsEvaluated)) {
+  if ([string]::IsNullOrEmpty($DotsEvaluated)) {
     return [FsObjectResult]@{
       Exists = $false
       # Type   = $null      # Must be omitted to prevent PowerShell from converting it to ""!
@@ -769,7 +769,7 @@ function Get-ParentDir {
   $ParentDirectory = Split-Path -Path "${DotsEvaluated}"
   Write-DebugMsg "Get-ParentDir(): ParentDirectory: ${ParentDirectory}"
 
-  if ([String]::IsNullOrEmpty($ParentDirectory)) {
+  if ([string]::IsNullOrEmpty($ParentDirectory)) {
     return [FsObjectResult]@{
       Exists = $false
       # Type   = $null      # Must be omitted to prevent PowerShell from converting it to ""!

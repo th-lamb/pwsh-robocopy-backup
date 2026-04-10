@@ -17,8 +17,8 @@ BeforeAll {
   function Test-SeverityExpectedBackgroundColor {
     param (
       [SeverityKeyword]$Severity,
-      [String]$Message,
-      [String]$ExpectedBackgroundColor
+      [string]$Message,
+      [string]$ExpectedBackgroundColor
     )
 
     #TODO: Does not fail with multiple parameter checks (e.g. $BackgroundColor + $ForegroundColor) at the same time!
@@ -42,8 +42,8 @@ BeforeAll {
   function Test-SeverityExpectedForegroundColor {
     param (
       [SeverityKeyword]$Severity,
-      [String]$Message,
-      [String]$ExpectedForegroundColor
+      [string]$Message,
+      [string]$ExpectedForegroundColor
     )
 
     # We store the used ForegroundColor for a better error message.

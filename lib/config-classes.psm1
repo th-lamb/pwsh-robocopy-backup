@@ -135,8 +135,8 @@ class ScriptConfig {
 
 class FsObjectResult {
   [bool]$Exists   # $true or $false
-  [String]$Type   # "directory", "file", ..., or $null if unknown
-  [String]$Path   # The actual path of the found filesystem object
+  [string]$Type   # "directory", "file", ..., or $null if unknown
+  [string]$Path   # The actual path of the found filesystem object
 }
 
 #endregion Object types ########################################################

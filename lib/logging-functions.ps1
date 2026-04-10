@@ -13,7 +13,7 @@ function Format-SeverityLabel {
   [CmdletBinding()]
   param (
     #[ValidateSet("EMERG", "ALERT", "CRIT", "ERR", "WARNING", "NOTICE", "INFO", "DEBUG")]
-    #[String]$keyword
+    #[string]$keyword
     [Parameter(Mandatory=$true)]
     [SeverityKeyword]$keyword
   )
@@ -43,11 +43,11 @@ function Add-LogMessage {
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory=$true)]
-    [String]$logfile,
+    [string]$logfile,
     [Parameter(Mandatory=$true)]
     [SeverityKeyword]$severity,
     [Parameter(Mandatory=$true)]
-    [String]$message
+    [string]$message
   )
 
   $Timestamp = (Get-Date -Format s)
@@ -69,7 +69,7 @@ function Add-EmptyLineToLogfile {
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory=$true)]
-    [String]$logfile
+    [string]$logfile
   )
 
   try {
@@ -88,11 +88,11 @@ function LogAndShowMessage {
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory=$true)]
-    [String]$logfile,
+    [string]$logfile,
     [Parameter(Mandatory=$true)]
     [SeverityKeyword]$severity,
     [Parameter(Mandatory=$true)]
-    [String]$message
+    [string]$message
   )
 
   # Log the message.

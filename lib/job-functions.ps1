@@ -57,15 +57,15 @@ function Test-FsObjectTypeMismatch {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$SpecifiedType,
+    [string]$SpecifiedType,
     [Parameter(Mandatory = $false)]
     [AllowNull()]
-    [String]$ExistingType
+    [string]$ExistingType
   )
 
   # non-existent objects
   # Check for $null or empty string
-  if ([String]::IsNullOrEmpty($ExistingType)) {
+  if ([string]::IsNullOrEmpty($ExistingType)) {
     return "missing"
   }
 
@@ -120,9 +120,9 @@ function Get-DirlistLineType {
   [CmdletBinding()]
   param (
     #[Parameter(Mandatory=$true)]   # A line in the dir-list can be empty!
-    [String]$entry,
+    [string]$entry,
     [Parameter(Mandatory = $true)]
-    [String]$logfile
+    [string]$logfile
   )
 
   # ignore
@@ -230,9 +230,9 @@ function Get-TargetDir {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$BaseDirectory,
+    [string]$BaseDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$FolderSpec
+    [string]$FolderSpec
   )
 
   # Checks
@@ -278,11 +278,11 @@ function _addHeader {
     [AllowEmptyCollection()]
     [System.Collections.Generic.List[string]]$JobLines,
     [Parameter(Mandatory = $true)]
-    [String]$computername,
+    [string]$computername,
     [Parameter(Mandatory = $true)]
-    [Int32]$CurrentJobNumber,
+    [int32]$CurrentJobNumber,
     [Parameter(Mandatory = $true)]
-    [String]$DirlistEntry
+    [string]$DirlistEntry
   )
 
   #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
@@ -301,9 +301,9 @@ function _addSourceAndTarget {
     [AllowEmptyCollection()]
     [System.Collections.Generic.List[string]]$JobLines,
     [Parameter(Mandatory = $true)]
-    [String]$SourceDirectory,
+    [string]$SourceDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$TargetDirectory
+    [string]$TargetDirectory
   )
 
   $JobLines.Add(":: Source Directory")
@@ -322,7 +322,7 @@ function _addJobConfig {
     [AllowEmptyCollection()]
     [System.Collections.Generic.List[string]]$JobLines,
     [Parameter(Mandatory = $true)]
-    [String]$LogfilePath
+    [string]$LogfilePath
   )
 
   $JobLines.Add(":: ----- User settings ---------------------------------------------------------")
@@ -416,7 +416,7 @@ function _finalizeJob {
     [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedFiles,
     [Parameter(Mandatory = $true)]
-    [System.Boolean]$CopySingleFile
+    [bool]$CopySingleFile
   )
 
   $SpacerNeeded = $false
@@ -462,7 +462,7 @@ function _writeToJobfile {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$JobfilePath,
+    [string]$JobfilePath,
     [AllowEmptyCollection()]
     [System.Collections.Generic.List[string]]$JobLines
   )
@@ -486,17 +486,17 @@ function Add-JobFile {
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$BackupJobDirectory,
+    [string]$BackupJobDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$computername,
+    [string]$computername,
     [Parameter(Mandatory = $true)]
-    [Int32]$CurrentJobNumber,
+    [int32]$CurrentJobNumber,
     [Parameter(Mandatory = $true)]
-    [String]$DirlistEntry,
+    [string]$DirlistEntry,
     [Parameter(Mandatory = $true)]
-    [String]$SourceDirectory,
+    [string]$SourceDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$TargetDirectory,
+    [string]$TargetDirectory,
     [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$IncludedFiles,
     [Parameter(Mandatory = $false)]
@@ -504,7 +504,7 @@ function Add-JobFile {
     [Parameter(Mandatory = $false)]
     [System.Collections.Generic.List[string]]$ExcludedFiles,
     [Parameter(Mandatory = $true)]
-    [System.Boolean]$CopySingleFile
+    [bool]$CopySingleFile
   )
 
   Write-DebugMsg "Add-JobFile(): BackupJobDirectory : ${BackupJobDirectory}"

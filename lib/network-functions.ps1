@@ -5,7 +5,7 @@ function Get-ComputernameFromUncPath {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [String]$UncPath
+    [string]$UncPath
   )
 
   # Check if this really is a UNC path.
@@ -33,11 +33,11 @@ function Get-ComputernameFromUncPath {
 
 function Test-ServerIsAvailable {
   # Returns $true if the specified server is available; otherwise $false.
-  [OutputType([System.Boolean])]
+  [OutputType([bool])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [String]$ServerPathSpec
+    [string]$ServerPathSpec
   )
 
   # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/

@@ -38,7 +38,7 @@ function Remove-FileCollection {
   }
   #endregion Check parameters
 
-  [Int32]$DeletedFilesCount = 0
+  [int32]$DeletedFilesCount = 0
 
   foreach ($FileToDelete in $FilesToDelete) {
     if ($PSCmdlet.ShouldProcess("${FileToDelete}", "Delete file")) {
@@ -86,13 +86,13 @@ function Export-PreviousJobsArchive {
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (
     [Parameter(Mandatory = $true)]
-    [String]$BackupJobDirectory,
+    [string]$BackupJobDirectory,
     [Parameter(Mandatory = $true)]
-    [String]$JobNameScheme,
+    [string]$JobNameScheme,
     [Parameter(Mandatory = $true)]
-    [String]$JobLogNameScheme,
+    [string]$JobLogNameScheme,
     [Parameter(Mandatory = $true)]
-    [String]$ArchiveNameScheme,
+    [string]$ArchiveNameScheme,
     [Parameter(Mandatory = $true)]
     [System.Byte]$MaxArchivesCount  # 0..255
   )
