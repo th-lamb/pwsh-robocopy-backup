@@ -14,8 +14,8 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
   # For logging in tested functions
-  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
-  $Script:logfile = "${workingFolder}/Get-ExecutablePath.Tests.log"
+  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
+  $script:logfile = "${workingFolder}/Get-ExecutablePath.Tests.log"
 
   # For messages in tested functions
   $script:config = [ScriptConfig]::new()

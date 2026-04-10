@@ -5,7 +5,7 @@ BeforeAll {
   $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
+  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
 }
 
 

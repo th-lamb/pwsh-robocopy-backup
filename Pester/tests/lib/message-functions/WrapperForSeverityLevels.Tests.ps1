@@ -14,8 +14,8 @@ BeforeAll {
   $script:config = [ScriptConfig]::new()
 
   Mock Write-ColoredMessage {
-    $Script:used_severity = $Severity
-    $Script:used_message = $Message
+    $script:used_severity = $Severity
+    $script:used_message = $Message
   } -Verifiable
 }
 
@@ -30,8 +30,8 @@ Describe 'Write-EmergMsg' {
     Write-EmergMsg -Message "${test_message}"
 
     Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-    $Script:used_severity | Should -Be "${test_severity}"
-    $Script:used_message | Should -Be "${expected_message}"
+    $script:used_severity | Should -Be "${test_severity}"
+    $script:used_message | Should -Be "${expected_message}"
   }
 
   It 'Throws an exception when called with an empty message.' {
@@ -50,8 +50,8 @@ Describe 'Write-AlertMsg' {
     Write-AlertMsg -Message "${test_message}"
 
     Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-    $Script:used_severity | Should -Be "${test_severity}"
-    $Script:used_message | Should -Be "${expected_message}"
+    $script:used_severity | Should -Be "${test_severity}"
+    $script:used_message | Should -Be "${expected_message}"
   }
 
   It 'Throws an exception when called with an empty message.' {
@@ -70,8 +70,8 @@ Describe 'Write-CritMsg' {
     Write-CritMsg -Message "${test_message}"
 
     Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-    $Script:used_severity | Should -Be "${test_severity}"
-    $Script:used_message | Should -Be "${expected_message}"
+    $script:used_severity | Should -Be "${test_severity}"
+    $script:used_message | Should -Be "${expected_message}"
   }
 
   It 'Throws an exception when called with an empty message.' {
@@ -90,8 +90,8 @@ Describe 'Write-ErrMsg' {
     Write-ErrMsg -Message "${test_message}"
 
     Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-    $Script:used_severity | Should -Be "${test_severity}"
-    $Script:used_message | Should -Be "${expected_message}"
+    $script:used_severity | Should -Be "${test_severity}"
+    $script:used_message | Should -Be "${expected_message}"
   }
 
   It 'Throws an exception when called with an empty message.' {
@@ -112,8 +112,8 @@ Describe 'Write-WarningMsg' {
       Write-WarningMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-      $Script:used_severity | Should -Be "${test_severity}"
-      $Script:used_message | Should -Be "${expected_message}"
+      $script:used_severity | Should -Be "${test_severity}"
+      $script:used_message | Should -Be "${expected_message}"
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 4.' {
@@ -157,8 +157,8 @@ Describe 'Write-NoticeMsg' {
       Write-NoticeMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-      $Script:used_severity | Should -Be "${test_severity}"
-      $Script:used_message | Should -Be "${expected_message}"
+      $script:used_severity | Should -Be "${test_severity}"
+      $script:used_message | Should -Be "${expected_message}"
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 5.' {
@@ -202,8 +202,8 @@ Describe 'Write-InfoMsg' {
       Write-InfoMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-      $Script:used_severity | Should -Be "${test_severity}"
-      $Script:used_message | Should -Be "${expected_message}"
+      $script:used_severity | Should -Be "${test_severity}"
+      $script:used_message | Should -Be "${expected_message}"
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 6.' {
@@ -247,8 +247,8 @@ Describe 'Write-DebugMsg' {
       Write-DebugMsg -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-      $Script:used_severity | Should -Be "${test_severity}"
-      $Script:used_message | Should -Be "${expected_message}"
+      $script:used_severity | Should -Be "${test_severity}"
+      $script:used_message | Should -Be "${expected_message}"
     }
 
     It 'Does NOT call Write-ColoredMessage for $__VERBOSE < 7.' {

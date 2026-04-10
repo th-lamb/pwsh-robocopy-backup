@@ -9,17 +9,17 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
   . "${ProjectRoot}\lib\message-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
+  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
 
-  $Script:DefaultJob = "Incremental"
+  $script:DefaultJob = "Incremental"
 
   # For logging in tested functions (mandatory parameter) - but should not be written to because we use Mocks.
-  $Script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
+  $script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
 
   Mock _showJobTypeList {}
   Mock Add-LogMessage {
-    # $Script:used_severity = $Severity
-    # $Script:used_message = $Message
+    # $script:used_severity = $Severity
+    # $script:used_message = $Message
   } #-Verifiable
 }
 

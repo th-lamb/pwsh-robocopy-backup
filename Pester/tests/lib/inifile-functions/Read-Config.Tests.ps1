@@ -58,12 +58,12 @@ Describe 'Read-Config' {
       # Mock Write-WarningMsg to capture the message
       Mock Write-WarningMsg {
         param($message)
-        $Script:actualWarning = $message
+        $script:actualWarning = $message
       }
 
       $result = Read-Config -IniFile $IniFile
 
-      $Script:actualWarning | Should -Be $ExpectedWarning
+      $script:actualWarning | Should -Be $ExpectedWarning
       $result.GetType().Name | Should -Be "ScriptConfig"
       $result.General.__VERBOSE | Should -Be 6
     }

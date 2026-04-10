@@ -13,7 +13,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-archive-functions/"
+  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-archive-functions/"
 
   # For messages in tested functions
   $script:config = [ScriptConfig]::new()
@@ -25,7 +25,7 @@ BeforeAll {
   $JOB_FILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.RCJ"
   $JOB_LOGFILE_NAME_SCHEME = "${COMPUTERNAME}-Job*.log"
   $ARCHIVE_NAME_SCHEME = "${COMPUTERNAME}-Jobs-*.zip"
-  $Script:MAX_ARCHIVES_COUNT = 3
+  $script:MAX_ARCHIVES_COUNT = 3
 
   # Mocking functions (https://github.com/pester/Pester/issues/1589#issuecomment-637409980)
   function Get-TestFilenameSet {

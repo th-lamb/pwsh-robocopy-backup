@@ -7,10 +7,10 @@ BeforeAll {
   . "${ProjectRoot}\lib\message-functions.ps1"
   . "${ProjectRoot}\lib\logging-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\logging-functions\"
+  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\logging-functions\"
 
-  $Script:infoLog = "${workingFolder}info.log"
-  $Script:errorLog = "${workingFolder}error.log"
+  $script:infoLog = "${workingFolder}info.log"
+  $script:errorLog = "${workingFolder}error.log"
 
   function Format-RegexString {
     Param(

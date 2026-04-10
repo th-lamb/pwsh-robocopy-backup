@@ -14,8 +14,8 @@ BeforeAll {
   $script:config = [ScriptConfig]::new()
 
   Mock Write-ColoredMessage {
-    $Script:used_severity = $Severity
-    $Script:used_message = $Message
+    $script:used_severity = $Severity
+    $script:used_message = $Message
   } -Verifiable
 }
 
@@ -57,8 +57,8 @@ Describe 'Write-NormalMessage' {
       Write-NormalMessage -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-      $Script:used_severity | Should -Be "${test_severity}"
-      $Script:used_message | Should -Be "${expected_message}"
+      $script:used_severity | Should -Be "${test_severity}"
+      $script:used_message | Should -Be "${expected_message}"
     }
 
     It 'Does NOT call Write-ColoredMessage if $__VERBOSE < 5 (notice).' {
@@ -102,8 +102,8 @@ Describe 'Write-VerboseMessage' {
       Write-VerboseMessage -Message "${test_message}"
 
       Should -Invoke -CommandName "Write-ColoredMessage" -Times 1 -Exactly
-      $Script:used_severity | Should -Be "${test_severity}"
-      $Script:used_message | Should -Be "${expected_message}"
+      $script:used_severity | Should -Be "${test_severity}"
+      $script:used_message | Should -Be "${expected_message}"
     }
 
     It 'Does NOT call Write-ColoredMessage if $__VERBOSE < 7 (debug).' {

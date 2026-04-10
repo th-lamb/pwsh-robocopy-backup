@@ -32,7 +32,7 @@ BeforeAll {
     #}
 
     # We store the used BackgroundColor for a better error message.
-    Mock Write-Host { $Script:used_backgroundColor = $BackgroundColor } -Verifiable
+    Mock Write-Host { $script:used_backgroundColor = $BackgroundColor } -Verifiable
 
     Write-ColoredMessage $Severity "${Message}"
 
@@ -47,7 +47,7 @@ BeforeAll {
     )
 
     # We store the used ForegroundColor for a better error message.
-    Mock Write-Host { $Script:used_foregroundColor = $ForegroundColor } -Verifiable
+    Mock Write-Host { $script:used_foregroundColor = $ForegroundColor } -Verifiable
 
     Write-ColoredMessage $Severity "${Message}"
 

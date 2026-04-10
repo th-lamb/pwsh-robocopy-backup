@@ -7,7 +7,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\network-functions.ps1"
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
+  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
 }
 
 
@@ -17,7 +17,7 @@ BeforeAll {
 Describe 'Get-RealFsObjectType' {
   BeforeDiscovery {
     #$available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "Server" -Quiet
-    #$Script:skip_network_share_subfolder = !$available
+    #$script:skip_network_share_subfolder = !$available
     #Write-Host "skip_network_share_subfolder: $skip_network_share_subfolder" -ForegroundColor Yellow
   }
 

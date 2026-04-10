@@ -17,7 +17,7 @@ BeforeAll {
 
   $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/robocopy-functions/"
 
-  $Script:logfile = "${workingFolder}LogAndShowRobocopyError.Tests.log"
+  $script:logfile = "${workingFolder}LogAndShowRobocopyError.Tests.log"
 
   $script:config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6

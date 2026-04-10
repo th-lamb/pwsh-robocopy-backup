@@ -15,10 +15,10 @@ BeforeAll {
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
+  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
 
   # For logging in tested functions
-  $Script:logfile = "${workingFolder}Get-DirlistLineType.Tests.log"
+  $script:logfile = "${workingFolder}Get-DirlistLineType.Tests.log"
 
   # For messages in tested functions
   $script:config = [ScriptConfig]::new()

@@ -66,7 +66,7 @@ Set-StrictMode -Version Latest
 #region Bootstrap Logging
 
 # Message buffer for early events occurring before the logging library is loaded.
-$Script:earlyMsgBuffer = [System.Collections.Generic.List[PSObject]]::new()
+$script:earlyMsgBuffer = [System.Collections.Generic.List[PSObject]]::new()
 
 function Write-EarlyMsg {
   <# Local helper for logging before libraries are sourced.
@@ -82,7 +82,7 @@ function Write-EarlyMsg {
 
   # Store the message for later.
   $timestamp = Get-Date -Format s
-  $Script:earlyMsgBuffer.Add([PSCustomObject]@{
+  $script:earlyMsgBuffer.Add([PSCustomObject]@{
       Timestamp = $timestamp
       Severity  = $severity
       Message   = $message
@@ -318,11 +318,11 @@ Add-EmptyLineToLogfile $Config.Logging.BACKUP_LOGFILE # One empty line between t
 
 # Flushes early bootstrap messages to the real log file now that BACKUP_LOGFILE is available.
 if (![string]::IsNullOrWhiteSpace($Config.Logging.BACKUP_LOGFILE)) {
-  foreach ($msg in $Script:earlyMsgBuffer) {
+  foreach ($msg in $script:earlyMsgBuffer) {
     # Using direct Add-LogMessage (ignoring __VERBOSE for early mandatory info).
     Add-LogMessage -logfile $Config.Logging.BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
   }
-  $Script:earlyMsgBuffer.Clear()
+  $script:earlyMsgBuffer.Clear()
 }
 
 #endregion Start logging to actual logfile #####################################
@@ -401,17 +401,17 @@ function Invoke-AddJobFile {
   Add-JobFile `
     $Config.Directories.BACKUP_JOB_DIR `
     "${COMPUTERNAME}" `
-    $Script:CurrentJobNum `
+    $script:CurrentJobNum `
     "${Script:CurrentSourceDefinition}" `
     "${Script:SourceDir}" `
     "${Script:TargetDir}" `
-    $Script:IncludedFiles `
-    $Script:ExcludedDirs `
-    $Script:ExcludedFiles `
-    $Script:SingleFileJob
+    $script:IncludedFiles `
+    $script:ExcludedDirs `
+    $script:ExcludedFiles `
+    $script:SingleFileJob
 
-  $Script:JobsCreatedCount = ($Script:JobsCreatedCount + 1)
-  Write-DebugMsg "JobsCreatedCount  : $Script:JobsCreatedCount"
+  $script:JobsCreatedCount = ($script:JobsCreatedCount + 1)
+  Write-DebugMsg "JobsCreatedCount  : $script:JobsCreatedCount"
 
   Initialize-JobRelatedInfo
 
@@ -422,25 +422,25 @@ function Initialize-JobRelatedInfo {
   # Resets all values that apply for a whole job definition, possibly
   # consisting of multiple lines in the dir-list.
   Write-DebugMsg "Initialize-JobRelatedInfo()"
-  $Script:CurrentJobNum = 0
-  $Script:CurrentSourceDefinition = ""
-  $Script:CurrentSourceType = ""
-  $Script:SourceDir = ""
-  $Script:TargetDir = ""
-  $Script:IncludedFiles.Clear()
-  $Script:ExcludedDirs.Clear()
-  $Script:ExcludedFiles.Clear()
-  $Script:SingleFileJob = $false
+  $script:CurrentJobNum = 0
+  $script:CurrentSourceDefinition = ""
+  $script:CurrentSourceType = ""
+  $script:SourceDir = ""
+  $script:TargetDir = ""
+  $script:IncludedFiles.Clear()
+  $script:ExcludedDirs.Clear()
+  $script:ExcludedFiles.Clear()
+  $script:SingleFileJob = $false
 }
 
 function Initialize-LineRelatedInfo {
   # Resets all values that apply only for the current line in the dir-list.
   Write-DebugMsg "Initialize-LineRelatedInfo()"
-  $Script:StartNewJob = $false
-  $Script:FinishPreviousJob = $false
-  $Script:ContinueCurrentJob = $false
-  $Script:SingleFileDefinition = $false
-  $Script:LineType = ""
+  $script:StartNewJob = $false
+  $script:FinishPreviousJob = $false
+  $script:ContinueCurrentJob = $false
+  $script:SingleFileDefinition = $false
+  $script:LineType = ""
 }
 
 # Process the dir-list.
@@ -471,36 +471,36 @@ function _processDirectoryList {
         # The fallback value of function Get-DirlistLineType
         # No message: function Get-DirlistLineType reports the error/warning.
         #LogAndShowMessage $Config.Logging.BACKUP_LOGFILE ERR "Error in dir-list: ${line}"
-        $Script:FinishPreviousJob = $true
+        $script:FinishPreviousJob = $true
       }
       "invalid: *" {
         LogAndShowMessage $Config.Logging.BACKUP_LOGFILE WARNING "Invalid entry in dir-list: ${line}"
-        $Script:FinishPreviousJob = $true
+        $script:FinishPreviousJob = $true
       }
       "ignore" {
-        $Script:FinishPreviousJob = $true
+        $script:FinishPreviousJob = $true
       }
       "source-file" {
-        $Script:StartNewJob = $true
-        $Script:FinishPreviousJob = $true
-        $Script:SingleFileDefinition = $true  # Current line is a single-file definition - the job for it will be a single-file job.
+        $script:StartNewJob = $true
+        $script:FinishPreviousJob = $true
+        $script:SingleFileDefinition = $true  # Current line is a single-file definition - the job for it will be a single-file job.
 
         # https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-switch?view=powershell-7.3#multiple-matches
         continue
       }
       "source-*" {
         # Only source-dir or source-file-pattern
-        $Script:StartNewJob = $true
-        $Script:FinishPreviousJob = $true
+        $script:StartNewJob = $true
+        $script:FinishPreviousJob = $true
       }
       "incl-files-pattern" {
-        $Script:ContinueCurrentJob = $true
+        $script:ContinueCurrentJob = $true
       }
       "excl-files-pattern" {
-        $Script:ContinueCurrentJob = $true
+        $script:ContinueCurrentJob = $true
       }
       "excl-dirs-pattern" {
-        $Script:ContinueCurrentJob = $true
+        $script:ContinueCurrentJob = $true
       }
     }
 
@@ -508,15 +508,15 @@ function _processDirectoryList {
 
     #region Plausibility checks ------------------------------------------------
 
-    if ($Script:FinishPreviousJob) {
-      if ($Script:CurrentJobNum -eq 0) {
-        $Script:FinishPreviousJob = $false
+    if ($script:FinishPreviousJob) {
+      if ($script:CurrentJobNum -eq 0) {
+        $script:FinishPreviousJob = $false
       }
     }
 
-    if ($Script:ContinueCurrentJob) {
-      if ($Script:CurrentJobNum -eq 0) {
-        $Script:ContinueCurrentJob = $false
+    if ($script:ContinueCurrentJob) {
+      if ($script:CurrentJobNum -eq 0) {
+        $script:ContinueCurrentJob = $false
         LogAndShowMessage $Config.Logging.BACKUP_LOGFILE ERR "No folder/job defined for: ${line}"
       }
     }
@@ -524,12 +524,12 @@ function _processDirectoryList {
     #endregion Plausibility checks ---------------------------------------------
 
     # Show what we are going to do.
-    if ($Script:FinishPreviousJob -or $Script:StartNewJob -or $Script:ContinueCurrentJob -or $Script:SingleFileJob) {
+    if ($script:FinishPreviousJob -or $script:StartNewJob -or $script:ContinueCurrentJob -or $script:SingleFileJob) {
       $TaskList = [System.Collections.Generic.List[string]]::new()
-      if ($Script:FinishPreviousJob) { $TaskList.Add("Finish previous job") }
-      if ($Script:StartNewJob) { $TaskList.Add("Start new job") }
-      if ($Script:ContinueCurrentJob) { $TaskList.Add("Continue current job") }
-      if ($Script:SingleFileJob) { $TaskList.Add("Copy single file") }
+      if ($script:FinishPreviousJob) { $TaskList.Add("Finish previous job") }
+      if ($script:StartNewJob) { $TaskList.Add("Start new job") }
+      if ($script:ContinueCurrentJob) { $TaskList.Add("Continue current job") }
+      if ($script:SingleFileJob) { $TaskList.Add("Copy single file") }
 
       $tasks = ($TaskList -join ", ")
       Write-DebugMsg "Task(s)                 : ${tasks}"
@@ -540,36 +540,36 @@ function _processDirectoryList {
 
     #region Actual job creation ------------------------------------------------
 
-    if ($Script:FinishPreviousJob) {
+    if ($script:FinishPreviousJob) {
       Write-DebugMsg "----- Finishing the previous job -----".PadRight(70, "-")
       Invoke-AddJobFile
     }
 
-    if ($Script:StartNewJob) {
+    if ($script:StartNewJob) {
       Write-DebugMsg "----- Starting a new job -----".PadRight(70, "-")
-      $Script:SourceDefinitionsCount = ($Script:SourceDefinitionsCount + 1)
-      $Script:CurrentJobNum = $Script:SourceDefinitionsCount
-      $Script:CurrentSourceDefinition = "${line}"
-      $Script:CurrentSourceType = "${LineType}"
-      $Script:SingleFileJob = $Script:SingleFileDefinition
+      $script:SourceDefinitionsCount = ($script:SourceDefinitionsCount + 1)
+      $script:CurrentJobNum = $script:SourceDefinitionsCount
+      $script:CurrentSourceDefinition = "${line}"
+      $script:CurrentSourceType = "${LineType}"
+      $script:SingleFileJob = $script:SingleFileDefinition
 
-      Write-DebugMsg "SourceDefinitionsCount  : $Script:SourceDefinitionsCount"
-      Write-DebugMsg "CurrentJobNum           : $Script:CurrentJobNum"
+      Write-DebugMsg "SourceDefinitionsCount  : $script:SourceDefinitionsCount"
+      Write-DebugMsg "CurrentJobNum           : $script:CurrentJobNum"
       Write-DebugMsg "CurrentSourceDefinition : ${Script:CurrentSourceDefinition}"
       Write-DebugMsg "CurrentSourceType       : ${Script:CurrentSourceType}"
 
       # Determine basic information for the job.
       switch -Wildcard ("${Script:CurrentSourceType}") {
-        "source-dir" { $Script:SourceDir = "${expanded}" }
+        "source-dir" { $script:SourceDir = "${expanded}" }
         "source-file*" {
           # <--- pattern!
           $FSobject = Get-ParentDir "${expanded}"
-          $Script:SourceDir = $FSobject.Path
+          $script:SourceDir = $FSobject.Path
 
           # Add the filename (pattern) to $IncludedFiles because we must NOT use *.* later!
           $SourceFilename = Split-Path -Leaf "${expanded}"
           Write-DebugMsg "SourceFilename          : ${SourceFilename}"
-          $Script:IncludedFiles.Add("${SourceFilename}")
+          $script:IncludedFiles.Add("${SourceFilename}")
           $SourceFilename = ""
         }
       }
@@ -580,34 +580,34 @@ function _processDirectoryList {
         Initialize-JobRelatedInfo
       }
       else {
-        $Script:TargetDir = Get-TargetDir $Config.Directories.BACKUP_DIR "${Script:SourceDir}"
+        $script:TargetDir = Get-TargetDir $Config.Directories.BACKUP_DIR "${Script:SourceDir}"
         Write-DebugMsg "TargetDir               : ${Script:TargetDir}"
       }
 
       Write-DebugMsg "-----".PadRight(70, "-")
     }
 
-    if ($Script:SingleFileJob) {
+    if ($script:SingleFileJob) {
       Write-DebugMsg "----- Copying a single file -----".PadRight(70, "-")
       Invoke-AddJobFile
     }
 
     # Add included/excluded files/directories to the job file (robocopy options /IF, /XF, /XD).
-    if ($Script:ContinueCurrentJob) {
+    if ($script:ContinueCurrentJob) {
       Write-DebugMsg "----- Continuing the job -----".PadRight(70, "-")
       # Determine additional information for the job.
       $entry = "${expanded}".Substring(4)   # Remove the leading "  + " or "  - "
       Write-DebugMsg "entry                   : ${entry}"
 
       switch ("${LineType}") {
-        "incl-files-pattern" { $Script:IncludedFiles.Add("${entry}") }
-        "excl-files-pattern" { $Script:ExcludedFiles.Add("${entry}") }
-        "excl-dirs-pattern" { $Script:ExcludedDirs.Add("${entry}") }
+        "incl-files-pattern" { $script:IncludedFiles.Add("${entry}") }
+        "excl-files-pattern" { $script:ExcludedFiles.Add("${entry}") }
+        "excl-dirs-pattern" { $script:ExcludedDirs.Add("${entry}") }
       }
 
-      Write-DebugMsg "IncludedFiles.Count     : $($Script:IncludedFiles.Count)"
-      Write-DebugMsg "ExcludedFiles.Count     : $($Script:ExcludedFiles.Count)"
-      Write-DebugMsg "ExcludedDirs.Count      : $($Script:ExcludedDirs.Count)"
+      Write-DebugMsg "IncludedFiles.Count     : $($script:IncludedFiles.Count)"
+      Write-DebugMsg "ExcludedFiles.Count     : $($script:ExcludedFiles.Count)"
+      Write-DebugMsg "ExcludedDirs.Count      : $($script:ExcludedDirs.Count)"
 
       Write-DebugMsg "-----".PadRight(70, "-")
     }
@@ -626,24 +626,24 @@ _processDirectoryList
 Write-DebugMsg "----- End of the dir-list -----".PadRight(70, "-")
 
 # Finish the last job?
-$FinishLastJob = ($Script:CurrentJobNum -ne 0)
+$FinishLastJob = ($script:CurrentJobNum -ne 0)
 
 if ($FinishLastJob) {
   Write-DebugMsg "----- Finishing the last job -----".PadRight(70, "-")
   Invoke-AddJobFile
 }
 
-LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "$Script:JobsCreatedCount job file(s) created."
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "$script:JobsCreatedCount job file(s) created."
 
 Write-DebugMsg "----- Results -----".PadRight(70, "-")
-Write-DebugMsg "SourceDefinitionsCount: $Script:SourceDefinitionsCount"
-Write-DebugMsg "StartNewJob           : $Script:StartNewJob"
-Write-DebugMsg "ContinueCurrentJob    : $Script:ContinueCurrentJob"
-Write-DebugMsg "FinishPreviousJob     : $Script:FinishPreviousJob"
-Write-DebugMsg "IncludedFiles.Count   : $($Script:IncludedFiles.Count)"
-Write-DebugMsg "ExcludedFiles.Count   : $($Script:ExcludedFiles.Count)"
-Write-DebugMsg "ExcludedDirs.Count    : $($Script:ExcludedDirs.Count)"
-Write-DebugMsg "JobsCreatedCount      : $Script:JobsCreatedCount"
+Write-DebugMsg "SourceDefinitionsCount: $script:SourceDefinitionsCount"
+Write-DebugMsg "StartNewJob           : $script:StartNewJob"
+Write-DebugMsg "ContinueCurrentJob    : $script:ContinueCurrentJob"
+Write-DebugMsg "FinishPreviousJob     : $script:FinishPreviousJob"
+Write-DebugMsg "IncludedFiles.Count   : $($script:IncludedFiles.Count)"
+Write-DebugMsg "ExcludedFiles.Count   : $($script:ExcludedFiles.Count)"
+Write-DebugMsg "ExcludedDirs.Count    : $($script:ExcludedDirs.Count)"
+Write-DebugMsg "JobsCreatedCount      : $script:JobsCreatedCount"
 Write-DebugMsg "-----".PadRight(70, "-")
 
 #endregion Create job files ####################################################

@@ -11,7 +11,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\message-functions.ps1"
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
-  $Script:workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
+  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
 
   # For messages and logging in tested functions
   $script:config = [ScriptConfig]::new()
