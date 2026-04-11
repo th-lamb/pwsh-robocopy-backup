@@ -46,8 +46,8 @@ Describe 'Update-ConfigProperty' {
         whether $Config.Logging.ENABLE_TRACE_LOG has the correct value.
       #>
       param($MyInput, $Expected)
-
       $Config = [ScriptConfig]::new()
+
       # ENABLE_TRACE_LOG is a [bool] in the Logging container.
       Update-ConfigProperty -Config $Config -TargetContainer 'Logging' -Key 'ENABLE_TRACE_LOG' -Val $MyInput
 
@@ -56,6 +56,7 @@ Describe 'Update-ConfigProperty' {
 
     It 'Ignores empty input for boolean properties (no update).' {
       $Config = [ScriptConfig]::new()
+
       # Default is $true, we try to set it to '' which should be ignored.
       Update-ConfigProperty -Config $Config -TargetContainer 'Logging' -Key 'ENABLE_TRACE_LOG' -Val ''
 
@@ -66,7 +67,9 @@ Describe 'Update-ConfigProperty' {
   Context 'String Handling and Expansion' {
     It 'Calls Get-ExpandedPath for string properties.' {
       $Config = [ScriptConfig]::new()
-      # BACKUP_BASE_DIR is a [string] in the Directories container
+
+      # BACKUP_BASE_DIR is a [string] in the Directories container.
+      # Our Mock for Get-ExpandedPath just inserts "C:\" before the string.
       Update-ConfigProperty -Config $Config -TargetContainer 'Directories' -Key 'BACKUP_BASE_DIR' -Val 'SomePath'
 
       $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\SomePath\"
@@ -76,7 +79,8 @@ Describe 'Update-ConfigProperty' {
   Context 'Default Type Handling (Integer)' {
     It 'Correctly handles integer types.' {
       $Config = [ScriptConfig]::new()
-      # __VERBOSE is an [int] in the General container
+
+      # __VERBOSE is an [int] in the General container.
       Update-ConfigProperty -Config $Config -TargetContainer 'General' -Key '__VERBOSE' -Val '3'
 
       $Config.General.__VERBOSE | Should -Be 3

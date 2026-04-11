@@ -90,6 +90,7 @@ function Get-Container {
 function Update-ConfigProperty {
   <# Updates the specified property in the Configuration Object.
     Handles type conversion (Boolean, String, etc.) and variable expansion.
+    -> To be called by Read-Config.
   #>
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [CmdletBinding()]
@@ -131,7 +132,26 @@ function Update-ConfigProperty {
       $SubObject.$Key = $Val
     }
 
-    # Set variable in caller's scope for cross-references
+    <# Set variable in caller's scope for cross-references.
+      Problem:
+      - Users can use "shortcuts" in the configuration file:
+        `BACKUP_BASE_DIR = C:\Backup\`
+        `BACKUP_USER_BASE_DIR = ${BACKUP_BASE_DIR}\username\`
+      - But the ScriptConfig object keeps variables in their own container ($Config.Directories.BACKUP_BASE_DIR).
+        This means that Read-Config cannot easily re-use previous variables because it does not know that
+        ${BACKUP_BASE_DIR} in the INI file is the same as $BACKUP_BASE_DIR in our script.
+      - Read-Config needs to resolve these shortcuts when processing subsequent lines.
+
+      Solution:
+      "Scope Injection": the -Scope 1 tells PowerShell to create or update the variable in the caller's
+      scope (Read-Config).
+
+      This allows:
+      - Subsequent lines in the INI file to use variables like ${BACKUP_BASE_DIR} because we created
+        a local variable $BACKUP_BASE_DIR in Read-Config.
+      - `Get-ExpandedPath` (called in the next iteration) to find and replace these variables using
+        PowerShell's internal `ExpandString` mechanism.
+    #>
     Set-Variable -Name $Key -Value $SubObject.$Key -Scope 1
   }
 }
