@@ -107,55 +107,54 @@ function Update-ConfigProperty {
   )
 
   $SubObject = $Config.$TargetContainer
+  $Property = $SubObject.PSObject.Properties[$Key]
 
-  # Use PowerShell's hidden 'PSObject' to check if the property exists
-  if ($SubObject.PSObject.Properties[$Key] -and -not [string]::IsNullOrWhiteSpace($Val)) {
-    $prop = $SubObject.PSObject.Properties[$Key]
+  # Only process if the property exists and value is not empty.
+  if (-not $Property -or [string]::IsNullOrWhiteSpace($Val)) {
+    return
+  }
 
-    # Handle Booleans correctly
-    if ($prop.TypeNameOfValue -eq 'System.Boolean') {
+  switch ($Property.TypeNameOfValue) {
+    'System.Boolean' {
       if ($Val -match '^(true|1|yes|on)$') { $SubObject.$Key = $true }
       elseif ($Val -match '^(false|0|no|off)$') { $SubObject.$Key = $false }
     }
-    # Expand paths for strings
-    elseif ($prop.TypeNameOfValue -eq 'System.String') {
-      # Temporarily set a local variable so that cross-references in the INI file
-      # (e.g. ${BACKUP_BASE_DIR}) can be expanded by Get-ExpandedPath.
+    'System.String' {
+      # Expand paths for strings
       $SubObject.$Key = Get-ExpandedPath $Val
 
       # Fix missing backslashes BEFORE the variable is used for further expansion
       $Config.Normalize()
     }
-    else {
+    Default {
       $SubObject.$Key = $Val
     }
-
-    <# Set variable in caller's scope for cross-references.
-      Problem:
-      - Users can use "shortcuts" in the configuration file:
-        `BACKUP_BASE_DIR = C:\Backup\`
-        `BACKUP_USER_BASE_DIR = ${BACKUP_BASE_DIR}\username\`
-      - But the ScriptConfig object keeps variables in their own container ($Config.Directories.BACKUP_BASE_DIR).
-        This means that Read-Config cannot easily re-use previous variables because it does not know that
-        ${BACKUP_BASE_DIR} in the INI file is the same as $BACKUP_BASE_DIR in our script.
-      - Read-Config needs to resolve these shortcuts when processing subsequent lines.
-
-      Solution:
-      "Scope Injection": the -Scope 1 tells PowerShell to create or update the variable in the caller's
-      scope (Read-Config).
-
-      This allows:
-      - Subsequent lines in the INI file to use variables like ${BACKUP_BASE_DIR} because we created
-        a local variable $BACKUP_BASE_DIR in Read-Config.
-      - `Get-ExpandedPath` (called in the next iteration) to find and replace these variables using
-        PowerShell's internal `ExpandString` mechanism.
-    #>
-    Set-Variable -Name $Key -Value $SubObject.$Key -Scope 1
   }
+
+  <# Set variable in caller's scope for cross-references.
+    Problem:
+    - Users can use "shortcuts" in the configuration file:
+      `BACKUP_BASE_DIR = C:\Backup\`
+      `BACKUP_USER_BASE_DIR = ${BACKUP_BASE_DIR}\username\`
+    - But the ScriptConfig object keeps variables in their own container ($Config.Directories.BACKUP_BASE_DIR).
+      This means that Read-Config cannot easily re-use previous variables because it does not know that
+      ${BACKUP_BASE_DIR} in the INI file is the same as $BACKUP_BASE_DIR in our script.
+    - Read-Config needs to resolve these shortcuts when processing subsequent lines.
+
+    Solution:
+    "Scope Injection": the -Scope 1 tells PowerShell to create or update the variable in the caller's
+    scope (Read-Config).
+
+    This allows:
+    - Subsequent lines in the INI file to use variables like ${BACKUP_BASE_DIR} because we created
+      a local variable $BACKUP_BASE_DIR in Read-Config.
+    - `Get-ExpandedPath` (called in the next iteration) to find and replace these variables using
+      PowerShell's internal `ExpandString` mechanism.
+  #>
+  Set-Variable -Name $Key -Value $SubObject.$Key -Scope 1
 }
 
 #TODO: Add Pester tests for Read-Config (as the other ones for Read-SettingsFile)
-#TODO: Maybe we can refactor Read-Config even more to make it even easier to read?
 function Read-Config {
   <# Reads the specified INI file and returns a Configuration Object with all settings.
     The structure of the Config Object is like $Config.Container.Property = Value
@@ -174,32 +173,29 @@ function Read-Config {
     return $Config
   }
 
-  $IniFileContent = Get-Content "${IniFile}"
-
-  # Default to 'General' section for top-level settings (Finding 5)
-  $TargetContainer = "General"
-
   # Temporarily disable -WhatIf to ensure the configuration is loaded into the script scope (PowerShell 5.1 workaround).
   $oldWhatIfPreference = $WhatIfPreference
+  $WhatIfPreference = $false
+
   try {
-    $WhatIfPreference = $false
+    # Default to 'General' section for top-level settings (Finding 5)
+    $TargetContainer = "General"
 
-    foreach ($Line in $IniFileContent) {
-      $Line = $Line.Trim()
-      if ($Line -match '^\[(.+)\]$') {
-        # Look up the code-friendly name using the human-friendly header
+    switch -Regex -File $IniFile {
+      '^\s*[#;]' { continue } # Skip comments
+      '^\s*\[(.+)\]\s*$' {
         $IniHeader = $Matches[1].Trim()
-        $TargetContainer = Get-Container -IniHeader "${IniHeader}"
-
+        $TargetContainer = Get-Container -IniHeader $IniHeader
         if ($null -eq $TargetContainer) {
           Write-WarningMsg "Unrecognized section in INI file: [$IniHeader]"
         }
       }
-      elseif ($Line -match '^(.+?)=(.+)$' -and $TargetContainer) {
-        $Key = $Matches[1].Trim()
-        $Val = $Matches[2].Trim()
-
-        Update-ConfigProperty -Config $Config -TargetContainer $TargetContainer -Key $Key -Val $Val
+      '^\s*([^=]+)=(.*)$' {
+        if ($TargetContainer) {
+          $Key = $Matches[1].Trim() # $Matches[1] -> Regex capture group 1
+          $Val = $Matches[2].Trim()
+          Update-ConfigProperty -Config $Config -TargetContainer $TargetContainer -Key $Key -Val $Val
+        }
       }
     }
 
