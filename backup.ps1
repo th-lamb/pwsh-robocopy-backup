@@ -199,23 +199,11 @@ catch {
 
 Write-EarlyMsg INFO "Reading the settings file..."
 
-$iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
-#TODO: Replace with new Read-Config function
-# try {
-#   Read-SettingsFile ("${iniFile}")
-# }
-# catch {
-#   Write-EarlyMsg ERR "Failed to read settings file [${iniFile}]! Error: $_"
-#   exit 1
-# }
-
-
-
 # Configuration object with default values
 $Config = [ScriptConfig]::new()
 
 # Populate with values from the ini file.
-#TODO: Also add error handling for missing INI file?
+$iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
 $Config = Read-Config -IniFile "${iniFile}"
 
 Write-EarlyMsg INFO "Settings file read."
@@ -445,6 +433,7 @@ function Initialize-LineRelatedInfo {
 
 # Process the dir-list.
 
+#TODO: Remove the function _processDirectoryList and make the code top-level?
 function _processDirectoryList {
   $DirListContent = Get-Content $Config.Files.BACKUP_DIRLIST
 
