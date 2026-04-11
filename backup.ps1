@@ -693,9 +693,7 @@ else {
       Write-DebugMsg "Robocopy exit code: $RobocopyExitCode"
 
       # Log errors. Use the jobname (Job1..n) from the filename.
-      [int32]$JobNamePosition = ("${UserDefinedJob}".LastIndexOf("-") + 1)
-      [int32]$JobNameLength = ("${UserDefinedJob}".LastIndexOf(".") - $JobNamePosition)
-      [string]$JobName = "${UserDefinedJob}".Substring($JobNamePosition, $JobNameLength)
+      [string]$JobName = [regex]::Match($UserDefinedJob.Name, 'Job\d+').Value
 
       LogAndShowRobocopyError $Config.Logging.BACKUP_LOGFILE "${JobName}" $RobocopyExitCode
 
