@@ -13,23 +13,21 @@ class GeneralSettings {
 
 # Container for directory-related settings
 class DirectorySettings {
-  # Directories for the backup itself
-  <#TODO: Use . or $ProjectRoot?
-    - $ProjectRoot should always be the script dir.
-    - . could be any current directory from where the script is called?
+  <# Directories for the backup itself
+    - $ProjectRoot is always the script dir.
+    - . is any current directory from where the user calls the script.
   #>
-  [string]$BACKUP_BASE_DIR      = ".\Backup\"                           # Or "${ProjectRoot}Backup\"?
-  [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"                # Or "${ProjectRoot}Backup\%Username%\"?"
-  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\" # Or "${ProjectRoot}Backup\%Username%\%Computername%\"?
+  [string]$BACKUP_BASE_DIR      = ".\Backup\"
+  [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"
+  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\"
 
   # Other mandatory directories
-  [string]$BACKUP_TEMPLATES_DIR = "${ProjectRoot}templates\"     # Note: Must be an absolute path!
-  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"  # Or "${ProjectRoot}Backup\%Username%\robocopy-jobs\"?
+  [string]$BACKUP_TEMPLATES_DIR = "${ProjectRoot}templates\"            # Note: Must be an absolute path!
+  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
     # List of properties that are definitely directories
-    #TODO: Make this automatic? Adding values manually is error-prone!
     $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR')
 
     foreach ($Prop in $DirProperties) {
@@ -57,7 +55,7 @@ class FileSettings {
 
   # Template for job settings
   [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS = "${ProjectRoot}templates\global_exclusions.RCJ"
-  [string]$JOB_TEMPLATE_LOGGING = "${ProjectRoot}templates\logging.RCJ"
+  [string]$JOB_TEMPLATE_LOGGING           = "${ProjectRoot}templates\logging.RCJ"
 
   # Optional files
   [string]$ROBOCOPY = "robocopy"  # Fallback: Windows' own robocopy
@@ -74,9 +72,9 @@ class LoggingSettings {
   [string]$ERROR_LOGFILE = "Error.log"            # e.g. .\Backup\<username>\<Computername>\Error.log
 
   # Trace log
-  [bool]$ENABLE_TRACE_LOG = $true
-  [string]$TRACE_LOG_LOCAL_DIR = "%Temp%\"        #TODO: Make sure %Temp% works as intended!
-  [string]$TRACE_LOGFILE_NAME = "Trace.log"       # e.g. C:\Windows\Temp\Trace.log
+  [bool]$ENABLE_TRACE_LOG           = $true
+  [string]$TRACE_LOG_LOCAL_DIR      = "%Temp%\"        #TODO: Make sure %Temp% works as intended!
+  [string]$TRACE_LOGFILE_NAME       = "Trace.log"       # e.g. C:\Windows\Temp\Trace.log
   [bool]$UPLOAD_TRACE_TO_BACKUP_DIR = $true
 
   # Method to ensure all paths are formatted correctly.
