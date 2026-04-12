@@ -1,7 +1,5 @@
 #region Configuration Object
 
-#TODO: Add Pester tests to test the default values?
-
 # Container for general settings
 class GeneralSettings {
   [int]$__VERBOSE = 6 # Info

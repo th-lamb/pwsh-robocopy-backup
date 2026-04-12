@@ -15,6 +15,7 @@ BeforeAll {
   $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
   $script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
 
+  #TODO: rename to DEFAULT_JOB_TYPE (and similar for all tests)?
   $script:DefaultJob = "Incremental"
 }
 
