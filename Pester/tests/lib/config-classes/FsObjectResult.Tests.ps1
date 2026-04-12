@@ -7,26 +7,29 @@ BeforeAll {
 
 
 Describe 'FsObjectResult' {
-  It 'should have the expected properties' {
+  $PropertiesCases = @(
+    @{ ExpectedNames = @("Exists", "Type", "Path") }
+  )
+
+  It 'should have all expected properties' -TestCases $PropertiesCases {
+    param($ExpectedNames)
     $properties = $script:FsObject | Get-Member -MemberType Property
 
-    $properties.Count | Should -Be 3
-    $properties.Name | Should -Be @('Exists', 'Path', 'Type')
+    $properties.Count | Should -Be $ExpectedNames.Count
+    foreach ($name in $ExpectedNames) {
+      $properties.Name | Should -Contain $name
+    }
   }
 
-  It 'should have "Exists" as a Boolean' {
-    $script:FsObject.Exists | Should -BeOfType [bool]
-  }
+  $TypeCases = @(
+    @{ Property = "Exists"; ExpectedType = [bool] }
+    @{ Property = "Type";   ExpectedType = [string]; Val = "directory" }
+    @{ Property = "Path";   ExpectedType = [string]; Val = "C:\Test\" }
+  )
 
-  It 'should have "Type" as a String' {
-    $script:FsObject.Type = "directory" # Needs initialization
-
-    $script:FsObject.Type | Should -BeOfType [string]
-  }
-
-  It 'should have "Path" as a String' {
-    $script:FsObject.Path = "C:\Test"   # Needs initialization
-
-    $script:FsObject.Path | Should -BeOfType [string]
+  It 'should have property "<Property>" with correct type' -TestCases $TypeCases {
+    param($Property, $ExpectedType, $Val)
+    if ($Val) { $script:FsObject.$Property = $Val }
+    $script:FsObject.$Property | Should -BeOfType $ExpectedType
   }
 }
