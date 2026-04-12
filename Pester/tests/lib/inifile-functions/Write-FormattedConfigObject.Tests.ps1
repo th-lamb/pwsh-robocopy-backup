@@ -46,6 +46,13 @@ Describe 'Write-FormattedConfigObject' {
       $ExpectedLines = (Get-Content $ExpectedFile) -split '\r?\n' | Where-Object { $_ -ne "" }
       $ActualLines = (Get-Content $ActualFile) -split '\r?\n' | Where-Object { $_ -ne "" }
 
+      # Strip absolute $ProjectRoot from output to make tests portable.
+      # Reason: "config-classes.psm1" uses $ProjectRoot (which can be different on
+      #         other machines) to locate the templates folder.
+      # Ensure $ProjectRoot has a trailing backslash for consistent replacement.
+      $EscapedRoot = [regex]::Escape((Join-Path $ProjectRoot "").TrimEnd('\') + '\')
+      $ActualLines = $ActualLines | ForEach-Object { $_ -replace $EscapedRoot, "" }
+
       # Simple comparison
       $ActualLines | Should -Be $ExpectedLines
 

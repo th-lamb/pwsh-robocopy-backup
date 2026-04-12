@@ -1,3 +1,9 @@
+# This resolves to the actual directory where the project is,
+# even if called from a different working directory.
+$ProjectRoot = (Split-Path -Parent $PSScriptRoot) + "\"
+
+
+
 #region Configuration Object
 
 # Container for general settings
@@ -8,17 +14,17 @@ class GeneralSettings {
 # Container for directory-related settings
 class DirectorySettings {
   # Directories for the backup itself
-  <#TODO: Use . or ${SCRIPT_DIR}?
-    - ${SCRIPT_DIR} should always be the script dir.
+  <#TODO: Use . or $ProjectRoot?
+    - $ProjectRoot should always be the script dir.
     - . could be any current directory from where the script is called?
   #>
-  [string]$BACKUP_BASE_DIR      = ".\Backup\"                           # Or "${SCRIPT_DIR}Backup\"?
-  [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"                # Or "${SCRIPT_DIR}Backup\%Username%\"?"
-  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\" # Or "${SCRIPT_DIR}Backup\%Username%\%Computername%\"?
+  [string]$BACKUP_BASE_DIR      = ".\Backup\"                           # Or "${ProjectRoot}Backup\"?
+  [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"                # Or "${ProjectRoot}Backup\%Username%\"?"
+  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\" # Or "${ProjectRoot}Backup\%Username%\%Computername%\"?
 
   # Other mandatory directories
-  [string]$BACKUP_TEMPLATES_DIR = "${SCRIPT_DIR}templates\"             # Note: Must be ${SCRIPT_DIR} not "."!
-  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"  # Or "${SCRIPT_DIR}Backup\%Username%\robocopy-jobs\"?
+  [string]$BACKUP_TEMPLATES_DIR = "${ProjectRoot}templates\"     # Note: Must be an absolute path!
+  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"  # Or "${ProjectRoot}Backup\%Username%\robocopy-jobs\"?
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
@@ -39,19 +45,19 @@ class DirectorySettings {
 # Container for file-related settings
 class FileSettings {
   # Files for the backup itself
-  [string]$DIRLIST_TEMPLATE     = "${SCRIPT_DIR}templates\dir-list-template.conf"
+  [string]$DIRLIST_TEMPLATE     = "${ProjectRoot}templates\dir-list-template.conf"
   #TODO: rename to "BACKUP_DIRLIST_NAME" to be more consistent?
   [string]$BACKUP_DIRLIST       = "dir-list.conf" # e.g. .\Backup\<username>\<Computername>\dir-list.conf
 
   # Templates for jobtype
-  [string]$JOB_TEMPLATE_INCR    = "${SCRIPT_DIR}templates\incr_backup.RCJ"
-  [string]$JOB_TEMPLATE_FULL    = "${SCRIPT_DIR}templates\full_backup.RCJ"
-  [string]$JOB_TEMPLATE_PURGE   = "${SCRIPT_DIR}templates\purge.RCJ"
-  [string]$JOB_TEMPLATE_ARCHIVE = "${SCRIPT_DIR}templates\only_archive_attr.RCJ"
+  [string]$JOB_TEMPLATE_INCR    = "${ProjectRoot}templates\incr_backup.RCJ"
+  [string]$JOB_TEMPLATE_FULL    = "${ProjectRoot}templates\full_backup.RCJ"
+  [string]$JOB_TEMPLATE_PURGE   = "${ProjectRoot}templates\purge.RCJ"
+  [string]$JOB_TEMPLATE_ARCHIVE = "${ProjectRoot}templates\only_archive_attr.RCJ"
 
   # Template for job settings
-  [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS = "${SCRIPT_DIR}templates\global_exclusions.RCJ"
-  [string]$JOB_TEMPLATE_LOGGING = "${SCRIPT_DIR}templates\logging.RCJ"
+  [string]$JOB_TEMPLATE_GLOBAL_EXCLUSIONS = "${ProjectRoot}templates\global_exclusions.RCJ"
+  [string]$JOB_TEMPLATE_LOGGING = "${ProjectRoot}templates\logging.RCJ"
 
   # Optional files
   [string]$ROBOCOPY = "robocopy"  # Fallback: Windows' own robocopy
