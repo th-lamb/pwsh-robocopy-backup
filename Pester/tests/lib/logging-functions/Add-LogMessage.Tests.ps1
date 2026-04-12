@@ -29,6 +29,33 @@ BeforeAll {
 
 
 
+<#TODO: Add tests to check:
+  - See: TODO\logfile-formatting\
+
+  - Which severity level goes to which logfile? Example:
+    - DEBUG   -> Trace.log
+    - INFO    -> Backup.log
+    - WARNING -> Backup.log
+    - ERR     -> Error.log
+
+  - For which __VERBOSE levels does this change? -> Different combinations? Example:
+    _VERBOSE=7
+      - DEBUG   -> Trace.log  + Backup.log
+      - INFO    -> Trace.log  + Backup.log
+      - WARNING -> Trace.log  + Backup.log
+      - ERR     -> Trace.log  + Backup.log  + Error.log
+    _VERBOSE=6
+      - DEBUG   -> Trace.log
+      - INFO    -> Trace.log  + Backup.log
+      - WARNING -> Trace.log  + Backup.log
+      - ERR     -> Trace.log  + Backup.log  + Error.log
+    _VERBOSE=4
+      - DEBUG   -> Trace.log
+      - INFO    -> Trace.log
+      - WARNING -> Trace.log  + Backup.log
+      - ERR     -> Trace.log  + Backup.log  + Error.log
+#>
+
 Describe 'Add-LogMessage' {
   # Check file content: https://pester.dev/docs/v4/usage/assertions#filecontentmatch
 

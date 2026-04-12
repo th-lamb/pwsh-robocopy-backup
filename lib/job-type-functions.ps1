@@ -114,6 +114,10 @@ function Get-UserSelectedJobType {
   _showJobTypeList "${DefaultJobType}"
   Write-Host "Automatic start in ${MaxWaitingTimeS} seconds."
 
+  <#TODO: Decide whether we:
+    - Break the loop for any "normal" key, and quit after invalid choices (e.g. B, C, D, ...)?
+    - Only react on expected letters (e.g. I, S, ..., ESC, ENTER), and just keep waiting for others?
+  #>
   :waitForKey do {
     $keyInfo = Get-ConsoleKeyInfo
 
