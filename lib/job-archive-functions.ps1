@@ -121,7 +121,8 @@ function Export-PreviousJobsArchive {
   }
 
   # Find all existing (0..n) archives.
-  $OldArchives = Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${ArchiveNameScheme}" -File
+  # @(...) coerces $null to an empty array @(), making .Count always valid.
+  $OldArchives = @(Get-ChildItem -Path "${BackupJobDirectory}*" -Include "${ArchiveNameScheme}" -File)
 
   # Delete the oldest archive if it exists.
   $OldArchivesCount = $OldArchives.Count
