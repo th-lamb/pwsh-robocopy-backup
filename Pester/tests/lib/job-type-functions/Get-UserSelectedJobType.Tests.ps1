@@ -38,7 +38,7 @@ Describe 'Get-UserSelectedJobType' {
   Context 'User selects a job type' {
     It 'User selects: [I]    Incremental' {
       $KeyToPress     = "I"
-      $KeyToPressCher = 'i'
+      $KeyToPressCher = 'I'
       $expected       = "Incremental"
 
       # 1. Create the fake 'I' key press
@@ -60,7 +60,7 @@ Describe 'Get-UserSelectedJobType' {
 
     It 'User selects: [F]    Full backup' {
       $KeyToPress     = "F"
-      $KeyToPressCher = 'f'
+      $KeyToPressCher = 'F'
       $expected       = "Full"
 
       $keyPress = [pscustomobject]@{
@@ -78,7 +78,7 @@ Describe 'Get-UserSelectedJobType' {
 
     It 'User selects: [P]    Purge' {
       $KeyToPress     = "P"
-      $KeyToPressCher = 'p'
+      $KeyToPressCher = 'P'
       $expected       = "Purge"
 
       $keyPress = [pscustomobject]@{
@@ -96,7 +96,7 @@ Describe 'Get-UserSelectedJobType' {
 
     It 'User selects: [A]    Files with Archive attribute' {
       $KeyToPress     = "A"
-      $KeyToPressCher = 'a'
+      $KeyToPressCher = 'A'
       $expected       = "Archive"
 
       $keyPress = [pscustomobject]@{
@@ -114,7 +114,7 @@ Describe 'Get-UserSelectedJobType' {
 
     It 'User selects: [S]    Start (use the default)' {
       $KeyToPress     = "S"
-      $KeyToPressCher = 's'
+      $KeyToPressCher = 'S'
       $expected       = "Incremental"
 
       $keyPress = [pscustomobject]@{

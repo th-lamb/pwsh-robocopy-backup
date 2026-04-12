@@ -307,7 +307,7 @@ Add-EmptyLineToLogfile $Config.Logging.BACKUP_LOGFILE # One empty line between t
 # Flushes early bootstrap messages to the real log file now that BACKUP_LOGFILE is available.
 if (![string]::IsNullOrWhiteSpace($Config.Logging.BACKUP_LOGFILE)) {
   foreach ($msg in $script:earlyMsgBuffer) {
-    # Using direct Add-LogMessage (ignoring __VERBOSE for early mandatory info).
+    # Using direct Add-LogMessage (ignoring __VERBOSE for early info).
     Add-LogMessage -logfile $Config.Logging.BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
   }
   $script:earlyMsgBuffer.Clear()

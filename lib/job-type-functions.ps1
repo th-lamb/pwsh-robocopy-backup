@@ -114,10 +114,6 @@ function Get-UserSelectedJobType {
   _showJobTypeList "${DefaultJobType}"
   Write-Host "Automatic start in ${MaxWaitingTimeS} seconds."
 
-  <#TODO: Decide whether we:
-    - Break the loop for any "normal" key, and quit after invalid choices (e.g. B, C, D, ...)?
-    - Only react on expected letters (e.g. I, S, ..., ESC, ENTER), and just keep waiting for others?
-  #>
   :waitForKey do {
     $keyInfo = Get-ConsoleKeyInfo
 
@@ -152,37 +148,37 @@ function Get-UserSelectedJobType {
   }
 
   switch ($pressedKey) {
-    'i' {
+    'I' {
       $result = "Incremental"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "Incremental selected."
     }
 
-    'f' {
+    'F' {
       $result = "Full"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "Full selected."
     }
 
-    'p' {
+    'P' {
       $result = "Purge"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "Purge selected."
     }
 
-    'a' {
+    'A' {
       $result = "Archive"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "Archive selected."
     }
 
-    's' {
+    'S' {
       $result = "${DefaultJobType}"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "Start selected. Using the default: ${DefaultJobType}"
     }
 
-    'Escape' {
+    'ESCAPE' {
       $result = "Cancel"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "User pressed ESCAPE. Cancel."
     }
 
-    'Enter' {
+    'ENTER' {
       Write-Host "Using the default."
       $result = "${DefaultJobType}"
       Add-LogMessage -logfile "${logfile}" -severity INFO -message "User just pressed ENTER. Using the default: ${DefaultJobType}"
@@ -197,9 +193,9 @@ function Get-UserSelectedJobType {
 
     Default {
       # Illegal choice
+      Add-LogMessage -logfile "${logfile}" -severity DEBUG -message "User clicked: ${pressedKey}"
       LogAndShowMessage "${logfile}" WARNING "Illegal choice. Cancel."
       $result = "Cancel"
-      Add-LogMessage -logfile "${logfile}" -severity DEBUG -message "User clicked: ${pressedKey}"
     }
   }
 
