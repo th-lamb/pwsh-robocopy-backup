@@ -36,9 +36,23 @@ Describe 'Read-Config' {
         $script:actualWarning = $message
       }
 
-      $result = Read-Config -IniFile $IniFile
+      Read-Config -IniFile $IniFile
 
       $script:actualWarning | Should -Be $ExpectedWarning
+    }
+
+    It 'Returns a config with default values if INI file is missing.' {
+      <# Note: the default initialization of ScriptConfig is tested in another test.
+        - See: `Pester\tests\lib\config-classes\ScriptConfig.Tests.ps1`
+        - Here, we just test whether Read-Config returns this Configuration Object.
+      #>
+      $IniFile = "NON_EXISTENT_FILE.ini"
+
+      # Mock Write-WarningMsg to ignore the warning
+      Mock Write-WarningMsg {}
+
+      $result = Read-Config -IniFile $IniFile
+
       $result.GetType().Name | Should -Be "ScriptConfig"
       $result.General.__VERBOSE | Should -Be 6
     }
@@ -72,7 +86,127 @@ Describe 'Read-Config' {
     }
   }
 
-  Context 'Top-level settings (Finding 5)' {
+  #TODO: find a better name for this context.
+  Context 'Normal cases' {
+    <# These tests create their own INI files in a temporary directory ($env:TEMP)
+      for isolation and automatic cleanup, rather than using $script:workingFolder.
+    #>
+    BeforeAll {
+      $script:tempDir = Join-Path $env:TEMP "Pester-Read-Config-NormalCases"
+      if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+      New-Item $tempDir -ItemType Directory | Out-Null
+    }
+
+    AfterAll {
+      if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+    }
+
+    It 'should overwrite default values with settings from the INI file' {
+      $Config = [ScriptConfig]::new()
+
+      # Default values
+      $Config.General.__VERBOSE | Should -Be 6
+      $Config.Directories.BACKUP_BASE_DIR | Should -Be ".\Backup\"
+
+      # INI file with different values
+      $IniFile = Join-Path $tempDir "Overwrite.ini"
+      @'
+[General]
+__VERBOSE=3
+[Directories]
+BACKUP_BASE_DIR=C:\MyBackup
+'@ | Set-Content $IniFile
+
+      $Config = Read-Config -IniFile $IniFile
+
+      # Check the new values
+      $Config.General.__VERBOSE | Should -Be 3
+      $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\MyBackup\"
+    }
+
+    It 'correctly handles spaces around "=" in the INI file' {
+      <#TODO: Ignore rule PSAvoidTrailingWhitespace for this test.
+        Notes:
+        - Disabling and enabling before and after the file does not work.
+        - An inline comment "# psscriptanalyzer-disable PSAvoidTrailingWhitespace" behind the value
+          with trailing whitespaces works and disables the rule - but also breaks the test!
+        - Pragmas also don't work.
+
+        Workaround:
+        Use "   BACKUP_JOB_DIR   =   C:\Parent\UserDir\robocopy-jobs\" without trailing whitespace.
+      #>
+
+      $IniFile = Join-Path $tempDir "WithSpaces.ini"
+      # psscriptanalyzer-disable PSAvoidTrailingWhitespace
+      #pragma warning disable PSAvoidTrailingWhitespace
+      @'
+[Directories]
+BACKUP_BASE_DIR = C:\Parent\
+BACKUP_USER_BASE_DIR =C:\Parent\UserDir\
+BACKUP_DIR= C:\Parent\<Username>\<Computername>\
+   BACKUP_JOB_DIR   =   C:\Parent\UserDir\robocopy-jobs\
+'@ | Set-Content $IniFile
+      # psscriptanalyzer-enable PSAvoidTrailingWhitespace
+      #pragma warning restore PSAvoidTrailingWhitespace
+
+      $Config = Read-Config -IniFile $IniFile
+
+      $Config.Directories.BACKUP_BASE_DIR       | Should -Be "C:\Parent\"
+      $Config.Directories.BACKUP_USER_BASE_DIR  | Should -Be "C:\Parent\UserDir\"
+      $Config.Directories.BACKUP_DIR            | Should -Be "C:\Parent\<Username>\<Computername>\"
+      $Config.Directories.BACKUP_JOB_DIR        | Should -Be "C:\Parent\UserDir\robocopy-jobs\"
+    }
+  }
+
+  Context 'Cross-references between properties' {
+    <# These tests create their own INI files in a temporary directory ($env:TEMP)
+      for isolation and automatic cleanup, rather than using $script:workingFolder.
+    #>
+    BeforeAll {
+      $script:tempDir = Join-Path $env:TEMP "Pester-Read-Config-Crossref"
+      if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+      New-Item $tempDir -ItemType Directory | Out-Null
+    }
+
+    AfterAll {
+      if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+    }
+
+    It 'Correctly handles cross-references and scope within the same container.' {
+      # Note: For cross-references to work across different containers,
+      # the variables must be set in the caller's scope (which Update-ConfigProperty does).
+      $IniFile = Join-Path $tempDir "CrossrefSameContainer.ini"
+      @'
+[Directories]
+BACKUP_BASE_DIR=C:\Parent
+BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}UserDir\
+'@ | Set-Content $IniFile
+
+      $Config = Read-Config -IniFile $IniFile
+
+      $Config.Directories.BACKUP_BASE_DIR       | Should -Be "C:\Parent\"
+      $Config.Directories.BACKUP_USER_BASE_DIR  | Should -Be "C:\Parent\UserDir\"
+    }
+
+    It 'Correctly handles cross-references and scope across two containers.' {
+      # Note: For cross-references to work across different containers,
+      # the variables must be set in the caller's scope (which Update-ConfigProperty does).
+      $IniFile = Join-Path $tempDir "CrossrefDifferentContainers.ini"
+      @'
+[Directories]
+BACKUP_BASE_DIR=C:\Parent
+[Logging settings]
+TRACE_LOG_LOCAL_DIR=${BACKUP_BASE_DIR}LogDir\
+'@ | Set-Content $IniFile
+
+      $Config = Read-Config -IniFile $IniFile
+
+      $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\Parent\"
+      $Config.Logging.TRACE_LOG_LOCAL_DIR | Should -Be "C:\Parent\LogDir\"
+    }
+  }
+
+  Context 'Top-level settings' {
     <# These tests create their own INI files in a temporary directory ($env:TEMP)
       for isolation and automatic cleanup, rather than using $script:workingFolder.
     #>
@@ -98,24 +232,6 @@ BACKUP_BASE_DIR=C:\MyBackup
 
       $Config.General.__VERBOSE | Should -Be 3
       $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\MyBackup\"
-    }
-
-    It 'Correctly handles cross-references and scope.' {
-      # Note: For cross-references to work across different containers,
-      # the variables must be set in the caller's scope (which Update-ConfigProperty does).
-      $IniFile = Join-Path $tempDir "TopLevelCrossref.ini"
-      @'
-__VERBOSE=1
-[Directories]
-BACKUP_BASE_DIR=C:\TopLevel
-BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}User\
-'@ | Set-Content $IniFile
-
-      $Config = Read-Config -IniFile $IniFile
-
-      $Config.General.__VERBOSE | Should -Be 1
-      $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\TopLevel\"
-      $Config.Directories.BACKUP_USER_BASE_DIR | Should -Be "C:\TopLevel\User\"
     }
   }
 
