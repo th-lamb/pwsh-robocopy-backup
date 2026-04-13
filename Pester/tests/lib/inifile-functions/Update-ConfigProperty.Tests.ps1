@@ -72,6 +72,7 @@ Describe 'Update-ConfigProperty' {
       # Our Mock for Get-ExpandedPath just inserts "C:\" before the string.
       Update-ConfigProperty -Config $Config -TargetContainer 'Directories' -Key 'BACKUP_BASE_DIR' -Val 'SomePath'
 
+      Should -Invoke -CommandName "Get-ExpandedPath" # -Times 1
       $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\SomePath\"
     }
   }
