@@ -153,6 +153,8 @@ $startTime = (Get-Date)
 
 #region Change working dir to script location
 
+#FIXME: This should be avoided to allow defaults in `lib\config-classes.psm1`!
+
 try {
   # We use the .NET method because it is immune to -WhatIf interception in PS 5.1.
   [System.IO.Directory]::SetCurrentDirectory("${SCRIPT_DIR}")
@@ -206,6 +208,7 @@ $Config = [ScriptConfig]::new()
 $iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
 $Config = Read-Config -IniFile "${iniFile}"
 
+#FIXME: This should only be written to console and log if it was successful. and the script does not use default values!
 Write-EarlyMsg INFO "Settings file read."
 
 #endregion Read settings file ##################################################

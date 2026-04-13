@@ -17,6 +17,7 @@ class DirectorySettings {
     - $ProjectRoot is always the script dir.
     - . is any current directory from where the user calls the script.
   #>
+  #FIXME: This does *NOT* work because the main script changes the working dir to $SCRIPT_DIR at line ~150!
   [string]$BACKUP_BASE_DIR      = ".\Backup\"
   [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"
   [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\"
