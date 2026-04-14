@@ -19,12 +19,12 @@ class DirectorySettings {
   #>
   #FIXME: This does *NOT* work because the main script changes the working dir to $SCRIPT_DIR at line ~150!
   [string]$BACKUP_BASE_DIR      = ".\Backup\"
-  [string]$BACKUP_USER_BASE_DIR = ".\Backup\%Username%\"
-  [string]$BACKUP_DIR           = ".\Backup\%Username%\%Computername%\"
+  [string]$BACKUP_USER_BASE_DIR = ".\Backup\%USERNAME%\"
+  [string]$BACKUP_DIR           = ".\Backup\%USERNAME%\%COMPUTERNAME%\"
 
   # Other mandatory directories
   [string]$BACKUP_TEMPLATES_DIR = "${ProjectRoot}templates\"            # Note: Must be an absolute path!
-  [string]$BACKUP_JOB_DIR       = ".\Backup\%Username%\robocopy-jobs\"
+  [string]$BACKUP_JOB_DIR       = ".\Backup\%USERNAME%\robocopy-jobs\"
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
