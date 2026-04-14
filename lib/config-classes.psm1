@@ -45,8 +45,7 @@ class DirectorySettings {
 class FileSettings {
   # Files for the backup itself
   [string]$DIRLIST_TEMPLATE     = "${ProjectRoot}templates\dir-list-template.conf"
-  #TODO: Change to full path, e.g. "${BACKUP_DIR}dir-list.conf" or ".\Backup\%Username%\%Computername%\dir-list.conf"
-  [string]$BACKUP_DIRLIST       = "dir-list.conf" # e.g. .\Backup\<username>\<Computername>\dir-list.conf
+  [string]$BACKUP_DIRLIST       = "${BACKUP_DIR}dir-list.conf" # e.g. .\Backup\<username>\<Computername>\dir-list.conf
 
   # Templates for jobtype
   [string]$JOB_TEMPLATE_INCR    = "${ProjectRoot}templates\incr_backup.RCJ"

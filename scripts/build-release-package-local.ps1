@@ -68,6 +68,7 @@ New-Item -ItemType Directory -Path "$stagingDir\templates" -Force | Out-Null
 Write-Host "Copying root files..."
 Copy-Item "backup.ps1" "$stagingDir\"
 Copy-Item "example-backup.ini" "$stagingDir\"
+Copy-Item "example-backup.ini" "$stagingDir\backup.ini"  # Create backup.ini from example
 Copy-Item "example-dir-list.conf" "$stagingDir\"
 Copy-Item "README.md" "$stagingDir\"
 

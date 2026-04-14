@@ -94,18 +94,17 @@ function Get-RealFsObjectType {
     }
   }
 
-  #TODO: Necessary? The Pester test 'recognizes file defined as folder (trailing \)' succeeds without it.
-  # # Fallback for files defined with trailing slash (e.g. "file.txt\")
-  # $PathWithoutTrailingSlash = "${PathSpec}".TrimEnd('\').TrimEnd('/')
-  # if ("${PathWithoutTrailingSlash}" -ne "${PathSpec}" -and "${PathWithoutTrailingSlash}" -ne "") {
-  #   if (Test-Path -Path "${PathWithoutTrailingSlash}" -PathType Leaf) {
-  #     return [FsObjectResult]@{
-  #       Exists = $true
-  #       Type   = "file"
-  #       Path   = $PathWithoutTrailingSlash
-  #     }
-  #   }
-  # }
+  # Fallback for files defined with trailing slash (e.g. "file.txt\")
+  $PathWithoutTrailingSlash = "${PathSpec}".TrimEnd('\').TrimEnd('/')
+  if ("${PathWithoutTrailingSlash}" -ne "${PathSpec}" -and "${PathWithoutTrailingSlash}" -ne "") {
+    if (Test-Path -Path "${PathWithoutTrailingSlash}" -PathType Leaf) {
+      return [FsObjectResult]@{
+        Exists = $true
+        Type   = "file"
+        Path   = "${PathWithoutTrailingSlash}"
+      }
+    }
+  }
 
   <# Fallback for hidden files/folders with patterns.
     Reason: Test-Path doesn't find hidden items with wildcards.
@@ -472,9 +471,18 @@ function New-FileFromTemplate {
     Throw
   }
 
+  # Ensure the parent directory exists.
+  $FSobject = Get-ParentDir "${FileSpec}"
+  if (! ${FSobject}.Exists) {
+    [void](New-Directory -DefinitionName "${DefinitionName}_DIR" -DirectorySpec "$($FSobject.Path)" -logfile "${logfile}")
+  }
+
   if ($PSCmdlet.ShouldProcess("${FileSpec}", "Create file from template")) {
     try {
       Copy-Item -Path "${template}" -Destination "${FileSpec}" -Confirm:$false
+      if ($null -ne (Get-Command "Write-EarlyMsg" -ErrorAction SilentlyContinue)) {
+        Write-EarlyMsg INFO "File created from template: ${FileSpec}"
+      }
       LogAndShowMessage "${logfile}" INFO "File created from template."
       return $true
     }
@@ -766,9 +774,32 @@ function Get-ParentDir {
       Path   = $DotsEvaluated
     }
   }
-  $ParentDirectory = Split-Path -Path "${DotsEvaluated}"
+
+  $ParentDirectory = $null
+  try {
+    $ParentDirectory = Split-Path -Path "${DotsEvaluated}"
+  }
+  catch {
+    Write-DebugMsg "Get-ParentDir(): Split-Path failed for '${DotsEvaluated}': $_"
+  }
+
   Write-DebugMsg "Get-ParentDir(): ParentDirectory: ${ParentDirectory}"
 
+  if ([string]::IsNullOrEmpty($ParentDirectory)) {
+    # If the path has no parent (e.g. just a filename), we assume current directory
+    # but only if the path is not rooted (to avoid returning .\ for C:\ etc).
+    if (! [System.IO.Path]::IsPathRooted($DotsEvaluated)) {
+      $ParentDirectory = ".\"
+    }
+  }
+
+  if (! [string]::IsNullOrEmpty($ParentDirectory) -and ! "${ParentDirectory}".EndsWith("\") ) {
+    $ParentDirectory = "${ParentDirectory}\"
+    Write-DebugMsg "Get-ParentDir(): ParentDirectory: ${ParentDirectory}"
+  }
+
+  # Check existence.
+  $exists = $false
   if ([string]::IsNullOrEmpty($ParentDirectory)) {
     return [FsObjectResult]@{
       Exists = $false
@@ -777,13 +808,6 @@ function Get-ParentDir {
     }
   }
 
-  if (! "${ParentDirectory}".EndsWith("\") ) {
-    $ParentDirectory = "${ParentDirectory}\"
-    Write-DebugMsg "Get-ParentDir(): ParentDirectory: ${ParentDirectory}"
-  }
-
-  # Check existence.
-  $exists = $false
   if (Test-Path -Path "${ParentDirectory}" -PathType Container) {
     $exists = $true
   }

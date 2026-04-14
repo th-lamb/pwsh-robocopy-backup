@@ -89,11 +89,12 @@ function Write-EarlyMsg {
     })
 
   # Format the severity label similar to Format-SeverityLabel. Example: INFO = [INFO   ]
-  $sb = [System.Text.StringBuilder]::new("$severity")
-  while ($sb.Length -lt 7) {
+  $sb = [System.Text.StringBuilder]::new("[$severity")
+  while ($sb.Length -lt 8) {
     [void]$sb.Append(" ")
   }
-  $severityLabel = "[$sb]"
+  [void]$sb.Append("]")
+  $severityLabel = $sb.ToString()
 
   # Write the message to the console.
   $color = switch ($severity) {
@@ -118,7 +119,7 @@ $oldWhatIfPreference = $WhatIfPreference
 $WhatIfPreference = $false
 
 #TODO: Make versioning "generic" - using commands like "git tag v0.1.00" and %%SCRIPT_VERSION%% here?
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.3.03"
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.4.00"
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
 Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
 
@@ -151,45 +152,25 @@ $startTime = (Get-Date)
 
 
 
-#region Change working dir to script location
-
-#FIXME: This should be avoided to allow defaults in `lib\config-classes.psm1`!
-
-try {
-  # We use the .NET method because it is immune to -WhatIf interception in PS 5.1.
-  [System.IO.Directory]::SetCurrentDirectory("${SCRIPT_DIR}")
-}
-catch {
-  # Log to native stderr (often captured by logs).
-  [Console]::ForegroundColor = 'red'
-  [Console]::Error.WriteLine("Failed to change working directory to [${SCRIPT_DIR}]! Error: $_")
-  [Console]::ResetColor()
-  exit 2
-}
-
-#endregion Change working dir to script location ###############################
-
-
-
 #region Import function libraries
 
 #TODO: Hard-coded for now, later an import function for different library folders might be better.
 #TODO: Search order: current directory, parallel folder "lib" or standard directory
 
 try {
-  . lib\message-functions.ps1       # No dependencies
-  . lib\network-functions.ps1       # No dependencies
-  . lib\logging-functions.ps1       # Depends on message-functions.
-  . lib\filesystem-functions.ps1    # Depends on logging-functions, message-functions.
-  . lib\job-functions.ps1           # Depends on message-functions.
-  . lib\job-archive-functions.ps1   # Depends on logging-functions, message-functions.
-  . lib\inifile-functions.ps1       # Depends on message-functions.
-  . lib\robocopy-functions.ps1      # Depends on logging-functions.
-  . lib\job-type-functions.ps1      # Depends on logging-functions, message-functions.
+  . "${SCRIPT_DIR}lib\message-functions.ps1"       # No dependencies
+  . "${SCRIPT_DIR}lib\network-functions.ps1"       # No dependencies
+  . "${SCRIPT_DIR}lib\logging-functions.ps1"       # Depends on message-functions.
+  . "${SCRIPT_DIR}lib\filesystem-functions.ps1"    # Depends on logging-functions, message-functions.
+  . "${SCRIPT_DIR}lib\job-functions.ps1"           # Depends on message-functions.
+  . "${SCRIPT_DIR}lib\job-archive-functions.ps1"   # Depends on logging-functions, message-functions.
+  . "${SCRIPT_DIR}lib\inifile-functions.ps1"       # Depends on message-functions.
+  . "${SCRIPT_DIR}lib\robocopy-functions.ps1"      # Depends on logging-functions.
+  . "${SCRIPT_DIR}lib\job-type-functions.ps1"      # Depends on logging-functions, message-functions.
 }
 catch {
   Write-EarlyMsg ERR ("Failed to import function libraries from lib\ subfolder! " + `
-      "Ensure the folder exists in the script directory. Error: $_")
+      "Ensure the folder exists in the script directory [${SCRIPT_DIR}]. Error: $_")
   exit 2
 }
 
@@ -204,12 +185,36 @@ Write-EarlyMsg INFO "Reading the settings file..."
 # Configuration object with default values
 $Config = [ScriptConfig]::new()
 
-# Populate with values from the ini file.
-$iniFile = $PSCommandPath -replace "\.ps1$", ".ini"
-$Config = Read-Config -IniFile "${iniFile}"
+# Handle backup.ini (template approach)
+$iniFile = "${SCRIPT_DIR}backup.ini"
+$exampleIni = "${SCRIPT_DIR}example-backup.ini"
+$iniLoaded = $false
 
-#FIXME: This should only be written to console and log if it was successful. and the script does not use default values!
-Write-EarlyMsg INFO "Settings file read."
+if (-not (Test-Path "${iniFile}")) {
+  if (Test-Path "${exampleIni}") {
+    Write-EarlyMsg INFO "Settings file [backup.ini] not found. Creating from [example-backup.ini]..."
+    try {
+      Copy-Item -Path "${exampleIni}" -Destination "${iniFile}" -Confirm:$false -ErrorAction Stop
+      Write-EarlyMsg INFO "Settings file [backup.ini] successfully created."
+    }
+    catch {
+      Write-EarlyMsg WARNING "Failed to create [backup.ini] from template! Error: $_"
+    }
+  }
+}
+
+# Populate with values from the ini file.
+if (Test-Path "${iniFile}") {
+  $Config = Read-Config -IniFile "${iniFile}"
+  Write-EarlyMsg INFO "Settings file read."
+  $iniLoaded = $true
+}
+
+if (-not $iniLoaded) {
+  Write-EarlyMsg WARNING "No settings file found. Using default values."
+  # Ensure defaults are expanded (normally handled by Read-Config)
+  $Config.Normalize()
+}
 
 #endregion Read settings file ##################################################
 
@@ -264,12 +269,8 @@ switch ("${DirType}") {
     Test-NecessaryDirectory 'BACKUP_BASE_DIR' $Config.Directories.BACKUP_BASE_DIR $Config.Logging.BACKUP_LOGFILE
   }
   "relative path" {
-    # Interpret as path below script dir, current drive or ...?
-    #TODO: This may not yet have a test case!
-    #TODO: Check if the following change to $Config.Directories.BACKUP_BASE_DIR has correct syntax!
-    # $AbsoluteBaseDir = "${SCRIPT_DIR}\${BACKUP_BASE_DIR}"
-    $AbsoluteBaseDir = "${SCRIPT_DIR}\$($Config.Directories.BACKUP_BASE_DIR)"
-    [void](New-Directory 'BACKUP_BASE_DIR (absolute path)' "${AbsoluteBaseDir}" $Config.Logging.BACKUP_LOGFILE)
+    # Relative to current working directory (NOT script dir anymore)
+    [void](New-Directory 'BACKUP_BASE_DIR (relative path)' $Config.Directories.BACKUP_BASE_DIR $Config.Logging.BACKUP_LOGFILE)
   }
   "network computer" {
     Write-CritMsg "Cannot use a server as BACKUP_BASE_DIR, specify a share!"
@@ -280,7 +281,6 @@ switch ("${DirType}") {
     exit 1
   }
 }
-
 #TODO: Report creation of these dirs (as INFO).
 [void](New-Directory 'BACKUP_USER_BASE_DIR' $Config.Directories.BACKUP_USER_BASE_DIR $Config.Logging.BACKUP_LOGFILE)
 [void](New-Directory 'BACKUP_DIR' $Config.Directories.BACKUP_DIR $Config.Logging.BACKUP_LOGFILE)

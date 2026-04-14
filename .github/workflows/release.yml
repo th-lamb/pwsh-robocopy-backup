@@ -61,6 +61,7 @@ jobs:
           # 2. Copy main script, templates, and README
           Copy-Item "backup.ps1" "pwsh-robocopy-backup\"
           Copy-Item "example-backup.ini" "pwsh-robocopy-backup\"
+          Copy-Item "example-backup.ini" "pwsh-robocopy-backup\backup.ini" # Create backup.ini from example
           Copy-Item "example-dir-list.conf" "pwsh-robocopy-backup\"
           Copy-Item "README.md" "pwsh-robocopy-backup\"
 

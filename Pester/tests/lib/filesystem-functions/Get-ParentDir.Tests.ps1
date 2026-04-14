@@ -1,4 +1,4 @@
-﻿using module '..\..\..\..\lib\config-classes.psm1'
+using module '..\..\..\..\lib\config-classes.psm1'
 
 # Top level (discovery phase)
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
@@ -25,42 +25,50 @@ BeforeAll {
 Describe 'Get-ParentDir' {
   Context 'no placeholders' {
     It 'returns parent folder for existing file' {
-      $path_spec  = "${workingFolder}existing_dir\existing_file"
-      $expected   = "${workingFolder}existing_dir\"
+      $FileSpec = "${workingFolder}existing_dir\existing_file"
+      $expected = "${workingFolder}existing_dir\"
 
-      $FSobject = Get-ParentDir "${path_spec}"
+      $FSobject = Get-ParentDir "${FileSpec}"
       ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns parent folder for non-existent file' {
-      $path_spec  = "${workingFolder}existing_dir\non_existent_file"
-      $expected   = "${workingFolder}existing_dir\"
+      $FileSpec = "${workingFolder}existing_dir\non_existent_file"
+      $expected = "${workingFolder}existing_dir\"
 
-      $FSobject = Get-ParentDir "${path_spec}"
+      $FSobject = Get-ParentDir "${FileSpec}"
       ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns parent folder for file in non-existent folder' {
-      $path_spec  = "${workingFolder}non_existent_dir\some_file"
-      $expected   = "${workingFolder}non_existent_dir\"
+      $FileSpec = "${workingFolder}non_existent_dir\some_file"
+      $expected = "${workingFolder}non_existent_dir\"
 
-      $FSobject = Get-ParentDir "${path_spec}"
+      $FSobject = Get-ParentDir "${FileSpec}"
       ${FSobject}.Path | Should -Be "${expected}"
     }
 
     It 'returns the drive for a short path' {
-      $path_spec  = "C:\test\"
-      $expected   = "C:\"
+      $FileSpec = "C:\test\"
+      $expected = "C:\"
 
-      $FSobject = Get-ParentDir "${path_spec}"
+      $FSobject = Get-ParentDir "${FileSpec}"
       ${FSobject}.Path | Should -Be "${expected}"
     }
 
-    It 'returns an empty value for a too short path' {
-      $path_spec  = "C:\"
-      $expected   = ""
+    It 'returns an empty value for a too short path (1)' {
+      $FileSpec = "C:\"
+      $expected = ""
 
-      $FSobject = Get-ParentDir "${path_spec}"
+      $FSobject = Get-ParentDir "${FileSpec}"
+      ${FSobject}.Path | Should -Be "${expected}"
+    }
+
+    It 'returns an empty value for a too short path (2)' {
+      $FileSpec = "C:"
+      $expected = ""
+
+      $FSobject = Get-ParentDir "${FileSpec}"
       ${FSobject}.Path | Should -Be "${expected}"
     }
   }
@@ -178,7 +186,7 @@ Describe 'Get-ParentDir' {
       ${FSobject}.Path | Should -Be "${expected}"
     }
 
-    It 'returns an empty value for a too short path and ..' {
+    It 'returns an empty value for a too short path and .. (1)' {
       $pattern  = "C:\.."
       $expected = ""
 
@@ -186,7 +194,7 @@ Describe 'Get-ParentDir' {
       ${FSobject}.Path | Should -Be "${expected}"
     }
 
-    It 'returns an empty value for a too short path and ..' {
+    It 'returns an empty value for a too short path and .. (2)' {
       $pattern  = "C:\test\.."
       $expected = ""
 

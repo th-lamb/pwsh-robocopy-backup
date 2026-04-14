@@ -63,9 +63,10 @@ Describe "backup.ps1 Smoke Test" {
     Write-Host "Sandbox Root: $script:SandboxRoot"
 
     $script:smokeTestPs1 = Join-Path $script:SandboxRoot "smoke-test.ps1"
-    $script:smokeTestIni = Join-Path $script:SandboxRoot "smoke-test.ini"
+    # backup.ps1 now always looks for backup.ini in its own folder
+    $script:smokeTestIni = Join-Path $script:SandboxRoot "backup.ini"
     #TODO: Read $smokeTestConf from the inifile, not hardcoded?
-    $script:smokeTestConf = Join-Path $script:SandboxRoot "smoke-test-dir-list.conf"
+    $script:smokeTestConf = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\$env:COMPUTERNAME\dir-list.conf"
 
     # --- PRE-TEST CLEANUP ---
     # Remove artifacts from previous runs so we start fresh,
@@ -73,8 +74,7 @@ Describe "backup.ps1 Smoke Test" {
     $artifacts = @(
       $script:smokeTestPs1,
       $script:smokeTestIni,
-      $script:smokeTestConf,
-      (Join-Path $script:SandboxRoot "destination"),
+      (Join-Path $script:SandboxRoot "Backup"),
       (Join-Path $script:SandboxRoot "stdout.txt")
     )
     foreach ($path in $artifacts) {
@@ -96,6 +96,9 @@ Describe "backup.ps1 Smoke Test" {
     }
 
     # 3. Prepare the sandbox dir-list
+    # Note: it now must be in the Backup subfolder because of BACKUP_DIRLIST=${BACKUP_DIR}dir-list.conf
+    $dirListTargetDir = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\$env:COMPUTERNAME"
+    $null = New-Item -ItemType Directory -Path $dirListTargetDir -Force
     $dirListSource = Join-Path $script:SandboxRoot "test-dir-list.conf"
     if (Test-Path $dirListSource) {
       Copy-Item $dirListSource -Destination $script:smokeTestConf -Force
@@ -104,7 +107,13 @@ Describe "backup.ps1 Smoke Test" {
       throw "test-dir-list.conf not found in $script:SandboxRoot"
     }
 
-    # 4. Prepare the sandbox lib/ and templates/ folder.
+    # 4. Create an 'old' job file so the archiver doesn't complain about an empty collection.
+    $jobDir = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\$env:COMPUTERNAME\robocopy-jobs"
+    $null = New-Item -ItemType Directory -Path $jobDir -Force
+    Set-Content -Path (Join-Path $jobDir "Old-Job-2020-01-01-000000.RCJ") -Value "dummy"
+    Set-Content -Path (Join-Path $jobDir "Old-Job-2020-01-01-000000.log") -Value "dummy"
+
+    # 5. Prepare the sandbox lib/ and templates/ folder.
     $libPath = Join-Path $script:SandboxRoot "lib\"
     $null = New-Item -ItemType Directory -Path $libPath -Force
     Remove-Item -Path "$libPath\*" -Recurse -Force -ErrorAction SilentlyContinue

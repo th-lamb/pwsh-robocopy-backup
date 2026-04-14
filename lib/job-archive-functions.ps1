@@ -188,12 +188,12 @@ function Export-PreviousJobsArchive {
   # Delete the jobs.
   Write-InfoMsg "Deleting old jobs..."
 
-  if ( $null -ne $OldJobfiles ) {
+  if ( $OldJobfiles.Count -gt 0 ) {
     $DeletedJobfilesCount = Remove-FileCollection $OldJobfiles
     Write-DebugMsg "$DeletedJobfilesCount jobfile(s) deleted."
   }
 
-  if ( $null -ne $OldLogfiles ) {
+  if ( $OldLogfiles.Count -gt 0 ) {
     $DeletedLogfilesCount = Remove-FileCollection $OldLogfiles
     Write-DebugMsg "$DeletedLogfilesCount logfile(s) deleted."
   }
