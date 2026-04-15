@@ -1,0 +1,515 @@
+#         Message functions library
+#         =========================
+#
+# Provides different (colored) messages depending on their severity level.
+# - Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
+# - Colors inspired by ANSI Z535.6
+#
+# Does not use the standard PowerShell streams 1..6 (Output, Error, Warning,
+# Verbose, ...), only Write-Host to write to the console with different colors.
+#
+#
+#     How to use in your script?
+#     ==========================
+#
+# 1. Source this file.
+#
+# 2. Define the $Config object with a General.__VERBOSE property (0..7).
+#
+# 3. Replace Write-Host commands with function calls depending on the message severity.
+#    -> e.g. Write-NoticeMsg() for important (but expected) messages, and Write-ErrMsg()
+#       for unexpected errors
+#
+#
+#     When will a message be written?
+#     ===============================
+#
+# The message functions are related to a specific severity level. Messages will
+# be written if $Config.General.__VERBOSE is equal to or higher than this level.
+#
+#   | Function            | Severity (value)| Condition                       |
+#   +---------------------+-----------------+---------------------------------+
+#   | Write-EmergMsg()    | emerg     (0)   | none (always written)           |
+#   | Write-AlertMsg()    | alert     (1)   | ""                              |
+#   | Write-CritMsg()     | crit      (2)   | ""                              |
+#   | Write-ErrMsg()      | err       (3)   | ""                              |
+#   | Write-WarningMsg()  | warning   (4)   | $Config.General.__VERBOSE >= 4  |
+#   | Write-NoticeMsg()   | notice    (5)   | $Config.General.__VERBOSE >= 5  |
+#   | Write-InfoMsg()     | info      (6)   | $Config.General.__VERBOSE >= 6  |
+#   | Write-DebugMsg()    | debug     (7)   | $Config.General.__VERBOSE = 7   |
+#
+#
+#     Helper functions
+#     ================
+#
+# Not meant to be called directly:
+# - Write-ColoredMessage()
+# - Test-VerbosityIsDefined()
+#
+#
+#     Wrappers for simple verbose modes
+#     =================================
+#
+# - Write-QuietMessage()  : Interpreted as a warning
+# - Write-NormalMessage() : Interpreted as "info" but will already be written at
+#                           verbose level 5 (severity level "notice").
+# - Write-VerboseMessage(): Interpreted as "info" but will only be written at
+#                           verbose level 7 (severity level "debug").
+#
+################################################################################
+
+
+
+#         Change log
+#         ==========
+# 2023-03-20, Version 0.0.01, Thomas Lambeck
+# - File created
+################################################################################
+
+
+
+enum SeverityKeyword {
+  EMERG = 0
+  ALERT = 1
+  CRIT = 2
+  ERR = 3
+  WARNING = 4
+  NOTICE = 5
+  INFO = 6
+  DEBUG = 7
+}
+
+
+
+#region Helper functions - Colored message (without and with timestamp)
+
+function Write-ColoredMessage {
+  <# Writes the specified message to the console with colors depending on the severity level of the message.
+
+    Notes:
+    * Severity levels: https://en.wikipedia.org/wiki/Syslog#Severity_level
+    * Colors inspired by ANSI Z535.6
+    * Throws an exception on illegal severity levels.
+TODO:
+    * Redirects errors (emerg...warning) to stderr and other messages to stdout.
+      -> Powershell has 6 streams!
+
+    Parameters:
+    $1   Severity level: emerg|alert|crit|err|warning|notice|info|debug
+    $2   The message
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [SeverityKeyword]$severity,
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  $IsError = $false
+
+  switch ($severity) {
+    ([SeverityKeyword]::EMERG) {
+      $IsError = $true
+      $MsgBackgroundColor = "Red"
+      $MsgForegroundColor = "White"
+    }
+    ([SeverityKeyword]::ALERT) {
+      $IsError = $true
+      $MsgBackgroundColor = "Red"
+      $MsgForegroundColor = "Black"
+    }
+    ([SeverityKeyword]::CRIT) {
+      $IsError = $true
+      $MsgBackgroundColor = "Yellow"
+      $MsgForegroundColor = "Black"
+    }
+    ([SeverityKeyword]::ERR) {
+      $IsError = $true
+      $MsgBackgroundColor = "White"
+      $MsgForegroundColor = "Red"
+    }
+    ([SeverityKeyword]::WARNING) {
+      $MsgBackgroundColor = "White"
+      $MsgForegroundColor = "Black"
+    }
+    ([SeverityKeyword]::NOTICE) {
+      $MsgBackgroundColor = "Blue"
+      $MsgForegroundColor = "White"
+    }
+    ([SeverityKeyword]::INFO) {
+      $MsgBackgroundColor = "Black"
+      $MsgForegroundColor = "White"
+    }
+    ([SeverityKeyword]::DEBUG) {
+      $MsgBackgroundColor = "Black"
+      $MsgForegroundColor = "DarkGray"
+    }
+    Default {
+      # Illegal severity level!
+      $ErrorMessage = "Write-ColoredMessage(): Illegal severity level specified: ${severity}"
+      Write-ColoredMessage ([SeverityKeyword]::ERR) "${ErrorMessage}"
+      Throw "${ErrorMessage}"
+    }
+  }
+
+  #TODO: Finish the remaining section!
+  #Write-Host "${message}" -ForegroundColor "${MsgForegroundColor}" -BackgroundColor "${MsgBackgroundColor}"
+
+  if ($IsError) {
+    #Write-Error "${message}"
+    #Write-Error "${message}" 2>> .\error.log                     # Nothing in console, the whole verbose error message in the logfile
+
+    #[Console]::ForegroundColor = "${MsgForegroundColor}"
+    #[Console]::BackgroundColor = "${MsgBackgroundColor}"
+
+    #[Console]::Error.WriteLine("${message}")                     # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") 1>> .\1.log         # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") 2>> .\2.log         # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") 3>> .\3.log         # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") 4>> .\4.log         # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") 5>> .\5.log         # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") 6>> .\6.log         # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") 2>> .\error.log     # no output to the logfile
+    #[Console]::Error.WriteLine("${message}") >> .\error.log      # no output to the logfile
+
+    # Note:
+    # [Console]::Error.WriteLine(): bypasses PowerShell's stream system entirely and writes
+    # directly to the process's Standard Error (stderr) file descriptor at the .NET level.
+    # This is a "raw" way to communicate with the operating system's output handles.
+
+    #[Console]::ResetColor()
+
+    Write-Host "${message}" -ForegroundColor "${MsgForegroundColor}" -BackgroundColor "${MsgBackgroundColor}" # 6>> .\error.log
+
+  }
+  else {
+    #TODO: remove the redirection after testing
+    Write-Host "${message}" -ForegroundColor "${MsgForegroundColor}" -BackgroundColor "${MsgBackgroundColor}" # 6>> .\success.log
+  }
+
+}
+
+#endregion Helper functions - Colored message (without and with timestamp) #####
+
+
+
+#region Helper functions - checks
+
+function Get-VerbosityLevel {
+  <# Returns the verbosity level (0..7) from the $config object or legacy $__VERBOSE variable.
+     Returns $null if neither is defined.
+  #>
+  $cfgVar = Get-Variable -Name "Config" -ErrorAction SilentlyContinue
+  if ($null -ne $cfgVar -and $null -ne $cfgVar.Value.General) {
+    return $cfgVar.Value.General.__VERBOSE
+  }
+
+  return $null
+}
+
+function Test-VerbosityIsDefined {
+  <# Returns $true if a valid verbosity level (0..7) is found. #>
+  $val = Get-VerbosityLevel
+  return ($null -ne $val -and $val -as [int] -ge 0 -and $val -as [int] -le 7)
+}
+
+#endregion Helper functions - checks ###########################################
+
+
+
+#region Wrappers for severity levels (without timestamp)
+
+function Write-EmergMsg {
+  <# Write-ColoredMessage() for severity level 0 (emerg).
+    Notice: No verbose level check, always written.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-ColoredMessage ([SeverityKeyword]::EMERG) "[EMERG  ] ${message}"
+
+}
+
+function Write-AlertMsg {
+  <# Write-ColoredMessage() for severity level 1 (alert).
+    Notice: No verbose level check, always written.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-ColoredMessage ([SeverityKeyword]::ALERT) "[ALERT  ] ${message}"
+
+}
+
+function Write-CritMsg {
+  <# Write-ColoredMessage() for severity level 2 (crit).
+    Notice: No verbose level check, always written.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-ColoredMessage ([SeverityKeyword]::CRIT) "[CRIT   ] ${message}"
+
+}
+
+function Write-ErrMsg {
+  <# Write-ColoredMessage() for severity level 3 (err).
+    Notice: No verbose level check, always written.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-ColoredMessage ([SeverityKeyword]::ERR) "[ERR    ] ${message}"
+
+}
+
+function Write-WarningMsg {
+  # Write-ColoredMessage() for severity level 4 (warning).
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
+    Throw "__VERBOSE is not defined and between 0..7!"
+  }
+
+  if ((Get-VerbosityLevel) -ge 4) {
+    Write-ColoredMessage ([SeverityKeyword]::WARNING) "[WARNING] ${message}"
+  }
+
+}
+
+function Write-NoticeMsg {
+  # Write-ColoredMessage() for severity level 5 (notice).
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
+    Throw "__VERBOSE is not defined and between 0..7!"
+  }
+
+  if ((Get-VerbosityLevel) -ge 5) {
+    Write-ColoredMessage ([SeverityKeyword]::NOTICE) "[NOTICE ] ${message}"
+  }
+
+}
+
+function Write-InfoMsg {
+  # Write-ColoredMessage() for severity level 6 (info).
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
+    Throw "__VERBOSE is not defined and between 0..7!"
+  }
+
+  if ((Get-VerbosityLevel) -ge 6) {
+    Write-ColoredMessage ([SeverityKeyword]::INFO) "[INFO   ] ${message}"
+  }
+
+}
+
+function Write-DebugMsg {
+  # Write-ColoredMessage() for severity level 7 (debug).
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
+    Throw "__VERBOSE is not defined and between 0..7!"
+  }
+
+  if ((Get-VerbosityLevel) -ge 7) {
+    Write-ColoredMessage ([SeverityKeyword]::DEBUG) "[DEBUG  ] ${message}"
+  }
+
+}
+
+#endregion Wrappers for severity levels (without timestamp) ####################
+
+
+
+#region ... with additional exit codes
+
+function Exit-WithEmergMessage {
+  <# Writes a message for severity level 0 (emerg) and exit with specified exit code.
+    Notice: No verbose level check, always written.
+
+    Parameters:
+    $1  exit with code
+    $2  string to log
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [int32]$ExitCode,
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-EmergMsg "${message}"
+  exit $ExitCode
+
+}
+
+function Exit-WithAlertMessage {
+  <# Writes a message for severity level 1 (alert) and exit with specified exit code.
+    Notice: No verbose level check, always written.
+
+    Parameters:
+    $1  exit with code
+    $2  string to log
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [int32]$ExitCode,
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-AlertMsg "${message}"
+  exit $ExitCode
+
+}
+
+function Exit-WithCritMessage {
+  <# Writes a message for severity level 2 (crit) and exit with specified exit code.
+    Notice: No verbose level check, always written.
+
+    Parameters:
+    $1  exit with code
+    $2  string to log
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [int32]$ExitCode,
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-CritMsg "${message}"
+  exit $ExitCode
+
+}
+
+function Exit-WithErrMessage {
+  <# Writes a message for severity level 3 (err) and exit with specified exit code.
+    Notice: No verbose level check, always written.
+
+    Parameters:
+    $1  exit with code
+    $2  string to log
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [int32]$ExitCode,
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  Write-ErrMsg "${message}"
+  exit $ExitCode
+
+}
+
+#endregion ... with additional exit codes ######################################
+
+
+
+#region Wrappers for simple verbose modes
+
+function Write-QuietMessage {
+  <# Writes the specified message even in quiet mode.
+    -> Message is interpreted as a warning.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  # Colored warning message if ${__VERBOSE} >= 4.
+  Write-WarningMsg "${message}"
+
+}
+
+function Write-NormalMessage {
+  <# Writes the specified message in normal mode.
+
+    Notes:
+    The Message will be interpreted as "info" but will already be written at
+    verbose level 5 (severity level "notice").
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  # Check: ${__VERBOSE} is defined and between 0..7?
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
+    Throw "__VERBOSE is not defined and between 0..7!"
+  }
+
+  # Write message if ${__VERBOSE} >= 5 (notice).
+  if ((Get-VerbosityLevel) -ge 5) {
+    Write-ColoredMessage INFO "[INFO   ] ${message}"
+  }
+
+}
+
+function Write-VerboseMessage {
+  <# Writes the specified message only in verbose mode.
+    -> Message is interpreted as an info message.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+
+  # Check: ${__VERBOSE} is defined and between 0..7?
+  if (! (Test-VerbosityIsDefined) ) {
+    Write-ErrMsg "__VERBOSE is not defined and between 0..7!"
+    Throw "__VERBOSE is not defined and between 0..7!"
+  }
+
+  # Write message if ${__VERBOSE} = 7 (debug).
+  if ((Get-VerbosityLevel) -eq 7) {
+    Write-ColoredMessage INFO "[INFO   ] ${message}"
+  }
+
+}
+
+#endregion Wrappers for simple verbose modes ###################################

@@ -1,0 +1,18 @@
+[INFO   ] Backup Script version 0.4.00 started.
+[INFO   ] Reading the settings file...
+[INFO   ] Settings file [backup.ini] not found. Creating from [example-backup.ini]...
+[INFO   ] Settings file [backup.ini] successfully created.
+[INFO   ] Settings file read.
+[INFO   ] Checking necessary directories and files...
+[INFO   ] Creating logfile directory...
+[INFO   ] Logfile directory created.
+[INFO   ] File created from template: .\Backup\lambecth\R1754WW11P\dir-list.conf
+[INFO   ] File created from template.
+[INFO   ] Necessary directories and files checked.
+[INFO   ] Non-interactive mode. Using the default: Incremental
+[INFO   ] Archiving previous jobs...
+[INFO   ] Previous jobs archived.
+[INFO   ] ----- Creating job files ---------------------------------------------
+[INFO   ] 0 job file(s) created.
+[WARNING] No jobfiles created!
+[INFO   ] Script finished in 00 h 00 min 01 sec.

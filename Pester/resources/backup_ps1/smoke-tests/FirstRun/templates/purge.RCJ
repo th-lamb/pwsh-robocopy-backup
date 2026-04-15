@@ -1,0 +1,22 @@
+:: Robocopy Job purge.RCJ
+
+:: Source Directory
+/NOSD   :: Use parameter 1
+
+:: Destination Directory
+/NODD   :: Use parameter 2
+
+:: ----- Global settings -------------------------------------------------------
+
+:: global-robocopy-options
+:: Retry Options
+/R:3
+/W:30
+
+:: ----- User settings ---------------------------------------------------------
+
+:: Copy options
+/S      :: copy Subdirectories, but not empty ones.
+/PURGE  :: delete dest files/dirs that no longer exist in source.
+/NOCOPY :: COPY NO file info (useful with /PURGE).
+::/XL     :: eXclude Lonely files and directories.  -> https://superuser.com/a/314511/1792888: Prevents any new files being added to the destination.
