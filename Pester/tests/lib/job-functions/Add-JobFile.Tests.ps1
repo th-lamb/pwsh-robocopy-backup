@@ -69,7 +69,7 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
       $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
@@ -103,7 +103,7 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
       $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
@@ -137,7 +137,7 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
       $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
@@ -172,7 +172,7 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
       $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
@@ -207,7 +207,7 @@ Describe 'Add-JobFile' {
       $excluded_files.AddRange( [string[]]@("*.tmp", "*.todo") )
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
       $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
@@ -242,7 +242,7 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
       $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"

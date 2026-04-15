@@ -486,8 +486,6 @@ function Add-JobFile {
     [Parameter(Mandatory = $true)]
     [string]$BackupJobDirectory,
     [Parameter(Mandatory = $true)]
-    [string]$computername,
-    [Parameter(Mandatory = $true)]
     [int32]$CurrentJobNumber,
     [Parameter(Mandatory = $true)]
     [string]$JobFileNameScheme,
@@ -510,7 +508,6 @@ function Add-JobFile {
   )
 
   Write-DebugMsg "Add-JobFile(): BackupJobDirectory : ${BackupJobDirectory}"
-  Write-DebugMsg "Add-JobFile(): computername       : ${computername}"
   Write-DebugMsg "Add-JobFile(): CurrentJobNumber   : $CurrentJobNumber"
   Write-DebugMsg "Add-JobFile(): JobFileNameScheme  : ${JobFileNameScheme}"
   Write-DebugMsg "Add-JobFile(): JobLogFileNameScheme: ${JobLogFileNameScheme}"
