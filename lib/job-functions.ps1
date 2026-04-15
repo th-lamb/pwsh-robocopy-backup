@@ -278,17 +278,15 @@ function _addHeader {
     [AllowEmptyCollection()]
     [System.Collections.Generic.List[string]]$JobLines,
     [Parameter(Mandatory = $true)]
-    [string]$computername,
+    [string]$JobFileNameScheme,
     [Parameter(Mandatory = $true)]
     [int32]$CurrentJobNumber,
     [Parameter(Mandatory = $true)]
     [string]$DirlistEntry
   )
 
-  #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
-  # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
-  # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
-  $JobLines.Add(":: Robocopy Job ${computername}-Job${CurrentJobNumber}")
+  $JobName = $JobFileNameScheme.Replace("*", $CurrentJobNumber).Replace(".RCJ", "")
+  $JobLines.Add(":: Robocopy Job ${JobName}")
   $JobLines.Add(":: For dir-list entry: ${DirlistEntry}")
   $JobLines.Add("")
 
@@ -492,6 +490,10 @@ function Add-JobFile {
     [Parameter(Mandatory = $true)]
     [int32]$CurrentJobNumber,
     [Parameter(Mandatory = $true)]
+    [string]$JobFileNameScheme,
+    [Parameter(Mandatory = $true)]
+    [string]$JobLogFileNameScheme,
+    [Parameter(Mandatory = $true)]
     [string]$DirlistEntry,
     [Parameter(Mandatory = $true)]
     [string]$SourceDirectory,
@@ -510,6 +512,8 @@ function Add-JobFile {
   Write-DebugMsg "Add-JobFile(): BackupJobDirectory : ${BackupJobDirectory}"
   Write-DebugMsg "Add-JobFile(): computername       : ${computername}"
   Write-DebugMsg "Add-JobFile(): CurrentJobNumber   : $CurrentJobNumber"
+  Write-DebugMsg "Add-JobFile(): JobFileNameScheme  : ${JobFileNameScheme}"
+  Write-DebugMsg "Add-JobFile(): JobLogFileNameScheme: ${JobLogFileNameScheme}"
   Write-DebugMsg "Add-JobFile(): DirlistEntry       : ${DirlistEntry}"
   Write-DebugMsg "Add-JobFile(): SourceDirectory    : ${SourceDirectory}"
   Write-DebugMsg "Add-JobFile(): TargetDirectory    : ${TargetDirectory}"
@@ -519,11 +523,10 @@ function Add-JobFile {
   Write-DebugMsg "Add-JobFile(): CopySingleFile     : $CopySingleFile"
 
   # Paths for the current job
-  #TODO: Use $JOB_FILE_NAME_SCHEME or similar from the inifile to make sure that function Export-OldJobs uses the same scheme!
-  # e.g.  $JOB_FILE_NAME_SCHEME = "${computername}-Job*.RCJ"
-  # or    $JOB_FILE_NAME_SCHEME = "${computername}-Job%job_num%.RCJ"
-  $JobfilePath = "${BackupJobDirectory}${computername}-Job$CurrentJobNumber.RCJ"
-  $LogfilePath = "${BackupJobDirectory}${computername}-Job$CurrentJobNumber.log"
+  $JobfileName = $JobFileNameScheme.Replace("*", $CurrentJobNumber)
+  $LogfileName = $JobLogFileNameScheme.Replace("*", $CurrentJobNumber)
+  $JobfilePath = Join-Path $BackupJobDirectory $JobfileName
+  $LogfilePath = Join-Path $BackupJobDirectory $LogfileName
 
   Write-DebugMsg "Add-JobFile(): JobfilePath        : ${JobfilePath}"
   Write-DebugMsg "Add-JobFile(): LogfilePath        : ${LogfilePath}"
@@ -532,7 +535,7 @@ function Add-JobFile {
   if ($PSCmdlet.ShouldProcess("${JobfilePath}", "Create Robocopy job file")) {
     # Create job
     $JobLines = [System.Collections.Generic.List[string]]::new()
-    _addHeader -JobLines $JobLines -computername "${computername}" -CurrentJobNumber $CurrentJobNumber -DirlistEntry "${DirlistEntry}"
+    _addHeader -JobLines $JobLines -JobFileNameScheme $JobFileNameScheme -CurrentJobNumber $CurrentJobNumber -DirlistEntry "${DirlistEntry}"
 
     # Add paths
     _addSourceAndTarget -JobLines $JobLines -SourceDirectory "${SourceDirectory}" -TargetDirectory "${TargetDirectory}"

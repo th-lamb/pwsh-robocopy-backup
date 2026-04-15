@@ -66,7 +66,7 @@ Describe "backup.ps1 Smoke Test" {
     # backup.ps1 now always looks for backup.ini in its own folder
     $script:smokeTestIni = Join-Path $script:SandboxRoot "backup.ini"
     #TODO: Read $smokeTestConf from the inifile, not hardcoded?
-    $script:smokeTestConf = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\$env:COMPUTERNAME\dir-list.conf"
+    $script:smokeTestConf = Join-Path $script:SandboxRoot "destination\testuser\testcomputer\dir-list.conf"
 
     # --- PRE-TEST CLEANUP ---
     # Remove artifacts from previous runs so we start fresh,
@@ -74,8 +74,11 @@ Describe "backup.ps1 Smoke Test" {
     $artifacts = @(
       $script:smokeTestPs1,
       $script:smokeTestIni,
-      (Join-Path $script:SandboxRoot "Backup"),
-      (Join-Path $script:SandboxRoot "stdout.txt")
+      (Join-Path $script:SandboxRoot "source"),
+      (Join-Path $script:SandboxRoot "destination"),
+      (Join-Path $script:SandboxRoot "logdir"),
+      (Join-Path $script:SandboxRoot "stdout.txt"),
+      (Join-Path $script:SandboxRoot "stderr.txt")
     )
     foreach ($path in $artifacts) {
       if (Test-Path $path) {
@@ -97,7 +100,8 @@ Describe "backup.ps1 Smoke Test" {
 
     # 3. Prepare the sandbox dir-list
     # Note: it now must be in the Backup subfolder because of BACKUP_DIRLIST=${BACKUP_DIR}dir-list.conf
-    $dirListTargetDir = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\$env:COMPUTERNAME"
+    # $dirListTargetDir = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\$env:COMPUTERNAME"
+    $dirListTargetDir = Join-Path $script:SandboxRoot "destination\testuser\testcomputer"
     $null = New-Item -ItemType Directory -Path $dirListTargetDir -Force
     $dirListSource = Join-Path $script:SandboxRoot "test-dir-list.conf"
     if (Test-Path $dirListSource) {
@@ -108,10 +112,11 @@ Describe "backup.ps1 Smoke Test" {
     }
 
     # 4. Create an 'old' job file so the archiver doesn't complain about an empty collection.
-    $jobDir = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\$env:COMPUTERNAME\robocopy-jobs"
+    # $jobDir = Join-Path $script:SandboxRoot "Backup\$env:USERNAME\robocopy-jobs"
+    $jobDir = Join-Path $script:SandboxRoot "destination\testuser\robocopy-jobs"
     $null = New-Item -ItemType Directory -Path $jobDir -Force
-    Set-Content -Path (Join-Path $jobDir "Old-Job-2020-01-01-000000.RCJ") -Value "dummy"
-    Set-Content -Path (Join-Path $jobDir "Old-Job-2020-01-01-000000.log") -Value "dummy"
+    Set-Content -Path (Join-Path $jobDir "testcomputer-Job1.RCJ") -Value "dummy"
+    Set-Content -Path (Join-Path $jobDir "testcomputer-Job1.log") -Value "dummy"
 
     # 5. Prepare the sandbox lib/ and templates/ folder.
     $libPath = Join-Path $script:SandboxRoot "lib\"
@@ -195,7 +200,7 @@ Describe "backup.ps1 Smoke Test" {
     }
 
     # Check for specific expected messages
-    #TODO: Can we check the correct order of messages?
+    #TODO: Can/should we check the correct order of messages?
     #TODO: We can check a lot more messages because __VERBOSE is now set to 7 in the ini file.
     $stdout | Should -Match "INFO.*Backup Script version .* started."
     $stdout | Should -Match "INFO.*Reading the settings file."

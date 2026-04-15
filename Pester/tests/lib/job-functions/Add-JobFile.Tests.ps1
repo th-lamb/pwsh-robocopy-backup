@@ -1,4 +1,4 @@
-﻿using module '..\..\..\..\lib\config-classes.psm1'
+using module '..\..\..\..\lib\config-classes.psm1'
 
 # Top level (discovery phase)
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
@@ -20,7 +20,7 @@ BeforeAll {
 
   $script:jobfile_templates_folder = "${workingFolder}jobfile_templates\"
   $script:expected_jobfiles_folder = "${workingFolder}expected_jobfiles\"
-  $script:created_jobfiles_folder = "${workingFolder}created_jobfiles\"
+  $script:created_jobfiles_folder  = "${workingFolder}created_jobfiles\"
 
   # For messages in tested functions
   $script:config = [ScriptConfig]::new()
@@ -50,14 +50,16 @@ Describe 'Add-JobFile' {
   Context 'Different line types in dir-list' {
     It 'Writes a correct job file for line type: source-dir.' {
       # Parameters
-      [string]$backup_job_dir = "${created_jobfiles_folder}"
-      [string]$computername   = "MyComputer"
-      [int32]$current_job_num = 1
-      [string]$dirlist_entry  = "C:\foo\"
-      [string]$source_dir     = "C:\foo\"
-      [string]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir           = "${created_jobfiles_folder}"
+      [string]$computername             = "MyComputer"
+      [int32]$current_job_num           = 1
+      [string]$job_file_name_scheme     = "${computername}-Job*.RCJ"
+      [string]$job_logfile_name_scheme  = "${computername}-Job*.log"
+      [string]$dirlist_entry            = "C:\foo\"
+      [string]$source_dir               = "C:\foo\"
+      [string]$target_dir               = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
-      $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
+      $excluded_dirs = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
       [bool]$copy_single_file = $false
 
@@ -67,11 +69,11 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
-      $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-      $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
+      $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
+      $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
       $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
       $created_jobfile_content = Get-Content -Path "${created_jobfile}"
@@ -82,14 +84,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: source-file.' {
       # Parameters
-      [string]$backup_job_dir = "${created_jobfiles_folder}"
-      [string]$computername   = "MyComputer"
-      [int32]$current_job_num = 2
-      [string]$dirlist_entry  = "C:\foo\bar.txt"
-      [string]$source_dir     = "C:\foo\"
-      [string]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir           = "${created_jobfiles_folder}"
+      [string]$computername             = "MyComputer"
+      [int32]$current_job_num           = 2
+      [string]$job_file_name_scheme     = "${computername}-Job*.RCJ"
+      [string]$job_logfile_name_scheme  = "${computername}-Job*.log"
+      [string]$dirlist_entry            = "C:\foo\bar.txt"
+      [string]$source_dir               = "C:\foo\"
+      [string]$target_dir               = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
-      $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
+      $excluded_dirs = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
       [bool]$copy_single_file = $true
 
@@ -99,11 +103,11 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
-      $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-      $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
+      $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
+      $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
       $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
       $created_jobfile_content = Get-Content -Path "${created_jobfile}"
@@ -114,14 +118,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: source-file-pattern.' {
       # Parameters
-      [string]$backup_job_dir = "${created_jobfiles_folder}"
-      [string]$computername   = "MyComputer"
-      [int32]$current_job_num = 3
-      [string]$dirlist_entry  = "C:\foo\*.txt"
-      [string]$source_dir     = "C:\foo\"
-      [string]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir           = "${created_jobfiles_folder}"
+      [string]$computername             = "MyComputer"
+      [int32]$current_job_num           = 3
+      [string]$job_file_name_scheme     = "${computername}-Job*.RCJ"
+      [string]$job_logfile_name_scheme  = "${computername}-Job*.log"
+      [string]$dirlist_entry            = "C:\foo\*.txt"
+      [string]$source_dir               = "C:\foo\"
+      [string]$target_dir               = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
-      $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
+      $excluded_dirs = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
       [bool]$copy_single_file = $true
 
@@ -131,11 +137,11 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
-      $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-      $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
+      $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
+      $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
       $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
       $created_jobfile_content = Get-Content -Path "${created_jobfile}"
@@ -146,14 +152,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: incl-files-pattern.' {
       # Parameters
-      [string]$backup_job_dir = "${created_jobfiles_folder}"
-      [string]$computername   = "MyComputer"
-      [int32]$current_job_num = 4
-      [string]$dirlist_entry  = "C:\foo\"
-      [string]$source_dir     = "C:\foo\"
-      [string]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir           = "${created_jobfiles_folder}"
+      [string]$computername             = "MyComputer"
+      [int32]$current_job_num           = 4
+      [string]$job_file_name_scheme     = "${computername}-Job*.RCJ"
+      [string]$job_logfile_name_scheme  = "${computername}-Job*.log"
+      [string]$dirlist_entry            = "C:\foo\"
+      [string]$source_dir               = "C:\foo\"
+      [string]$target_dir               = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
-      $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
+      $excluded_dirs = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
       [bool]$copy_single_file = $false
 
@@ -164,11 +172,11 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
-      $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-      $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
+      $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
+      $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
       $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
       $created_jobfile_content = Get-Content -Path "${created_jobfile}"
@@ -179,14 +187,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: excl-files-pattern.' {
       # Parameters
-      [string]$backup_job_dir = "${created_jobfiles_folder}"
-      [string]$computername   = "MyComputer"
-      [int32]$current_job_num = 5
-      [string]$dirlist_entry  = "C:\foo\"
-      [string]$source_dir     = "C:\foo\"
-      [string]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir           = "${created_jobfiles_folder}"
+      [string]$computername             = "MyComputer"
+      [int32]$current_job_num           = 5
+      [string]$job_file_name_scheme     = "${computername}-Job*.RCJ"
+      [string]$job_logfile_name_scheme  = "${computername}-Job*.log"
+      [string]$dirlist_entry            = "C:\foo\"
+      [string]$source_dir               = "C:\foo\"
+      [string]$target_dir               = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
-      $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
+      $excluded_dirs = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
       [bool]$copy_single_file = $false
 
@@ -197,11 +207,11 @@ Describe 'Add-JobFile' {
       $excluded_files.AddRange( [string[]]@("*.tmp", "*.todo") )
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
-      $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-      $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
+      $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
+      $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
       $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
       $created_jobfile_content = Get-Content -Path "${created_jobfile}"
@@ -212,14 +222,16 @@ Describe 'Add-JobFile' {
 
     It 'Writes a correct job file for line type: excl-dirs-pattern.' {
       # Parameters
-      [string]$backup_job_dir = "${created_jobfiles_folder}"
-      [string]$computername   = "MyComputer"
-      [int32]$current_job_num = 6
-      [string]$dirlist_entry  = "C:\foo\"
-      [string]$source_dir     = "C:\foo\"
-      [string]$target_dir     = "C:\Backup\C\foo\"
+      [string]$backup_job_dir           = "${created_jobfiles_folder}"
+      [string]$computername             = "MyComputer"
+      [int32]$current_job_num           = 6
+      [string]$job_file_name_scheme     = "${computername}-Job*.RCJ"
+      [string]$job_logfile_name_scheme  = "${computername}-Job*.log"
+      [string]$dirlist_entry            = "C:\foo\"
+      [string]$source_dir               = "C:\foo\"
+      [string]$target_dir               = "C:\Backup\C\foo\"
       $included_files = [System.Collections.Generic.List[string]]::new()
-      $excluded_dirs  = [System.Collections.Generic.List[string]]::new()
+      $excluded_dirs = [System.Collections.Generic.List[string]]::new()
       $excluded_files = [System.Collections.Generic.List[string]]::new()
       [bool]$copy_single_file = $false
 
@@ -230,11 +242,11 @@ Describe 'Add-JobFile' {
       #$excluded_files
 
       # Function call with all values.
-      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
+      Add-JobFile "${backup_job_dir}" "${computername}" $current_job_num $job_file_name_scheme $job_logfile_name_scheme "${dirlist_entry}" "${source_dir}" "${target_dir}" $included_files $excluded_dirs $excluded_files $copy_single_file
 
       # Compare the result with the template!
-      $jobfile_name = "${computername}-Job${current_job_num}.RCJ"
-      $created_jobfile = "${created_jobfiles_folder}${jobfile_name}"
+      $jobfile_name     = "${computername}-Job${current_job_num}.RCJ"
+      $created_jobfile  = "${created_jobfiles_folder}${jobfile_name}"
       $expected_jobfile = "${expected_jobfiles_folder}${jobfile_name}"
 
       $created_jobfile_content = Get-Content -Path "${created_jobfile}"

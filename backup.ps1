@@ -393,6 +393,8 @@ function Invoke-AddJobFile {
     $Config.Directories.BACKUP_JOB_DIR `
     "${COMPUTERNAME}" `
     $script:CurrentJobNum `
+    $Config.Jobs.JOB_FILE_NAME_SCHEME `
+    $Config.Jobs.JOB_LOGFILE_NAME_SCHEME `
     "${Script:CurrentSourceDefinition}" `
     "${Script:SourceDir}" `
     "${Script:TargetDir}" `
