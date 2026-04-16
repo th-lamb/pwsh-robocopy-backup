@@ -119,7 +119,7 @@ $oldWhatIfPreference = $WhatIfPreference
 $WhatIfPreference = $false
 
 #TODO: Make versioning "generic" - using commands like "git tag v0.1.00" and %%SCRIPT_VERSION%% here?
-Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.4.00"
+Set-Variable -Name "SCRIPT_VERSION" -Option ReadOnly -Value "0.4.01"
 Set-Variable -Name "SCRIPT_DIR" -Option ReadOnly -Value ((Split-Path -parent "${PSCommandPath}") + "\")
 Set-Variable -Name "COMPUTERNAME" -Option ReadOnly -Value ([System.Environment]::ExpandEnvironmentVariables("%COMPUTERNAME%"))
 
@@ -220,9 +220,7 @@ if (-not $iniLoaded) {
 
 
 
-#region Check necessary directories and files
-
-Write-EarlyMsg INFO "Checking necessary directories and files..."
+#region Start logging to actual logfile
 
 # Create logfile folder if necessary. (May be different from $BACKUP_DIR.)
 $FSobject = Get-ParentDir $Config.Logging.BACKUP_LOGFILE
@@ -231,6 +229,25 @@ if (! ${FSobject}.Exists) {
   [void](New-Directory 'LOGFILE_DIR' "$($FSobject.Path)" $Config.Logging.BACKUP_LOGFILE)
   Write-EarlyMsg INFO "Logfile directory created."
 }
+
+# Flush early bootstrap messages to the real log file now that BACKUP_LOGFILE is available.
+if (![string]::IsNullOrWhiteSpace($Config.Logging.BACKUP_LOGFILE)) {
+  Add-EmptyLineToLogfile $Config.Logging.BACKUP_LOGFILE # One empty line between the previous and this backup.
+
+  foreach ($msg in $script:earlyMsgBuffer) {
+    # Using direct Add-LogMessage (ignoring __VERBOSE for early info).
+    Add-LogMessage -logfile $Config.Logging.BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
+  }
+  $script:earlyMsgBuffer.Clear()
+}
+
+#endregion Start logging to actual logfile #####################################
+
+
+
+#region Check necessary directories and files
+
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "Checking necessary directories and files..."
 
 <# Some folders/files are mandatory. The rest can be created automatically.
   - Mandatory:
@@ -297,26 +314,9 @@ if ($IsDirlistCreated -and -not $NonInteractive) {
   Notepad.exe $Config.Files.BACKUP_DIRLIST | Out-Null
 }
 
-Write-EarlyMsg INFO "Necessary directories and files checked."
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "Necessary directories and files checked."
 
 #endregion Check necessary directories and files ###############################
-
-
-
-#region Start logging to actual logfile
-
-Add-EmptyLineToLogfile $Config.Logging.BACKUP_LOGFILE # One empty line between the previous and this backup.
-
-# Flushes early bootstrap messages to the real log file now that BACKUP_LOGFILE is available.
-if (![string]::IsNullOrWhiteSpace($Config.Logging.BACKUP_LOGFILE)) {
-  foreach ($msg in $script:earlyMsgBuffer) {
-    # Using direct Add-LogMessage (ignoring __VERBOSE for early info).
-    Add-LogMessage -logfile $Config.Logging.BACKUP_LOGFILE -severity $msg.Severity -message $msg.Message
-  }
-  $script:earlyMsgBuffer.Clear()
-}
-
-#endregion Start logging to actual logfile #####################################
 
 
 

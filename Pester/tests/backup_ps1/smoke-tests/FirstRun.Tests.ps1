@@ -65,7 +65,7 @@ Describe "backup.ps1 New User Experience Smoke Test" {
 
       $stdout | Should -Match "INFO.*Settings file \[backup.ini\] not found\. Creating from \[example-backup\.ini\]\.\.\."
       $stdout | Should -Match "INFO.*Settings file \[backup.ini\] successfully created\."
-      $stdout | Should -Match "INFO.*File created from template\."
+      $stdout | Should -Match "INFO.*File created from template"
 
       # ASSERT: Filesystem checks
       $expectedIni = Join-Path $script:SandboxRoot "backup.ini"

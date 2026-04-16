@@ -480,10 +480,7 @@ function New-FileFromTemplate {
   if ($PSCmdlet.ShouldProcess("${FileSpec}", "Create file from template")) {
     try {
       Copy-Item -Path "${template}" -Destination "${FileSpec}" -Confirm:$false
-      if ($null -ne (Get-Command "Write-EarlyMsg" -ErrorAction SilentlyContinue)) {
-        Write-EarlyMsg INFO "File created from template: ${FileSpec}"
-      }
-      LogAndShowMessage "${logfile}" INFO "File created from template."
+      LogAndShowMessage "${logfile}" INFO "File created from template: ${FileSpec}"
       return $true
     }
     catch {
