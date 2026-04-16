@@ -32,13 +32,13 @@ Describe "backup.ps1 New User Experience Smoke Test" {
     # Custom sandbox setup for FirstRun: we don't want to pre-copy backup.ini or dir-list.conf
     function Initialize-CleanFirstRunSandbox {
       if (Test-Path $script:SandboxRoot) {
-        Remove-Item -Path "$script:SandboxRoot\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Get-ChildItem -Path $script:SandboxRoot -Exclude ".gitignore" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
       }
       $null = New-Item -ItemType Directory -Path $script:SandboxRoot -Force
 
       $script:smokeTestPs1 = Join-Path $script:SandboxRoot "smoke-test.ps1"
       Copy-Item (Join-Path $script:ProjectRoot "backup.ps1") -Destination $script:smokeTestPs1 -Force
-      Copy-Item (Join-Path $script:ProjectRoot "example-backup.ini") -Destination (Join-Path $script:SandboxRoot "example-backup.ini") -Force
+      Copy-Item (Join-Path $script:ProjectRoot "example-backup.ini") -Destination $script:SandboxRoot -Force
 
       $libPath = Join-Path $script:SandboxRoot "lib\"
       $null = New-Item -ItemType Directory -Path $libPath -Force
