@@ -47,35 +47,41 @@ function _showJobTypeList {
   Write-Host "  Press a key to select the backup job-type:"
   Write-Host ""
 
-  if ( "${DefaultJobType}" -eq "Incremental") {
-    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup (", "default", ")" -Color White, Yellow, White, Green, White
-    Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
-    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  }
-  elseif ( "${DefaultJobType}" -eq "Full") {
-    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
-    Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup (", "default", ")" -Color White, Yellow, White, Green, White
-    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  }
-  elseif ( "${DefaultJobType}" -eq "Purge") {
-    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
-    Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
-    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files) (", "default", ")" -Color White, Yellow, White, Green, White
-    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
-  }
-  elseif ( "${DefaultJobType}" -eq "Archive") {
-    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
-    Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
-    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute) (", "default", ")" -Color White, Red, White, Yellow, White, Green, White
-  }
-  elseif ( "${DefaultJobType}" -eq "Cancel") {
-    Write-Color -Text "  [I]    ", "`e[4mI`e[24m", "ncremental backup" -Color White, Yellow, White
-    Write-Color -Text "  [F]    ", "`e[4mF`e[24m", "ull backup" -Color White, Yellow, White
-    Write-Color -Text "  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)" -Color White, Yellow, White
-    Write-Color -Text "  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)" -Color White, Red, White, Yellow, White
+  $menuItems = @(
+    @{
+      JobType = 'Incremental'
+      Text    = @("  [I]    ", "`e[4mI`e[24m", "ncremental backup")
+      Color   = @('White', 'Yellow', 'White')
+    }
+    @{
+      JobType = 'Full'
+      Text    = @("  [F]    ", "`e[4mF`e[24m", "ull backup")
+      Color   = @('White', 'Yellow', 'White')
+    }
+    @{
+      JobType = 'Purge'
+      Text    = @("  [P]    ", "`e[4mP`e[24m", "urge (remove deleted/renamed files)")
+      Color   = @('White', 'Yellow', 'White')
+    }
+    @{
+      JobType = 'Archive'
+      Text    = @("  [A]    ", "Experimental: ", "Files with ", "`e[4mA`e[24m", "rchive attribute (and reset the attribute)")
+      Color   = @('White', 'Red', 'White', 'Yellow', 'White')
+    }
+  )
+
+  foreach ($item in $menuItems) {
+    # Copy the arrays so appending the default indicator never mutates the static definitions.
+    $text  = @() + $item.Text
+    $color = @() + $item.Color
+
+    if ($item.JobType -eq $DefaultJobType) {
+      $text[$text.Length - 1] += " ("
+      $text  += "default", ")"
+      $color += "Green", "White"
+    }
+
+    Write-Color -Text $text -Color $color
   }
 
   Write-Host ""
