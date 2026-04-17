@@ -7,7 +7,11 @@
 #region Helper functions
 
 # https://stackoverflow.com/a/2688572/5944475
-function Write-Color([String[]]$Text, [ConsoleColor[]]$Color) {
+function Write-Color {
+  param(
+    [String[]]$Text,
+    [ConsoleColor[]]$Color
+  )
   for ($i = 0; $i -lt $Text.Length; $i++) {
     Write-Host $Text[$i] -Foreground $Color[$i] -NoNewLine
   }
