@@ -232,12 +232,14 @@ function Get-TargetDir {
     [Parameter(Mandatory = $true)]
     [string]$BaseDirectory,
     [Parameter(Mandatory = $true)]
-    [string]$FolderSpec
+    [string]$FolderSpec,
+    [Parameter(Mandatory = $true)]
+    [string]$logfile
   )
 
   # Checks
   if ("${FolderSpec}" -eq "") {
-    LogAndShowMessage "${BACKUP_LOGFILE}" ERR "Get-TargetDir(): No folder specified!"
+    LogAndShowMessage "${logfile}" ERR "Get-TargetDir(): No folder specified!"
     #TODO: If we show an *error* here, why do we return the base dir as target dir?
     #TODO: Can this even happen?
     Throw "Get-TargetDir(): No folder specified!"

@@ -576,7 +576,7 @@ function _processDirectoryList {
         Initialize-JobRelatedInfo
       }
       else {
-        $script:TargetDir = Get-TargetDir $Config.Directories.BACKUP_DIR "${Script:SourceDir}"
+        $script:TargetDir = Get-TargetDir $Config.Directories.BACKUP_DIR "${Script:SourceDir}" $Config.Logging.BACKUP_LOGFILE
         Write-DebugMsg "TargetDir               : ${Script:TargetDir}"
       }
 

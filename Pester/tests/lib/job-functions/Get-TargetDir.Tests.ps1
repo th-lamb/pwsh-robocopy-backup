@@ -1,4 +1,4 @@
-﻿# Top level (discovery phase)
+# Top level (discovery phase)
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
 . "${ProjectRoot}\lib\job-functions.ps1"
 . "${ProjectRoot}\lib\logging-functions.ps1"
@@ -19,7 +19,7 @@ Describe 'Get-TargetDir' {
       $folder_spec  = "C:\Test\"
       $expected     = "C:\Backup\C\Test\"
 
-      $result = Get-TargetDir "${base_dir}" "${folder_spec}"
+      $result = Get-TargetDir "${base_dir}" "${folder_spec}" "TestDrive:\test.log"
       $result | Should -Be "${expected}"
     }
 
@@ -28,7 +28,7 @@ Describe 'Get-TargetDir' {
       $folder_spec  = "C:\Test"
       $expected     = "C:\Backup\C\Test\"
 
-      $result = Get-TargetDir "${base_dir}" "${folder_spec}"
+      $result = Get-TargetDir "${base_dir}" "${folder_spec}" "TestDrive:\test.log"
       $result | Should -Be "${expected}"
     }
   }
@@ -41,7 +41,7 @@ Describe 'Get-TargetDir' {
       Mock LogAndShowMessage {}
 
       {
-        Get-TargetDir "${base_dir}" "${folder_spec}"
+        Get-TargetDir "${base_dir}" "${folder_spec}" "TestDrive:\test.log"
       } | Should -Throw
     }
   }
