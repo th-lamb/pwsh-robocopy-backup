@@ -8,8 +8,8 @@ BeforeAll {
   . "${ProjectRoot}\lib\filesystem-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
-  $script:logfile = "${workingFolder}/Test-FileExists.Tests.log"
+  $workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
+  $script:BACKUP_LOGFILE = "${workingFolder}Test-FileExists.Tests.log"
 }
 
 

@@ -18,11 +18,10 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/job-functions/"
-  $script:logfile = "${workingFolder}Get-DirlistLineType.Tests.log"
+  $script:BACKUP_LOGFILE = "${ProjectRoot}\Pester\resources\lib\job-functions\Get-DirlistLineType.Tests.log"
 
   # For messages in tested functions
-  $script:config = [ScriptConfig]::new()
+  $config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 }
 
@@ -34,7 +33,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = ""
       $expected = "ignore"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -42,7 +41,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "::foo"
       $expected = "ignore"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -50,7 +49,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "C:\Users\desktop.ini"
       $expected = "source-file"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -58,7 +57,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "C:\Users\"
       $expected = "source-dir"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -66,7 +65,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "C:\cygwin64\*.ico"
       $expected = "source-file-pattern"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -74,7 +73,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "  + *.txt"
       $expected = "incl-files-pattern"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -82,7 +81,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "  - *.txt"
       $expected = "excl-files-pattern"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -90,7 +89,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "  - *\test\"
       $expected = "excl-dirs-pattern"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
   }
@@ -100,7 +99,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "C:\User*\"
       $expected = "invalid: source directory pattern"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -108,7 +107,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "C:\Users\."
       $expected = "invalid: directory entry (for current or parent folder)"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -116,7 +115,7 @@ Describe 'Get-DirlistLineType' {
       $entry    = "C:\Users\.."
       $expected = "invalid: directory entry (for current or parent folder)"
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
   }
@@ -128,7 +127,7 @@ Describe 'Get-DirlistLineType' {
 
       Mock LogAndShowMessage {}
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -138,7 +137,7 @@ Describe 'Get-DirlistLineType' {
 
       Mock LogAndShowMessage {}
 
-      $result = Get-DirlistLineType "${entry}" "${logfile}"
+      $result = Get-DirlistLineType "${entry}" "$BACKUP_LOGFILE"
       $result | Should -Be "${expected}"
     }
 
@@ -154,5 +153,5 @@ Describe 'Get-DirlistLineType' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${BACKUP_LOGFILE}" -ErrorAction SilentlyContinue
 }

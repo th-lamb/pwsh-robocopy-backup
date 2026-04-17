@@ -16,11 +16,11 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
-  $script:logfile = "${workingFolder}/Get-ExecutablePath.Tests.log"
+  $workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
+  $script:BACKUP_LOGFILE = "${workingFolder}Get-ExecutablePath.Tests.log"
 
   # For messages in tested functions
-  $script:config = [ScriptConfig]::new()
+  $config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 }
 
@@ -32,7 +32,7 @@ Describe 'Get-ExecutablePath' {
       $path_spec  = "C:\TOOLS\CMD\robocopy\Win10_engl\Robocopy.exe"
       $expected   = "C:\TOOLS\CMD\robocopy\Win10_engl\Robocopy.exe"
 
-      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
+      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${BACKUP_LOGFILE}"
       "${result}" | Should -Be "${expected}"
     }
 
@@ -40,7 +40,7 @@ Describe 'Get-ExecutablePath' {
       $path_spec  = "robocopy.exe"
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
-      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
+      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${BACKUP_LOGFILE}"
       "${result}" | Should -Be "${expected}"
     }
 
@@ -48,7 +48,7 @@ Describe 'Get-ExecutablePath' {
       $path_spec  = "robocopy"
       $expected   = "C:\Windows\system32\Robocopy.exe"
 
-      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}"
+      $result = Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${BACKUP_LOGFILE}"
       "${result}" | Should -Be "${expected}"
     }
   }
@@ -60,7 +60,7 @@ Describe 'Get-ExecutablePath' {
       Mock LogAndShowMessage {}
 
       {
-        Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${logfile}" | Out-Null
+        Get-ExecutablePath 'ROBOCOPY' "${path_spec}" "${BACKUP_LOGFILE}" | Out-Null
       } | Should -Throw
     }
   }
@@ -91,5 +91,5 @@ Describe 'Get-ExecutablePath' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${BACKUP_LOGFILE}" -ErrorAction SilentlyContinue
 }

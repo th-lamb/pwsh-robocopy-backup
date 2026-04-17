@@ -16,11 +16,11 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
-  $script:logfile = "${workingFolder}/Test-NecessaryDirectory.Tests.log"
+  $workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
+  $script:BACKUP_LOGFILE = "${workingFolder}Test-NecessaryDirectory.Tests.log"
 
   # For messages in tested functions
-  $script:config = [ScriptConfig]::new()
+  $config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 }
 
@@ -34,7 +34,7 @@ Describe 'Test-NecessaryDirectory' {
       Mock LogAndShowMessage {}
 
       {
-        Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${logfile}"
+        Test-NecessaryDirectory 'Test' "${nonexistent_dir}" "${BACKUP_LOGFILE}"
       } | Should -Throw
     }
   }
@@ -44,7 +44,7 @@ Describe 'Test-NecessaryDirectory' {
       $existing_dir = "${workingFolder}existing_dir/"
 
       {
-        Test-NecessaryDirectory 'Test' "${existing_dir}" "${logfile}"
+        Test-NecessaryDirectory 'Test' "${existing_dir}" "${BACKUP_LOGFILE}"
       } | Should -Not -Throw
     }
   }
@@ -75,5 +75,5 @@ Describe 'Test-NecessaryDirectory' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${BACKUP_LOGFILE}" -ErrorAction SilentlyContinue
 }

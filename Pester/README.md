@@ -56,4 +56,7 @@ Tests Passed: 18, Failed: 0, Skipped: 0 NotRun: 0
 PS C:\dev\pwsh-robocopy-backup\Pester>
 ```
 
-## [Pester test structure](./docs/Pester%20test%20structure.md)
+## Further Information
+
+- [Pester test structure](./docs/Pester%20test%20structure.md)
+- [Variable Scoping and Linter Compatibility](./docs/Variable%20Scoping%20and%20Linter%20Compatibility.md)

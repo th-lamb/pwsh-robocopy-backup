@@ -16,11 +16,11 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
-  $script:logfile = "${workingFolder}New-FileFromTemplate.Tests.log"
+  $workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
+  $script:BACKUP_LOGFILE = "${workingFolder}New-FileFromTemplate.Tests.log"
 
   # For messages in tested functions
-  $script:config = [ScriptConfig]::new()
+  $config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 5  # Reduced to 5 because New-FileFromTemplate writes an INFO message.
 }
 
@@ -35,7 +35,7 @@ Describe 'New-FileFromTemplate' {
       Mock LogAndShowMessage {}
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
-      New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${BACKUP_LOGFILE}"
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
 
@@ -49,7 +49,7 @@ Describe 'New-FileFromTemplate' {
       Mock LogAndShowMessage {}
 
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
-      $return_value = New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      $return_value = New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${BACKUP_LOGFILE}"
       Remove-Item "${file_to_be_created}" -ErrorAction SilentlyContinue
 
       $return_value | Should -Be $true
@@ -59,7 +59,7 @@ Describe 'New-FileFromTemplate' {
       $file_to_be_created = "${workingFolder}existing_file"
       $template_file      = "${workingFolder}template_file.txt"
 
-      $return_value = New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+      $return_value = New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${BACKUP_LOGFILE}"
 
       $return_value | Should -Be $false
     }
@@ -73,7 +73,7 @@ Describe 'New-FileFromTemplate' {
       Mock LogAndShowMessage {}
 
       {
-        New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${logfile}"
+        New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" "${BACKUP_LOGFILE}"
       } | Should -Throw
 
       $exists = Test-Path -Path "${file_to_be_created}" -PathType Leaf
@@ -116,5 +116,5 @@ Describe 'New-FileFromTemplate' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${BACKUP_LOGFILE}" -ErrorAction SilentlyContinue
 }

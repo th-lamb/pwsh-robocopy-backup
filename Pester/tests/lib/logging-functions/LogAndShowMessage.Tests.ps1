@@ -10,8 +10,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\logging-functions\"
-  $script:logfile = "${workingFolder}LogAndShowMessage.Tests.log"
+  $script:BACKUP_LOGFILE = "${ProjectRoot}\Pester\resources\lib\logging-functions\LogAndShowMessage.Tests.log"
 }
 
 
@@ -34,7 +33,7 @@ Describe 'LogAndShowMessage' {
       # Test(s)
       foreach( $test_severity in [SeverityKeyword].GetEnumNames() )
       {
-        LogAndShowMessage "${logfile}" $test_severity "Test message"
+        LogAndShowMessage "$BACKUP_LOGFILE" $test_severity "Test message"
 
         Should -Invoke -CommandName "Add-LogMessage" -Times 1 -Exactly -ParameterFilter {
           $severity -eq "${test_severity}"
@@ -59,7 +58,7 @@ Describe 'LogAndShowMessage' {
       foreach( $test_severity in [SeverityKeyword].GetEnumNames() )
       {
         $test_message = "${test_severity} message"
-        LogAndShowMessage "${logfile}" $test_severity "${test_message}"
+        LogAndShowMessage "$BACKUP_LOGFILE" $test_severity "${test_message}"
 
         Should -Invoke -CommandName "Add-LogMessage" -Times 1 -Exactly -ParameterFilter {
           $message -eq "${test_message}"
@@ -92,7 +91,7 @@ Describe 'LogAndShowMessage' {
         [void]$sb.Append("Msg")
         $command_name = $sb.ToString()
 
-        LogAndShowMessage "${logfile}" $test_severity "Test message"
+        LogAndShowMessage "$BACKUP_LOGFILE" $test_severity "Test message"
 
         Should -Invoke -CommandName "${command_name}" -Times 1 -Exactly -ParameterFilter {
           $message -eq "Test message"
@@ -105,5 +104,5 @@ Describe 'LogAndShowMessage' {
 
 
 AfterAll {
-  #Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  #Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
 }

@@ -10,9 +10,8 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\logging-functions\"
-  $script:infoLog = "${workingFolder}info.log"
-  $script:errorLog = "${workingFolder}error.log"
+  $script:BACKUP_LOGFILE = "${ProjectRoot}\Pester\resources\lib\logging-functions\info.log"
+  $script:ERROR_LOGFILE = "${ProjectRoot}\Pester\resources\lib\logging-functions\error.log"
 
   function Format-RegexString {
     Param(
@@ -61,7 +60,7 @@ Describe 'Add-LogMessage' {
 
   Context 'Errors' {
     It 'Correctly writes EMERG message.' {
-      $logfile  = "${errorLog}"
+      $logfile  = "$ERROR_LOGFILE"
       $severity = "EMERG"
       $message  = "Emergency message"
       $expected = "[EMERG  ] Emergency message"
@@ -74,7 +73,7 @@ Describe 'Add-LogMessage' {
     }
 
     It 'Correctly writes ALERT message.' {
-      $logfile  = "${errorLog}"
+      $logfile  = "$ERROR_LOGFILE"
       $severity = "ALERT"
       $message  = "Alert message"
       $expected = "[ALERT  ] Alert message"
@@ -87,7 +86,7 @@ Describe 'Add-LogMessage' {
     }
 
     It 'Correctly writes CRIT message.' {
-      $logfile  = "${errorLog}"
+      $logfile  = "$ERROR_LOGFILE"
       $severity = "CRIT"
       $message  = "Critical message"
       $expected = "[CRIT   ] Critical message"
@@ -100,7 +99,7 @@ Describe 'Add-LogMessage' {
     }
 
     It 'Correctly writes ERR message.' {
-      $logfile  = "${errorLog}"
+      $logfile  = "$ERROR_LOGFILE"
       $severity = "ERR"
       $message  = "Error message"
       $expected = "[ERR    ] Error message"
@@ -115,7 +114,7 @@ Describe 'Add-LogMessage' {
 
   Context 'Info' {
     It 'Correctly writes WARNING message.' {
-      $logfile  = "${infoLog}"
+      $logfile  = "$BACKUP_LOGFILE"
       $severity = "WARNING"
       $message  = "Warning message"
       $expected = "[WARNING] Warning message"
@@ -128,7 +127,7 @@ Describe 'Add-LogMessage' {
     }
 
     It 'Correctly writes NOTICE message.' {
-      $logfile  = "${infoLog}"
+      $logfile  = "$BACKUP_LOGFILE"
       $severity = "NOTICE"
       $message  = "Notice message"
       $expected = "[NOTICE ] Notice message"
@@ -141,7 +140,7 @@ Describe 'Add-LogMessage' {
     }
 
     It 'Correctly writes INFO message.' {
-      $logfile  = "${infoLog}"
+      $logfile  = "$BACKUP_LOGFILE"
       $severity = "INFO"
       $message  = "Info message"
       $expected = "[INFO   ] Info message"
@@ -154,7 +153,7 @@ Describe 'Add-LogMessage' {
     }
 
     It 'Correctly writes DEBUG message.' {
-      $logfile  = "${infoLog}"
+      $logfile  = "$BACKUP_LOGFILE"
       $severity = "DEBUG"
       $message  = "Debug message"
       $expected = "[DEBUG  ] Debug message"
@@ -171,6 +170,6 @@ Describe 'Add-LogMessage' {
 
 
 AfterAll {
-  Remove-Item "${infoLog}" -ErrorAction SilentlyContinue
-  Remove-Item "${errorLog}" -ErrorAction SilentlyContinue
+  Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
+  Remove-Item "$ERROR_LOGFILE" -ErrorAction SilentlyContinue
 }

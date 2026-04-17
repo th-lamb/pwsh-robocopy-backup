@@ -8,8 +8,7 @@ BeforeAll {
   . "${ProjectRoot}\lib\logging-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/logging-functions/"
-  $script:logfile = "${workingFolder}Add-EmptyLineToLogfile.Tests.log"
+  $script:BACKUP_LOGFILE = "${ProjectRoot}\Pester\resources\lib\logging-functions\Add-EmptyLineToLogfile.Tests.log"
 }
 
 
@@ -18,15 +17,15 @@ Describe 'Add-EmptyLineToLogfile' {
   # Check file content: https://pester.dev/docs/v4/usage/assertions#filecontentmatchmultiline
 
   It 'Correctly inserts 1 empty line.' {
-    Remove-Item "${logfile}" -ErrorAction SilentlyContinue
-    Add-EmptyLineToLogfile "${logfile}"
+    Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
+    Add-EmptyLineToLogfile "$BACKUP_LOGFILE"
 
-    "${logfile}" | Should -FileContentMatchMultiline '\n$'
+    "$BACKUP_LOGFILE" | Should -FileContentMatchMultiline '\n$'
   }
 }
 
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
 }

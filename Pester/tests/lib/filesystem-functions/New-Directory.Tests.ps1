@@ -16,11 +16,11 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
-  $script:logfile = "${workingFolder}New-Directory.Tests.log"
+  $workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
+  $script:BACKUP_LOGFILE = "${workingFolder}New-Directory.Tests.log"
 
   # For messages in tested functions
-  $script:config = [ScriptConfig]::new()
+  $config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 }
 
@@ -32,7 +32,7 @@ Describe 'New-Directory' {
       $dir_to_create = "${workingFolder}dir_to_create"
 
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
-      New-Directory 'Test' "${dir_to_create}" "${logfile}"
+      New-Directory 'Test' "${dir_to_create}" "$BACKUP_LOGFILE"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
       Remove-Item "${dir_to_create}" -ErrorAction SilentlyContinue
 
@@ -42,7 +42,7 @@ Describe 'New-Directory' {
     It 'Does nothing if the directory already exists' {
       $dir_to_create = "${workingFolder}existing_dir"
 
-      New-Directory 'Test' "${dir_to_create}" "${logfile}"
+      New-Directory 'Test' "${dir_to_create}" "$BACKUP_LOGFILE"
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
 
       $exists | Should -Be $true
@@ -60,7 +60,7 @@ Describe 'New-Directory' {
       Mock LogAndShowMessage {}
 
       {
-        New-Directory 'Test' "${dir_to_create}" "${logfile}"
+        New-Directory 'Test' "${dir_to_create}" "$BACKUP_LOGFILE"
       } | Should -Throw -ExpectedMessage "${expected_message}"
 
       $exists = Test-Path -Path "${dir_to_create}" -PathType Container
@@ -94,5 +94,5 @@ Describe 'New-Directory' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
 }

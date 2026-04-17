@@ -16,11 +16,12 @@ BeforeAll {
   . "${ProjectRoot}\lib\inifile-functions.ps1"
 
   # For logging in tested functions
-  $script:workingFolder = "${ProjectRoot}\Pester/resources/lib/filesystem-functions/"
-  $script:logfile = "${workingFolder}/Test-NecessaryFile.Tests.log"
+  #FIXME: Check in all files whether variables like $workingFolder are only used once in the following line!
+  $workingFolder = "${ProjectRoot}\Pester\resources\lib\filesystem-functions\"
+  $script:BACKUP_LOGFILE = "${workingFolder}Test-NecessaryFile.Tests.log"
 
   # For messages in tested functions
-  $script:config = [ScriptConfig]::new()
+  $config = [ScriptConfig]::new()
   $config.General.__VERBOSE = 6
 }
 
@@ -34,7 +35,7 @@ Describe 'Test-NecessaryFile' {
       Mock LogAndShowMessage {}
 
       {
-        Test-NecessaryFile 'Test' "${nonexistent_file}" "${logfile}"
+        Test-NecessaryFile 'Test' "${nonexistent_file}" "${BACKUP_LOGFILE}"
       } | Should -Throw
     }
   }
@@ -44,7 +45,7 @@ Describe 'Test-NecessaryFile' {
       $existing_file = "${workingFolder}existing_file"
 
       {
-        Test-NecessaryFile 'Test' "${existing_file}" "${logfile}"
+        Test-NecessaryFile 'Test' "${existing_file}" "${BACKUP_LOGFILE}"
       } | Should -Not -Throw
     }
   }
@@ -75,5 +76,5 @@ Describe 'Test-NecessaryFile' {
 
 
 AfterAll {
-  Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  Remove-Item "${BACKUP_LOGFILE}" -ErrorAction SilentlyContinue
 }

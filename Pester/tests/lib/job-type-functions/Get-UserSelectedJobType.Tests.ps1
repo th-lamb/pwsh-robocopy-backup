@@ -12,11 +12,10 @@ BeforeAll {
   . "${ProjectRoot}\lib\message-functions.ps1"
 
   # For logging in tested functions (mandatory parameter) - but should not be written to because we use Mocks.
-  $script:workingFolder = "${ProjectRoot}\Pester\resources\lib\job-type-functions\"
-  $script:logfile = "${workingFolder}Get-UserSelectedJobType.Tests.log"
+  $script:BACKUP_LOGFILE = "${ProjectRoot}\Pester\resources\lib\job-type-functions\Get-UserSelectedJobType.Tests.log"
 
-  #TODO: rename to DEFAULT_JOB_TYPE (and similar for all tests)?
-  $script:DefaultJob = "Incremental"
+  $script:DEFAULT_JOB_TYPE = "Incremental"
+  $script:JOB_TYPE_SELECTION_MAX_WAITING_TIME_S = 1 # Keep it short for tests.
 }
 
 
@@ -54,7 +53,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
 
@@ -72,7 +71,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
 
@@ -90,7 +89,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
 
@@ -108,7 +107,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
 
@@ -126,7 +125,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
   }
@@ -146,7 +145,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
 
       # Call with specified number of seconds.
-      Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS $NumberOfSeconds
+      Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $NumberOfSeconds
 
       # Assert number of checks.
       Assert-MockCalled Get-ConsoleKeyInfo -Exactly -Times $NumberOfChecks
@@ -166,7 +165,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
 
       # Call with specified number of seconds.
-      Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS $NumberOfSeconds
+      Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $NumberOfSeconds
 
       # Assert number of dots.
       Assert-MockCalled Write-Host -ParameterFilter { $Object -eq '.' } -Exactly -Times $NumberOfDots
@@ -180,7 +179,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {} # Still mock this so the test is fast!
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
 
@@ -197,7 +196,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
   }
@@ -215,7 +214,7 @@ Describe 'Get-UserSelectedJobType' {
       Mock Start-Sleep {}
       Mock Write-Host {}
 
-      $result = Get-UserSelectedJobType -DefaultJobType "${DefaultJob}" -logfile "${logfile}" -MaxWaitingTimeS 1
+      $result = Get-UserSelectedJobType -DefaultJobType "${DEFAULT_JOB_TYPE}" -logfile "${BACKUP_LOGFILE}" -MaxWaitingTimeS $JOB_TYPE_SELECTION_MAX_WAITING_TIME_S
       $result | Should -Be "${expected}"
     }
   }
@@ -224,5 +223,5 @@ Describe 'Get-UserSelectedJobType' {
 
 
 AfterAll {
-  # Remove-Item "${logfile}" -ErrorAction SilentlyContinue
+  # Remove-Item "${BACKUP_LOGFILE}" -ErrorAction SilentlyContinue
 }
