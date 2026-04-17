@@ -365,6 +365,7 @@ LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "----- Creating job files 
 #>
 
 # Local variables
+[int32]$DirlistEntriesCount = 0
 [int32]$SourceDefinitionsCount = 0
 
 [bool]$StartNewJob = $false
@@ -463,12 +464,13 @@ function _processDirectoryList {
       "error: *" {
         # The fallback value of function Get-DirlistLineType
         # No message: function Get-DirlistLineType reports the error/warning.
-        #LogAndShowMessage $Config.Logging.BACKUP_LOGFILE ERR "Error in dir-list: ${line}"
         $script:FinishPreviousJob = $true
+        $Script:DirlistEntriesCount++
       }
       "invalid: *" {
         LogAndShowMessage $Config.Logging.BACKUP_LOGFILE WARNING "Invalid entry in dir-list: ${line}"
         $script:FinishPreviousJob = $true
+        $Script:DirlistEntriesCount++
       }
       "ignore" {
         $script:FinishPreviousJob = $true
@@ -485,6 +487,7 @@ function _processDirectoryList {
         # Only source-dir or source-file-pattern
         $script:StartNewJob = $true
         $script:FinishPreviousJob = $true
+        $Script:DirlistEntriesCount++
       }
       "incl-files-pattern" {
         $script:ContinueCurrentJob = $true
@@ -626,6 +629,7 @@ if ($FinishLastJob) {
   Invoke-AddJobFile
 }
 
+LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "$script:DirlistEntriesCount dir-list entries."
 LogAndShowMessage $Config.Logging.BACKUP_LOGFILE INFO "$script:JobsCreatedCount job file(s) created."
 
 Write-DebugMsg "----- Results -----".PadRight(70, "-")
