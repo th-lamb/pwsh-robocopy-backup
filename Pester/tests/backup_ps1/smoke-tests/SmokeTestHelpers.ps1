@@ -21,7 +21,6 @@ function Get-ProjectRoot {
   return $ProjectRoot
 }
 
-# Initialize-SmokeTestSandbox
 function Initialize-SmokeTestSandbox {
   <# Sets up a clean sandbox for a smoke test by:
     1. Cleaning up previous artifacts.
@@ -106,7 +105,6 @@ function Initialize-SmokeTestSandbox {
   }
 }
 
-# Invoke-SmokeTestProcess
 function Invoke-SmokeTestProcess {
   <# Runs the smoke test script as a separate process and captures stdout/stderr.
   #>
