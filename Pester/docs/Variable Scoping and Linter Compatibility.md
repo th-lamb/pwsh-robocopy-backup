@@ -8,11 +8,13 @@ PSScriptAnalyzer (the PowerShell linter) often flags variables defined in `Befor
 
 ## Comparison of Scoping Options
 
+<!-- markdownlint-disable MD033 -->
 | Option | Style | Linter Happy? | Leakage Protection? | Verdict |
 | :--- | :--- | :---: | :---: | :--- |
 | **1. Local** | `$var = 'val'` in `BeforeAll`<br>`$var` in `It` | ❌ No | ✅ Yes | **Clean but noisy.** Linter complains about unused variables. |
-| **2. Script** | `$script:var = 'val'` in `BeforeAll`<br>`$script:var` in `It` | ✅ Yes | ❌ No | **Explicit but dangerous.** Any modification in an `It` block leaks to all other tests. |
+| **2. Script** | `$script:var = 'val'` in `BeforeAll`<br>`$script:var` in `It` | ✅ Yes | ❌ No | **Explicit but dangerous.** Any modification in an `It` block leaks to all other tests in this file. |
 | **3. Mixed** | `$script:var = 'val'` in `BeforeAll`<br>`$var` in `It` | ✅ Yes | ✅ Yes | **Recommended.** Satisfies the linter and maintains Pester's "copy-on-write" protection. |
+<!-- markdownlint-enable MD033 -->
 
 ## Recommended Pattern (Option 3)
 
