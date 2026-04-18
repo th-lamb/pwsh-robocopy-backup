@@ -122,19 +122,19 @@ Describe 'ScriptConfig' {
 
     It 'DirectorySettings has expected default paths' {
       $script:Config.Directories.BACKUP_BASE_DIR      | Should -Be ".\Backup\"
-      $script:Config.Directories.BACKUP_USER_BASE_DIR | Should -Be ".\Backup\%Username%\"
-      $script:Config.Directories.BACKUP_DIR           | Should -Be ".\Backup\%Username%\%Computername%\"
+      $script:Config.Directories.BACKUP_USER_BASE_DIR | Should -Be ".\Backup\%USERNAME%\"
+      $script:Config.Directories.BACKUP_DIR           | Should -Be ".\Backup\%USERNAME%\%COMPUTERNAME%\"
 
       # Note: $ProjectRoot in the module is calculated relative to the module's location.
       $script:Config.Directories.BACKUP_TEMPLATES_DIR | Should -Be $ExpectedTemplatesDir
 
-      $script:Config.Directories.BACKUP_JOB_DIR       | Should -Be ".\Backup\%Username%\robocopy-jobs\"
+      $script:Config.Directories.BACKUP_JOB_DIR       | Should -Be ".\Backup\%USERNAME%\robocopy-jobs\"
     }
 
     It 'FileSettings has expected default filenames' {
       # Note: $ProjectRoot in the module is calculated relative to the module's location.
       $script:Config.Files.DIRLIST_TEMPLATE     | Should -Be $ExpectedDirListTemplates
-      $script:Config.Files.BACKUP_DIRLIST       | Should -Be "dir-list.conf"
+      $script:Config.Files.BACKUP_DIRLIST       | Should -Be ".\Backup\%USERNAME%\%COMPUTERNAME%\dir-list.conf"
 
       # Note: $ProjectRoot in the module is calculated relative to the module's location.
       $script:Config.Files.JOB_TEMPLATE_INCR    | Should -Be $ExpectedJobTemplateIncr
@@ -149,8 +149,8 @@ Describe 'ScriptConfig' {
     }
 
     It 'LoggingSettings has expected default values' {
-      $script:Config.Logging.BACKUP_LOGFILE | Should -Be "Backup.log"
-      $script:Config.Logging.ERROR_LOGFILE  | Should -Be "Error.log"
+      $script:Config.Logging.BACKUP_LOGFILE | Should -Be ".\Backup\%USERNAME%\%COMPUTERNAME%\Backup.log"
+      $script:Config.Logging.ERROR_LOGFILE  | Should -Be ".\Backup\%USERNAME%\%COMPUTERNAME%\Error.log"
 
       $script:Config.Logging.ENABLE_TRACE_LOG           | Should -Be $true
       $script:Config.Logging.TRACE_LOG_LOCAL_DIR        | Should -Be "%Temp%\"
@@ -162,12 +162,12 @@ Describe 'ScriptConfig' {
       $script:Config.Jobs.JOB_TYPE_SELECTION_MAX_WAITING_TIME_S | Should -Be 30
       $script:Config.Jobs.DEFAULT_JOB_TYPE                      | Should -Be "Incremental"
 
-      $script:Config.Jobs.JOB_FILE_NAME_SCHEME    | Should -Be "${COMPUTERNAME}-Job*.RCJ"
-      $script:Config.Jobs.JOB_LOGFILE_NAME_SCHEME | Should -Be "${COMPUTERNAME}-Job*.log"
+      $script:Config.Jobs.JOB_FILE_NAME_SCHEME    | Should -Be "%COMPUTERNAME%-Job*.RCJ"
+      $script:Config.Jobs.JOB_LOGFILE_NAME_SCHEME | Should -Be "%COMPUTERNAME%-Job*.log"
     }
 
     It 'ArchivingSettings has expected default values' {
-      $script:Config.Archiving.ARCHIVE_NAME_SCHEME  | Should -Be "${COMPUTERNAME}-Jobs-*.zip"
+      $script:Config.Archiving.ARCHIVE_NAME_SCHEME  | Should -Be "%COMPUTERNAME%-Jobs-*.zip"
       $script:Config.Archiving.MAX_ARCHIVES_COUNT   | Should -Be 10
     }
   }
@@ -182,6 +182,19 @@ Describe 'ScriptConfig' {
 
       $script:Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\Backup\"
       $script:Config.Logging.TRACE_LOG_LOCAL_DIR | Should -Be "C:\Logs\"
+    }
+
+    It 'should expand environment variables during normalization' {
+      $userName = [System.Environment]::UserName
+      $computerName = [System.Environment]::MachineName
+
+      $script:Config.Directories.BACKUP_USER_BASE_DIR = ".\Backup\%USERNAME%\"
+      $script:Config.Directories.BACKUP_DIR = ".\Backup\%USERNAME%\%COMPUTERNAME%\"
+
+      $script:Config.Normalize()
+
+      $script:Config.Directories.BACKUP_USER_BASE_DIR | Should -Be ".\Backup\$userName\"
+      $script:Config.Directories.BACKUP_DIR | Should -Be ".\Backup\$userName\$computerName\"
     }
   }
 }

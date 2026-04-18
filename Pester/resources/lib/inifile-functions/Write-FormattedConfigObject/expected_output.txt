@@ -2,12 +2,12 @@
 Values from the configuration object:
 __VERBOSE                            : 7
 BACKUP_BASE_DIR                      : C:\TestBackup\
-BACKUP_USER_BASE_DIR                 : .\Backup\%Username%\
-BACKUP_DIR                           : .\Backup\%Username%\%Computername%\
+BACKUP_USER_BASE_DIR                 : .\Backup\%USERNAME%\
+BACKUP_DIR                           : .\Backup\%USERNAME%\%COMPUTERNAME%\
 BACKUP_TEMPLATES_DIR                 : templates\
-BACKUP_JOB_DIR                       : .\Backup\%Username%\robocopy-jobs\
+BACKUP_JOB_DIR                       : .\Backup\%USERNAME%\robocopy-jobs\
 DIRLIST_TEMPLATE                     : templates\dir-list-template.conf
-BACKUP_DIRLIST                       : dir-list.conf
+BACKUP_DIRLIST                       : .\Backup\%USERNAME%\%COMPUTERNAME%\dir-list.conf
 JOB_TEMPLATE_INCR                    : templates\incr_backup.RCJ
 JOB_TEMPLATE_FULL                    : templates\full_backup.RCJ
 JOB_TEMPLATE_PURGE                   : templates\purge.RCJ
@@ -15,16 +15,16 @@ JOB_TEMPLATE_ARCHIVE                 : templates\only_archive_attr.RCJ
 JOB_TEMPLATE_GLOBAL_EXCLUSIONS       : templates\global_exclusions.RCJ
 JOB_TEMPLATE_LOGGING                 : templates\logging.RCJ
 ROBOCOPY                             : robocopy
-BACKUP_LOGFILE                       : Backup.log
-ERROR_LOGFILE                        : Error.log
+BACKUP_LOGFILE                       : .\Backup\%USERNAME%\%COMPUTERNAME%\Backup.log
+ERROR_LOGFILE                        : .\Backup\%USERNAME%\%COMPUTERNAME%\Error.log
 ENABLE_TRACE_LOG                     : True
 TRACE_LOG_LOCAL_DIR                  : %Temp%\
 TRACE_LOGFILE_NAME                   : Trace.log
 UPLOAD_TRACE_TO_BACKUP_DIR           : True
 JOB_TYPE_SELECTION_MAX_WAITING_TIME_S: 30
 DEFAULT_JOB_TYPE                     : Full
-JOB_FILE_NAME_SCHEME                 : -Job*.RCJ
-JOB_LOGFILE_NAME_SCHEME              : -Job*.log
-ARCHIVE_NAME_SCHEME                  : -Jobs-*.zip
+JOB_FILE_NAME_SCHEME                 : %COMPUTERNAME%-Job*.RCJ
+JOB_LOGFILE_NAME_SCHEME              : %COMPUTERNAME%-Job*.log
+ARCHIVE_NAME_SCHEME                  : %COMPUTERNAME%-Jobs-*.zip
 MAX_ARCHIVES_COUNT                   : 10
 --------------------------------------------------------------------------------

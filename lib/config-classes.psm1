@@ -9,6 +9,10 @@ $ProjectRoot = (Split-Path -Parent $PSScriptRoot) + "\"
 # Container for general settings
 class GeneralSettings {
   [int]$__VERBOSE = 6 # Info
+
+  [void] Normalize() {
+    # No strings to expand or paths to normalize currently.
+  }
 }
 
 # Container for directory-related settings
@@ -17,7 +21,6 @@ class DirectorySettings {
     - $ProjectRoot is always the script dir.
     - . is any current directory from where the user calls the script.
   #>
-  #FIXME: This does *NOT* work because the main script changes the working dir to $SCRIPT_DIR at line ~150!
   [string]$BACKUP_BASE_DIR      = ".\Backup\"
   [string]$BACKUP_USER_BASE_DIR = ".\Backup\%USERNAME%\"
   [string]$BACKUP_DIR           = ".\Backup\%USERNAME%\%COMPUTERNAME%\"
@@ -28,11 +31,18 @@ class DirectorySettings {
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
-    # List of properties that are definitely directories
+    # 1. Expand environment variables
+    foreach ($Prop in $this.PSObject.Properties) {
+      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
+        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
+      }
+    }
+
+    # 2. Fix trailing slashes for directories
     $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR')
 
     foreach ($Prop in $DirProperties) {
-      if (-not [string]::IsNullOrWhiteSpace($this.$Prop)) {
+      if ($this.PSObject.Properties[$Prop] -and -not [string]::IsNullOrWhiteSpace($this.$Prop)) {
         # Join-Path with an empty child ensures a proper trailing separator
         # and fixes double-slashes or missing slashes.
         $this.$Prop = (Join-Path $this.$Prop "").TrimEnd('\') + '\'
@@ -45,7 +55,7 @@ class DirectorySettings {
 class FileSettings {
   # Files for the backup itself
   [string]$DIRLIST_TEMPLATE     = "${ProjectRoot}templates\dir-list-template.conf"
-  [string]$BACKUP_DIRLIST       = "${BACKUP_DIR}dir-list.conf" # e.g. .\Backup\<username>\<Computername>\dir-list.conf
+  [string]$BACKUP_DIRLIST       = "dir-list.conf" # Will be prefixed with BACKUP_DIR in ScriptConfig constructor
 
   # Templates for jobtype
   [string]$JOB_TEMPLATE_INCR    = "${ProjectRoot}templates\incr_backup.RCJ"
@@ -59,38 +69,49 @@ class FileSettings {
 
   # Optional files
   [string]$ROBOCOPY = "robocopy"  # Fallback: Windows' own robocopy
+
+  [void] Normalize() {
+    # Expand environment variables
+    foreach ($Prop in $this.PSObject.Properties) {
+      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
+        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
+      }
+    }
+  }
 }
 
 # Container for logging-related settings
 class LoggingSettings {
   # Standard logfile
-  #TODO: Rename to BACKUP_LOGFILE_NAME?
-  [string]$BACKUP_LOGFILE = "Backup.log"          # e.g. .\Backup\<username>\<Computername>\Backup.log
+  [string]$BACKUP_LOGFILE = "Backup.log"          # Will be prefixed with BACKUP_DIR in ScriptConfig constructor
 
   # Error log
-  #TODO: Rename to ERROR_LOGFILE_NAME?
-  [string]$ERROR_LOGFILE = "Error.log"            # e.g. .\Backup\<username>\<Computername>\Error.log
+  [string]$ERROR_LOGFILE = "Error.log"            # Will be prefixed with BACKUP_DIR in ScriptConfig constructor
 
   # Trace log
   [bool]$ENABLE_TRACE_LOG           = $true
-  [string]$TRACE_LOG_LOCAL_DIR      = "%Temp%\"        #TODO: Make sure %Temp% works as intended!
-  [string]$TRACE_LOGFILE_NAME       = "Trace.log"       # e.g. C:\Windows\Temp\Trace.log
+  [string]$TRACE_LOG_LOCAL_DIR      = "%Temp%\"
+  [string]$TRACE_LOGFILE_NAME       = "Trace.log"
   [bool]$UPLOAD_TRACE_TO_BACKUP_DIR = $true
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
-    # List of properties that are definitely directories
+    # 1. Expand environment variables
+    foreach ($Prop in $this.PSObject.Properties) {
+      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
+        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
+      }
+    }
+
+    # 2. Fix trailing slashes for directories
     $DirProperties = @('TRACE_LOG_LOCAL_DIR')
 
     foreach ($Prop in $DirProperties) {
-      if (-not [string]::IsNullOrWhiteSpace($this.$Prop)) {
+      if ($this.PSObject.Properties[$Prop] -and -not [string]::IsNullOrWhiteSpace($this.$Prop)) {
         $this.$Prop = (Join-Path $this.$Prop "").TrimEnd('\') + '\'
       }
     }
   }
-
-  #TODO: Log rotation?
-  # [int]$MaxAgeDays = 14
 }
 
 # Container for job-related settings
@@ -100,14 +121,32 @@ class JobSettings {
   [string]$DEFAULT_JOB_TYPE                   = "Incremental"
 
   # Filename schemes
-  [string]$JOB_FILE_NAME_SCHEME     = "${COMPUTERNAME}-Job*.RCJ"
-  [string]$JOB_LOGFILE_NAME_SCHEME  = "${COMPUTERNAME}-Job*.log"
+  [string]$JOB_FILE_NAME_SCHEME     = "%COMPUTERNAME%-Job*.RCJ"
+  [string]$JOB_LOGFILE_NAME_SCHEME  = "%COMPUTERNAME%-Job*.log"
+
+  [void] Normalize() {
+    # Expand environment variables
+    foreach ($Prop in $this.PSObject.Properties) {
+      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
+        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
+      }
+    }
+  }
 }
 
 # Container for archiving-related settings
 class ArchivingSettings {
-  [string]$ARCHIVE_NAME_SCHEME      = "${COMPUTERNAME}-Jobs-*.zip"
+  [string]$ARCHIVE_NAME_SCHEME      = "%COMPUTERNAME%-Jobs-*.zip"
   [int]$MAX_ARCHIVES_COUNT          = 10
+
+  [void] Normalize() {
+    # Expand environment variables
+    foreach ($Prop in $this.PSObject.Properties) {
+      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
+        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
+      }
+    }
+  }
 }
 
 # Main container for all settings
@@ -119,14 +158,23 @@ class ScriptConfig {
   [JobSettings]$Jobs              = [JobSettings]::new()
   [ArchivingSettings]$Archiving   = [ArchivingSettings]::new()
 
-  # Method to ensure all paths in all sub-containers are formatted correctly.
-  [void] Normalize() {
-    $this.Directories.Normalize()
-    $this.Logging.Normalize()
+  # Constructor to link dependent defaults
+  ScriptConfig() {
+    # Prefix relative file paths with the backup directory
+    $this.Files.BACKUP_DIRLIST = Join-Path $this.Directories.BACKUP_DIR $this.Files.BACKUP_DIRLIST
+    $this.Logging.BACKUP_LOGFILE = Join-Path $this.Directories.BACKUP_DIR $this.Logging.BACKUP_LOGFILE
+    $this.Logging.ERROR_LOGFILE = Join-Path $this.Directories.BACKUP_DIR $this.Logging.ERROR_LOGFILE
   }
 
-  # "top-level" settings if needed
-  # [string]$Version = "1.0.0"
+  # Method to ensure all paths in all sub-containers are formatted correctly.
+  [void] Normalize() {
+    $this.General.Normalize()
+    $this.Directories.Normalize()
+    $this.Files.Normalize()
+    $this.Logging.Normalize()
+    $this.Jobs.Normalize()
+    $this.Archiving.Normalize()
+  }
 }
 
 #endregion Configuration Object ################################################
