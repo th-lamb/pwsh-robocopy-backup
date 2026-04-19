@@ -31,6 +31,35 @@ function Expand-EnvVar {
   }
 }
 
+function Set-TrailingSlash {
+  [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'The function only modifies internal object state, not the system.')]
+  # Ensures that directory paths have a trailing backslash.
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    $Object,
+    [Parameter(Mandatory = $true)]
+    [string[]]$PropertyNames
+  )
+
+  foreach ($PropName in $PropertyNames) {
+    # Use .NET Reflection to find the property (more reliable than PSObject or Get-Member)
+    $Prop = $Object.GetType().GetProperty($PropName)
+    if ($Prop -and $Prop.PropertyType.FullName -eq 'System.String' -and $Prop.CanWrite) {
+      $Value = $Prop.GetValue($Object)
+      if (-not [string]::IsNullOrWhiteSpace($Value)) {
+        # Join-Path with an empty child ensures a proper trailing separator
+        # and fixes double-slashes or missing slashes.
+        $Normalized = (Join-Path $Value "").TrimEnd('\') + '\'
+        # Only update if changed
+        if ($Normalized -ne $Value) {
+          $Prop.SetValue($Object, $Normalized)
+        }
+      }
+    }
+  }
+}
+
 #endregion Helper functions ####################################################
 
 
@@ -66,15 +95,7 @@ class DirectorySettings {
     Expand-EnvVar $this
 
     # 2. Fix trailing slashes for directories
-    $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR')
-
-    foreach ($PropName in $DirProperties) {
-      if (-not [string]::IsNullOrWhiteSpace($this.$PropName)) {
-        # Join-Path with an empty child ensures a proper trailing separator
-        # and fixes double-slashes or missing slashes.
-        $this.$PropName = (Join-Path $this.$PropName "").TrimEnd('\') + '\'
-      }
-    }
+    Set-TrailingSlash $this @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR')
   }
 }
 
@@ -123,13 +144,7 @@ class LoggingSettings {
     Expand-EnvVar $this
 
     # 2. Fix trailing slashes for directories
-    $DirProperties = @('TRACE_LOG_LOCAL_DIR')
-
-    foreach ($PropName in $DirProperties) {
-      if (-not [string]::IsNullOrWhiteSpace($this.$PropName)) {
-        $this.$PropName = (Join-Path $this.$PropName "").TrimEnd('\') + '\'
-      }
-    }
+    Set-TrailingSlash $this @('TRACE_LOG_LOCAL_DIR')
   }
 }
 
