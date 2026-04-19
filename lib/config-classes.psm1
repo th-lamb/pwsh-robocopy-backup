@@ -4,6 +4,37 @@ $ProjectRoot = (Split-Path -Parent $PSScriptRoot) + "\"
 
 
 
+#region Helper functions
+
+function Expand-EnvVar {
+  # Expands environment variables for all string properties of the object.
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    $Object
+  )
+
+  # Use .NET Reflection to find properties (more reliable than PSObject or Get-Member)
+  $Properties = $Object.GetType().GetProperties()
+
+  foreach ($Prop in $Properties) {
+    if ($Prop.PropertyType.FullName -eq 'System.String' -and $Prop.CanWrite) {
+      $Value = $Prop.GetValue($Object)
+      if (-not [string]::IsNullOrWhiteSpace($Value)) {
+        $Expanded = [System.Environment]::ExpandEnvironmentVariables($Value)
+        # Only update if changed
+        if ($Expanded -ne $Value) {
+          $Prop.SetValue($Object, $Expanded)
+        }
+      }
+    }
+  }
+}
+
+#endregion Helper functions ####################################################
+
+
+
 #region Configuration Object
 
 # Container for general settings
@@ -32,20 +63,16 @@ class DirectorySettings {
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
     # 1. Expand environment variables
-    foreach ($Prop in $this.PSObject.Properties) {
-      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
-        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
-      }
-    }
+    Expand-EnvVar $this
 
     # 2. Fix trailing slashes for directories
     $DirProperties = @('BACKUP_BASE_DIR', 'BACKUP_USER_BASE_DIR', 'BACKUP_DIR', 'BACKUP_TEMPLATES_DIR', 'BACKUP_JOB_DIR')
 
-    foreach ($Prop in $DirProperties) {
-      if ($this.PSObject.Properties[$Prop] -and -not [string]::IsNullOrWhiteSpace($this.$Prop)) {
+    foreach ($PropName in $DirProperties) {
+      if (-not [string]::IsNullOrWhiteSpace($this.$PropName)) {
         # Join-Path with an empty child ensures a proper trailing separator
         # and fixes double-slashes or missing slashes.
-        $this.$Prop = (Join-Path $this.$Prop "").TrimEnd('\') + '\'
+        $this.$PropName = (Join-Path $this.$PropName "").TrimEnd('\') + '\'
       }
     }
   }
@@ -72,11 +99,7 @@ class FileSettings {
 
   [void] Normalize() {
     # Expand environment variables
-    foreach ($Prop in $this.PSObject.Properties) {
-      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
-        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
-      }
-    }
+    Expand-EnvVar $this
   }
 }
 
@@ -97,18 +120,14 @@ class LoggingSettings {
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
     # 1. Expand environment variables
-    foreach ($Prop in $this.PSObject.Properties) {
-      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
-        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
-      }
-    }
+    Expand-EnvVar $this
 
     # 2. Fix trailing slashes for directories
     $DirProperties = @('TRACE_LOG_LOCAL_DIR')
 
-    foreach ($Prop in $DirProperties) {
-      if ($this.PSObject.Properties[$Prop] -and -not [string]::IsNullOrWhiteSpace($this.$Prop)) {
-        $this.$Prop = (Join-Path $this.$Prop "").TrimEnd('\') + '\'
+    foreach ($PropName in $DirProperties) {
+      if (-not [string]::IsNullOrWhiteSpace($this.$PropName)) {
+        $this.$PropName = (Join-Path $this.$PropName "").TrimEnd('\') + '\'
       }
     }
   }
@@ -126,11 +145,7 @@ class JobSettings {
 
   [void] Normalize() {
     # Expand environment variables
-    foreach ($Prop in $this.PSObject.Properties) {
-      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
-        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
-      }
-    }
+    Expand-EnvVar $this
   }
 }
 
@@ -141,11 +156,7 @@ class ArchivingSettings {
 
   [void] Normalize() {
     # Expand environment variables
-    foreach ($Prop in $this.PSObject.Properties) {
-      if ($Prop.TypeNameOfValue -eq 'System.String' -and -not [string]::IsNullOrWhiteSpace($Prop.Value)) {
-        $this.($Prop.Name) = [System.Environment]::ExpandEnvironmentVariables($Prop.Value)
-      }
-    }
+    Expand-EnvVar $this
   }
 }
 
