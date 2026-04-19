@@ -105,7 +105,8 @@ Describe 'Update-ConfigProperty' {
       $Config = [ScriptConfig]::new()
       Update-ConfigProperty -Config $Config -TargetContainer 'General' -Key 'NON_EXISTENT' -Val 'Value'
 
-      $Config.General.PSObject.Properties['NON_EXISTENT'] | Should -BeNullOrEmpty
+      $Properties = $Config.General | Get-Member -MemberType Property
+      $Properties | Where-Object { $_.Name -eq 'NON_EXISTENT' } | Should -BeNullOrEmpty
     }
   }
 }

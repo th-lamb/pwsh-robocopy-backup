@@ -17,13 +17,17 @@ function Write-FormattedConfigObject {
   $VarNames = [System.Collections.Generic.List[string]]::new()
   $VarValues = [System.Collections.Generic.List[string]]::new()
 
-  # Iterate through the containers (General, Directories, Files, etc.)
-  foreach ($ContainerProp in $ConfigObject.PSObject.Properties) {
-    $Container = $ContainerProp.Value
-    if ($null -ne $Container -and $Container.PSObject.Properties) {
-      foreach ($SettingProp in $Container.PSObject.Properties) {
-        $VarNames.Add($SettingProp.Name)
-        $VarValues.Add($SettingProp.Value -as [string])
+  # Iterate through the containers and their properties in a stable order.
+  $ContainerNames = @("General", "Directories", "Files", "Logging", "Jobs", "Archiving")
+
+  foreach ($Name in $ContainerNames) {
+    $Container = $ConfigObject.$Name
+    if ($null -ne $Container) {
+      # Use Reflection to get properties in their definition order
+      $Props = $Container.GetType().GetProperties()
+      foreach ($Prop in $Props) {
+        $VarNames.Add($Prop.Name)
+        $VarValues.Add($Prop.GetValue($Container) -as [string])
       }
     }
   }
@@ -107,14 +111,16 @@ function Update-ConfigProperty {
   )
 
   $SubObject = $Config.$TargetContainer
-  $Property = $SubObject.PSObject.Properties[$Key]
+  $TargetProp = $SubObject.GetType().GetProperty($Key)
 
   # Only process if the property exists and value is not empty.
-  if (-not $Property -or [string]::IsNullOrWhiteSpace($Val)) {
+  if ($null -eq $TargetProp -or [string]::IsNullOrWhiteSpace($Val)) {
     return
   }
 
-  switch ($Property.TypeNameOfValue) {
+  $PropTypeName = $TargetProp.PropertyType.FullName
+
+  switch ($PropTypeName) {
     'System.Boolean' {
       if ($Val -match '^(true|1|yes|on)$') { $SubObject.$Key = $true }
       elseif ($Val -match '^(false|0|no|off)$') { $SubObject.$Key = $false }
