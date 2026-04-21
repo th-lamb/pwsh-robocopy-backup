@@ -1,0 +1,3 @@
+# Allow .gitignore to be tracked by Git, and ignore all other test-generated artifacts.
+/*
+!.gitignore
