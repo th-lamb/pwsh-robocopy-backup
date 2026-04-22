@@ -1,0 +1,3 @@
+# Ignore temporary log files created during library unit tests.
+# These appear briefly during test runs and can cause Git window flicker.
+*.log
