@@ -40,17 +40,33 @@ function Test-ServerIsAvailable {
     [string]$ServerPathSpec
   )
 
-  # https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-check-if-computer-is-up/
-  # Test-Connection -BufferSize 32 -Count 1 -ComputerName 192.168.0.41 -Quiet
-
   $ServerName = Get-ComputernameFromUncPath "${ServerPathSpec}"
 
-  try {
-    $available = Test-Connection -BufferSize 32 -Count 1 -ComputerName "${ServerName}" -Quiet -ErrorAction Stop
-  } catch {
-    $available = $false
+  # We check for SMB ports (445 and 139) because this script uses Robocopy.
+  # Using TCP connection checks is more reliable than ICMP (Ping) because
+  # some networks (like Hotel WiFis) hijack DNS and respond to Pings for
+  # any hostname, but won't have SMB ports open.
+
+  $ports = @(445, 139)
+  foreach ($port in $ports) {
+    $tcpClient = New-Object System.Net.Sockets.TcpClient
+    try {
+      $asyncResult = $tcpClient.BeginConnect($ServerName, $port, $null, $null)
+      $wait = $asyncResult.AsyncWaitHandle.WaitOne(1000, $false)
+      if ($wait) {
+        $tcpClient.EndConnect($asyncResult)
+        $tcpClient.Close()
+        return $true
+      }
+      $tcpClient.Close()
+    }
+    catch {
+      $tcpClient.Close()
+      return $false
+    }
   }
-  return $available
+
+  return $false
 
 }
 
