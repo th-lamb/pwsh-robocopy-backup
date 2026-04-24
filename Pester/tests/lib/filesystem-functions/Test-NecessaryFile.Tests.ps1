@@ -62,14 +62,6 @@ Describe 'Test-NecessaryFile' {
         Test-NecessaryFile 'Test' ""
       } | Should -Throw
     }
-
-    It 'Throws an exception when called with an empty logfile.' {
-      $existing_file = "${workingFolder}existing_file"
-
-      {
-        Test-NecessaryFile 'Test' "${existing_file}" ""
-      } | Should -Throw
-    }
   }
 }
 

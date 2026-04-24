@@ -121,7 +121,7 @@ function Get-DirlistLineType {
   param (
     #[Parameter(Mandatory=$true)]   # A line in the dir-list can be empty!
     [string]$entry,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile
   )
 
@@ -147,10 +147,10 @@ function Get-DirlistLineType {
 
     if (! $FsObject.Exists) {
       if ($ExistingType -eq "network share" -or $ExistingType -eq "network computer") {
-        LogAndShowMessage "${logfile}" WARNING "Network resource offline: ${entry}"
+        LogAndShowMessage WARNING "Network resource offline: ${entry}" "${logfile}"
       }
       else {
-        LogAndShowMessage "${logfile}" WARNING "Not found: ${entry}"
+        LogAndShowMessage WARNING "Not found: ${entry}" "${logfile}"
       }
       return "error: not found"
     }
@@ -163,7 +163,7 @@ function Get-DirlistLineType {
         $ObjectType = "${SpecifiedType}"
       }
       "type mismatch" {
-        LogAndShowMessage "${logfile}" NOTICE "Type mismatch: ${entry}"
+        LogAndShowMessage NOTICE "Type mismatch: ${entry}" "${logfile}"
         $ObjectType = "${ExistingType}"   # We use the real object type!
       }
       Default {
@@ -233,13 +233,13 @@ function Get-TargetDir {
     [string]$BaseDirectory,
     [Parameter(Mandatory = $true)]
     [string]$FolderSpec,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile
   )
 
   # Checks
   if ("${FolderSpec}" -eq "") {
-    LogAndShowMessage "${logfile}" ERR "Get-TargetDir(): No folder specified!"
+    LogAndShowMessage ERR "Get-TargetDir(): No folder specified!" "${logfile}"
     #TODO: If we show an *error* here, why do we return the base dir as target dir?
     #TODO: Can this even happen?
     Throw "Get-TargetDir(): No folder specified!"

@@ -196,13 +196,13 @@ BACKUP_USER_BASE_DIR=${BACKUP_BASE_DIR}UserDir\
 [Directories]
 BACKUP_BASE_DIR=C:\Parent
 [Logging settings]
-TRACE_LOG_LOCAL_DIR=${BACKUP_BASE_DIR}LogDir\
+TRACE_LOG_TEMP_PATH=${BACKUP_BASE_DIR}LogDir\
 '@ | Set-Content $IniFile
 
       $Config = Read-Config -IniFile $IniFile
 
       $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\Parent\"
-      $Config.Logging.TRACE_LOG_LOCAL_DIR | Should -Be "C:\Parent\LogDir\"
+      $Config.Logging.TRACE_LOG_TEMP_PATH | Should -Be "C:\Parent\LogDir\"
     }
   }
 

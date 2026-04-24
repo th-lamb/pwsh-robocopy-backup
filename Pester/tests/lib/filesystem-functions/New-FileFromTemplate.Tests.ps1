@@ -1,4 +1,4 @@
-﻿using module '..\..\..\..\lib\config-classes.psm1'
+using module '..\..\..\..\lib\config-classes.psm1'
 
 # Top level (discovery phase)
 $ProjectRoot = (Resolve-Path "${PSScriptRoot}/../../../../").ProviderPath
@@ -94,20 +94,11 @@ Describe 'New-FileFromTemplate' {
       } | Should -Throw
     }
 
-    It 'Throws an exception when called with an empty template.' {
+    It 'Throws an exception when called with an empty template path.' {
       $file_to_be_created = "${workingFolder}file_to_be_created.txt"
 
       {
         New-FileFromTemplate 'Test' "${file_to_be_created}" ""
-      } | Should -Throw
-    }
-
-    It 'Throws an exception when called with an empty logfile.' {
-      $file_to_be_created = "${workingFolder}file_to_be_created.txt"
-      $template_file      = "${workingFolder}template_file.txt"
-
-      {
-        New-FileFromTemplate 'Test' "${file_to_be_created}" "${template_file}" ""
       } | Should -Throw
     }
   }

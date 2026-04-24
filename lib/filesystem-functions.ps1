@@ -335,12 +335,12 @@ function Test-NecessaryDirectory {
     [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
     [string]$DirectorySpec,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile
   )
 
   if (! (Test-FolderExists "${DirectorySpec}") ) {
-    LogAndShowMessage "${logfile}" ERR "The directory '${DefinitionName}' has been moved or deleted:`n${DirectorySpec}"
+    LogAndShowMessage ERR "The directory '${DefinitionName}' has been moved or deleted:`n${DirectorySpec}" "${logfile}"
     Throw
   }
 
@@ -354,12 +354,12 @@ function Test-NecessaryFile {
     [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
     [string]$FileSpec,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile
   )
 
   if (! (Test-FileExists "${FileSpec}") ) {
-    LogAndShowMessage "${logfile}" ERR "The file '${DefinitionName}' has been moved or deleted:`n${FileSpec}"
+    LogAndShowMessage ERR "The file '${DefinitionName}' has been moved or deleted:`n${FileSpec}" "${logfile}"
     Throw
   }
 
@@ -377,7 +377,7 @@ function Get-ExecutablePath {
     [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
     [string]$FileSpec,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile
   )
 
@@ -392,7 +392,7 @@ function Get-ExecutablePath {
     return "${FileInPath}"
   }
   else {
-    LogAndShowMessage "${logfile}" ERR "The file '${DefinitionName}' has been moved or deleted:`n${FileSpec}"
+    LogAndShowMessage ERR "The file '${DefinitionName}' has been moved or deleted:`n${FileSpec}" "${logfile}"
     Throw
   }
 
@@ -414,7 +414,7 @@ function New-Directory {
     [string]$DefinitionName,
     [Parameter(Mandatory = $true)]
     [string]$DirectorySpec,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile
   )
 
@@ -435,7 +435,7 @@ function New-Directory {
       return $true
     }
     catch {
-      LogAndShowMessage "${logfile}" ERR "Cannot create '${DefinitionName}' ${DirectorySpec}. Error: $_"
+      LogAndShowMessage ERR "Cannot create '${DefinitionName}' ${DirectorySpec}. Error: $_" "${logfile}"
       Throw
     }
   }
@@ -457,7 +457,7 @@ function New-FileFromTemplate {
     [string]$FileSpec,
     [Parameter(Mandatory = $true)]
     [string]$template,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile
   )
 
@@ -467,7 +467,7 @@ function New-FileFromTemplate {
   }
 
   if (Test-FolderExists "${FileSpec}") {
-    LogAndShowMessage "${logfile}" ERR "Cannot create '${DefinitionName}' ${FileSpec} because a folder with the same name already exists!"
+    LogAndShowMessage ERR "Cannot create '${DefinitionName}' ${FileSpec} because a folder with the same name already exists!" "${logfile}"
     Throw
   }
 
@@ -480,11 +480,11 @@ function New-FileFromTemplate {
   if ($PSCmdlet.ShouldProcess("${FileSpec}", "Create file from template")) {
     try {
       Copy-Item -Path "${template}" -Destination "${FileSpec}" -Confirm:$false
-      LogAndShowMessage "${logfile}" INFO "File created from template: ${FileSpec}"
+      LogAndShowMessage INFO "File created from template: ${FileSpec}" "${logfile}"
       return $true
     }
     catch {
-      LogAndShowMessage "${logfile}" ERR "Cannot create '${DefinitionName}' ${FileSpec}. Error: $_"
+      LogAndShowMessage ERR "Cannot create '${DefinitionName}' ${FileSpec}. Error: $_" "${logfile}"
       Throw
     }
   }

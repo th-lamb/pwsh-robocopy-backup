@@ -49,16 +49,16 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
 
       $exit_code = 0
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $exit_code = 1
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $exit_code = 2
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $exit_code = 3
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $result = Test-Path -Path "$BACKUP_LOGFILE" -PathType Leaf
       $result | Should -Be $false   # No logfile created
@@ -68,16 +68,16 @@ Describe 'LogAndShowRobocopyError' {
       Mock Write-InfoMsg {} -Verifiable
 
       $exit_code = 0
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $exit_code = 1
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $exit_code = 2
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $exit_code = 3
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-InfoMsg" -Times 0      # 0 is interpreted as: 0 times exactly
     }
@@ -93,7 +93,7 @@ Describe 'LogAndShowRobocopyError' {
       Mock Write-NoticeMsg {}
 
       # Test
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       # Check result
       $expected_regex = Format-RegexString "${expected_log_entry}"
@@ -111,7 +111,7 @@ Describe 'LogAndShowRobocopyError' {
       Mock Write-NoticeMsg {} -Verifiable
 
       # Test
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       # Check result
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
@@ -129,7 +129,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-NoticeMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -143,7 +143,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-NoticeMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -159,7 +159,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-NoticeMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -173,7 +173,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-NoticeMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -189,7 +189,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-NoticeMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -203,7 +203,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-NoticeMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-NoticeMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -221,7 +221,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -235,7 +235,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -251,7 +251,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -265,7 +265,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -281,7 +281,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -295,7 +295,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -311,7 +311,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -325,7 +325,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -341,7 +341,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -355,7 +355,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -371,7 +371,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -385,7 +385,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -401,7 +401,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -415,7 +415,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -431,7 +431,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-WarningMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -445,7 +445,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-WarningMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-WarningMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -463,7 +463,7 @@ Describe 'LogAndShowRobocopyError' {
       Remove-Item "$BACKUP_LOGFILE" -ErrorAction SilentlyContinue
       Mock Write-ErrMsg {}
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       $expected_regex = Format-RegexString "${expected_log_entry}"
       "$BACKUP_LOGFILE" | Should -FileContentMatch "${expected_regex}"
@@ -477,7 +477,7 @@ Describe 'LogAndShowRobocopyError' {
 
       Mock Write-ErrMsg {} -Verifiable
 
-      LogAndShowRobocopyError "$BACKUP_LOGFILE" "Job1" $exit_code
+      LogAndShowRobocopyError "Job1" $exit_code "$BACKUP_LOGFILE"
 
       Should -Invoke -CommandName "Write-ErrMsg" -Times 1 -Exactly -ParameterFilter {
         $message -eq "${expected_message}"
@@ -487,31 +487,24 @@ Describe 'LogAndShowRobocopyError' {
     }
   }
 
-  #Context 'Invalid exit code' {
   Context 'Invalid Parameters' {
-    It 'Throws an exception when called with an empty logfile.' {
+    It 'Throws an exception when called with an empty job_name.' {
       {
         LogAndShowRobocopyError ""
       } | Should -Throw
     }
 
-    It 'Throws an exception when called with an empty job_name.' {
-      {
-        LogAndShowRobocopyError "$BACKUP_LOGFILE" ""
-      } | Should -Throw
-    }
-
     It 'Throws an exception when called with an invalid exit code.' {
       {
-        LogAndShowRobocopyError "$BACKUP_LOGFILE" 'Job1' -1
+        LogAndShowRobocopyError 'Job1' -1
       } | Should -Throw
 
       {
-        LogAndShowRobocopyError "$BACKUP_LOGFILE" 'Job1' 17
+        LogAndShowRobocopyError 'Job1' 17
       } | Should -Throw
 
       {
-        LogAndShowRobocopyError "$BACKUP_LOGFILE" 'Job1' "foo"
+        LogAndShowRobocopyError 'Job1' "foo"
       } | Should -Throw
     }
   }

@@ -80,14 +80,6 @@ Describe 'New-Directory' {
         New-Directory 'Test' ""
       } | Should -Throw
     }
-
-    It 'Throws an exception when called with an empty logfile.' {
-      $dir_to_create = "${workingFolder}existing_dir"
-
-      {
-        New-Directory 'Test' "${dir_to_create}" ""
-      } | Should -Throw
-    }
   }
 }
 

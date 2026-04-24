@@ -17,10 +17,9 @@ JOB_TEMPLATE_LOGGING                 : templates\logging.RCJ
 ROBOCOPY                             : robocopy
 BACKUP_LOGFILE                       : .\Backup\%USERNAME%\%COMPUTERNAME%\Backup.log
 ERROR_LOGFILE                        : .\Backup\%USERNAME%\%COMPUTERNAME%\Error.log
-ENABLE_TRACE_LOG                     : True
-TRACE_LOG_LOCAL_DIR                  : %Temp%\
-TRACE_LOGFILE_NAME                   : Trace.log
-UPLOAD_TRACE_TO_BACKUP_DIR           : True
+TRACE_LOG_ENABLED                    : True
+TRACE_LOG_TEMP_PATH                  : %Temp%\Backup_Trace.log
+TRACE_LOGFILE                        : .\Backup\%USERNAME%\%COMPUTERNAME%\Trace.log
 JOB_TYPE_SELECTION_MAX_WAITING_TIME_S: 30
 DEFAULT_JOB_TYPE                     : Full
 JOB_FILE_NAME_SCHEME                 : %COMPUTERNAME%-Job*.RCJ

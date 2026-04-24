@@ -33,7 +33,7 @@ Describe 'LogAndShowMessage' {
       # Test(s)
       foreach( $test_severity in [SeverityKeyword].GetEnumNames() )
       {
-        LogAndShowMessage "$BACKUP_LOGFILE" $test_severity "Test message"
+        LogAndShowMessage $test_severity "Test message" "$BACKUP_LOGFILE"
 
         Should -Invoke -CommandName "Add-LogMessage" -Times 1 -Exactly -ParameterFilter {
           $severity -eq "${test_severity}"
@@ -58,7 +58,7 @@ Describe 'LogAndShowMessage' {
       foreach( $test_severity in [SeverityKeyword].GetEnumNames() )
       {
         $test_message = "${test_severity} message"
-        LogAndShowMessage "$BACKUP_LOGFILE" $test_severity "${test_message}"
+        LogAndShowMessage $test_severity "${test_message}" "$BACKUP_LOGFILE"
 
         Should -Invoke -CommandName "Add-LogMessage" -Times 1 -Exactly -ParameterFilter {
           $message -eq "${test_message}"
@@ -91,7 +91,7 @@ Describe 'LogAndShowMessage' {
         [void]$sb.Append("Msg")
         $command_name = $sb.ToString()
 
-        LogAndShowMessage "$BACKUP_LOGFILE" $test_severity "Test message"
+        LogAndShowMessage $test_severity "Test message" "$BACKUP_LOGFILE"
 
         Should -Invoke -CommandName "${command_name}" -Times 1 -Exactly -ParameterFilter {
           $message -eq "Test message"

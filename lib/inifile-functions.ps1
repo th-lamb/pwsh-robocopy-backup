@@ -113,12 +113,17 @@ function Update-ConfigProperty {
   $SubObject = $Config.$TargetContainer
   $TargetProp = $SubObject.GetType().GetProperty($Key)
 
-  # Only process if the property exists and value is not empty.
-  if ($null -eq $TargetProp -or [string]::IsNullOrWhiteSpace($Val)) {
+  # Only process if the property exists.
+  if ($null -eq $TargetProp) {
     return
   }
 
   $PropTypeName = $TargetProp.PropertyType.FullName
+
+  # Only process if the property exists and value is not empty OR if it's a string (allowing empty strings).
+  if ([string]::IsNullOrWhiteSpace($Val) -and $PropTypeName -ne 'System.String') {
+    return
+  }
 
   switch ($PropTypeName) {
     'System.Boolean' {
@@ -126,8 +131,13 @@ function Update-ConfigProperty {
       elseif ($Val -match '^(false|0|no|off)$') { $SubObject.$Key = $false }
     }
     'System.String' {
-      # Expand paths for strings
-      $SubObject.$Key = Get-ExpandedPath $Val
+      # Expand paths for strings (if not empty)
+      if (! [string]::IsNullOrWhiteSpace($Val)) {
+        $SubObject.$Key = Get-ExpandedPath $Val
+      }
+      else {
+        $SubObject.$Key = ""
+      }
 
       # Fix missing backslashes BEFORE the variable is used for further expansion
       $Config.Normalize()

@@ -61,14 +61,6 @@ Describe 'Test-NecessaryDirectory' {
         Test-NecessaryDirectory 'Test' ""
       } | Should -Throw
     }
-
-    It 'Throws an exception when called with an empty logfile.' {
-      $existing_dir = "${workingFolder}existing_dir/"
-
-      {
-        Test-NecessaryDirectory 'Test' "${existing_dir}" ""
-      } | Should -Throw
-    }
   }
 }
 

@@ -21,12 +21,12 @@ function LogAndShowRobocopyError {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true)]
-    [string]$logfile,
-    [Parameter(Mandatory=$true)]
     [string]$JobName,
     [Parameter(Mandatory=$true)]
     [ValidateRange(0,16)]
-    [System.Byte]$ExitCode
+    [System.Byte]$ExitCode,
+    [Parameter(Mandatory=$false)]
+    [string]$logfile = $null
   )
 
   $result = $([RoboCopyExitCodes]$ExitCode)
@@ -34,16 +34,16 @@ function LogAndShowRobocopyError {
   switch ($ExitCode) {
     {$_ -in 0..3} {
       # We log only errors and warnings.
-      #LogAndShowMessage "${logfile}" INFO "${JobName}: ${result}"
+      #LogAndShowMessage INFO "${JobName}: ${result}" "${logfile}"
     }
     {$_ -in 4..7} {
-      LogAndShowMessage "${logfile}" NOTICE "${JobName}: ${result} (Examine the output log. Some housekeeping may be needed.)"
+      LogAndShowMessage NOTICE "${JobName}: ${result} (Examine the output log. Some housekeeping may be needed.)" "${logfile}"
     }
     {$_ -in 8..15} {
-      LogAndShowMessage "${logfile}" WARNING "${JobName}: ${result}"
+      LogAndShowMessage WARNING "${JobName}: ${result}" "${logfile}"
     }
     16 {
-      LogAndShowMessage "${logfile}" ERR "${JobName}: ${result}"
+      LogAndShowMessage ERR "${JobName}: ${result}" "${logfile}"
     }
   }
 

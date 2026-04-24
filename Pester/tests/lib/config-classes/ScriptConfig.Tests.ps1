@@ -58,7 +58,7 @@ Describe 'ScriptConfig' {
       @{ ContainerName = "General";     ExpectedProperties = @("__VERBOSE") }
       @{ ContainerName = "Directories"; ExpectedProperties = @("BACKUP_BASE_DIR", "BACKUP_DIR", "BACKUP_JOB_DIR", "BACKUP_TEMPLATES_DIR", "BACKUP_USER_BASE_DIR") }
       @{ ContainerName = "Files";       ExpectedProperties = @("DIRLIST_TEMPLATE", "BACKUP_DIRLIST", "JOB_TEMPLATE_INCR", "JOB_TEMPLATE_FULL", "JOB_TEMPLATE_PURGE", "JOB_TEMPLATE_ARCHIVE", "JOB_TEMPLATE_GLOBAL_EXCLUSIONS", "JOB_TEMPLATE_LOGGING", "ROBOCOPY") }
-      @{ ContainerName = "Logging";     ExpectedProperties = @("BACKUP_LOGFILE", "ERROR_LOGFILE", "ENABLE_TRACE_LOG", "TRACE_LOG_LOCAL_DIR", "TRACE_LOGFILE_NAME", "UPLOAD_TRACE_TO_BACKUP_DIR") }
+      @{ ContainerName = "Logging";     ExpectedProperties = @("BACKUP_LOGFILE", "ERROR_LOGFILE", "TRACE_LOG_ENABLED", "TRACE_LOG_TEMP_PATH", "TRACE_LOGFILE") }
       @{ ContainerName = "Jobs";        ExpectedProperties = @("JOB_TYPE_SELECTION_MAX_WAITING_TIME_S", "DEFAULT_JOB_TYPE", "JOB_FILE_NAME_SCHEME", "JOB_LOGFILE_NAME_SCHEME") }
       @{ ContainerName = "Archiving";   ExpectedProperties = @("ARCHIVE_NAME_SCHEME", "MAX_ARCHIVES_COUNT") }
     )
@@ -95,10 +95,9 @@ Describe 'ScriptConfig' {
 
       @{ Container = "Logging";     Property = "BACKUP_LOGFILE";                 ExpectedType = "string" }
       @{ Container = "Logging";     Property = "ERROR_LOGFILE";                  ExpectedType = "string" }
-      @{ Container = "Logging";     Property = "ENABLE_TRACE_LOG";               ExpectedType = "Boolean" }
-      @{ Container = "Logging";     Property = "TRACE_LOG_LOCAL_DIR";            ExpectedType = "string" }
-      @{ Container = "Logging";     Property = "TRACE_LOGFILE_NAME";             ExpectedType = "string" }
-      @{ Container = "Logging";     Property = "UPLOAD_TRACE_TO_BACKUP_DIR";     ExpectedType = "Boolean" }
+      @{ Container = "Logging";     Property = "TRACE_LOG_ENABLED";              ExpectedType = "Boolean" }
+      @{ Container = "Logging";     Property = "TRACE_LOG_TEMP_PATH";            ExpectedType = "string" }
+      @{ Container = "Logging";     Property = "TRACE_LOGFILE";                  ExpectedType = "string" }
 
       @{ Container = "Jobs";        Property = "JOB_TYPE_SELECTION_MAX_WAITING_TIME_S"; ExpectedType = "int32" }
       @{ Container = "Jobs";        Property = "DEFAULT_JOB_TYPE";              ExpectedType = "string" }
@@ -152,10 +151,9 @@ Describe 'ScriptConfig' {
       $script:Config.Logging.BACKUP_LOGFILE | Should -Be ".\Backup\%USERNAME%\%COMPUTERNAME%\Backup.log"
       $script:Config.Logging.ERROR_LOGFILE  | Should -Be ".\Backup\%USERNAME%\%COMPUTERNAME%\Error.log"
 
-      $script:Config.Logging.ENABLE_TRACE_LOG           | Should -Be $true
-      $script:Config.Logging.TRACE_LOG_LOCAL_DIR        | Should -Be "%Temp%\"
-      $script:Config.Logging.TRACE_LOGFILE_NAME         | Should -Be "Trace.log"
-      $script:Config.Logging.UPLOAD_TRACE_TO_BACKUP_DIR | Should -Be $true
+      $script:Config.Logging.TRACE_LOG_ENABLED   | Should -Be $true
+      $script:Config.Logging.TRACE_LOG_TEMP_PATH | Should -Be "%Temp%\Backup_Trace.log"
+      $script:Config.Logging.TRACE_LOGFILE       | Should -Be ".\Backup\%USERNAME%\%COMPUTERNAME%\Trace.log"
     }
 
     It 'JobSettings has expected default values' {
@@ -176,12 +174,10 @@ Describe 'ScriptConfig' {
     It 'should normalize directory paths with trailing backslashes' {
       # Set paths without trailing backslashes - using C: to ensure it works on Windows
       $script:Config.Directories.BACKUP_BASE_DIR = "C:\Backup"
-      $script:Config.Logging.TRACE_LOG_LOCAL_DIR = "C:\Logs"
 
       $script:Config.Normalize()
 
       $script:Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\Backup\"
-      $script:Config.Logging.TRACE_LOG_LOCAL_DIR | Should -Be "C:\Logs\"
     }
 
     It 'should expand environment variables during normalization' {

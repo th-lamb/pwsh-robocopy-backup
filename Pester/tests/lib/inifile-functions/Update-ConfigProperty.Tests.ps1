@@ -43,24 +43,24 @@ Describe 'Update-ConfigProperty' {
 
     It "Correctly converts '<MyInput>' to <Expected>" -TestCases $TestCases {
       <# We pass all combinations to Update-ConfigProperty and then check
-        whether $Config.Logging.ENABLE_TRACE_LOG has the correct value.
+        whether $Config.Logging.TRACE_LOG_ENABLED has the correct value.
       #>
       param($MyInput, $Expected)
       $Config = [ScriptConfig]::new()
 
-      # ENABLE_TRACE_LOG is a [bool] in the Logging container.
-      Update-ConfigProperty -Config $Config -TargetContainer 'Logging' -Key 'ENABLE_TRACE_LOG' -Val $MyInput
+      # TRACE_LOG_ENABLED is a [bool] in the Logging container.
+      Update-ConfigProperty -Config $Config -TargetContainer 'Logging' -Key 'TRACE_LOG_ENABLED' -Val $MyInput
 
-      $Config.Logging.ENABLE_TRACE_LOG | Should -BeExactly $Expected
+      $Config.Logging.TRACE_LOG_ENABLED | Should -BeExactly $Expected
     }
 
     It 'Ignores empty input for boolean properties (no update).' {
       $Config = [ScriptConfig]::new()
 
       # Default is $true, we try to set it to '' which should be ignored.
-      Update-ConfigProperty -Config $Config -TargetContainer 'Logging' -Key 'ENABLE_TRACE_LOG' -Val ''
+      Update-ConfigProperty -Config $Config -TargetContainer 'Logging' -Key 'TRACE_LOG_ENABLED' -Val ''
 
-      $Config.Logging.ENABLE_TRACE_LOG | Should -Be $true
+      $Config.Logging.TRACE_LOG_ENABLED | Should -Be $true
     }
   }
 
@@ -74,6 +74,16 @@ Describe 'Update-ConfigProperty' {
 
       Should -Invoke -CommandName "Get-ExpandedPath" # -Times 1
       $Config.Directories.BACKUP_BASE_DIR | Should -Be "C:\SomePath\"
+    }
+
+    It 'Allows overwriting a string property with an empty string.' {
+      $Config = [ScriptConfig]::new()
+      # Default value is usually not empty. Let's set it first.
+      $Config.Directories.BACKUP_BASE_DIR = "C:\OldPath\"
+
+      Update-ConfigProperty -Config $Config -TargetContainer 'Directories' -Key 'BACKUP_BASE_DIR' -Val ''
+
+      $Config.Directories.BACKUP_BASE_DIR | Should -BeExactly ""
     }
   }
 

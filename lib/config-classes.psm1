@@ -133,10 +133,9 @@ class LoggingSettings {
   [string]$ERROR_LOGFILE = "Error.log"            # Will be prefixed with BACKUP_DIR in ScriptConfig constructor
 
   # Trace log
-  [bool]$ENABLE_TRACE_LOG           = $true
-  [string]$TRACE_LOG_LOCAL_DIR      = "%Temp%\"
-  [string]$TRACE_LOGFILE_NAME       = "Trace.log"
-  [bool]$UPLOAD_TRACE_TO_BACKUP_DIR = $true
+  [bool]$TRACE_LOG_ENABLED     = $true
+  [string]$TRACE_LOG_TEMP_PATH = "%Temp%\Backup_Trace.log"
+  [string]$TRACE_LOGFILE       = "Trace.log"      # Will be prefixed with BACKUP_DIR in ScriptConfig constructor
 
   # Method to ensure all paths are formatted correctly.
   [void] Normalize() {
@@ -144,7 +143,7 @@ class LoggingSettings {
     Expand-EnvVar $this
 
     # 2. Fix trailing slashes for directories
-    Set-TrailingSlash $this @('TRACE_LOG_LOCAL_DIR')
+    # No more directories to normalize here.
   }
 }
 
@@ -190,16 +189,35 @@ class ScriptConfig {
     $this.Files.BACKUP_DIRLIST = Join-Path $this.Directories.BACKUP_DIR $this.Files.BACKUP_DIRLIST
     $this.Logging.BACKUP_LOGFILE = Join-Path $this.Directories.BACKUP_DIR $this.Logging.BACKUP_LOGFILE
     $this.Logging.ERROR_LOGFILE = Join-Path $this.Directories.BACKUP_DIR $this.Logging.ERROR_LOGFILE
+    $this.Logging.TRACE_LOGFILE = Join-Path $this.Directories.BACKUP_DIR $this.Logging.TRACE_LOGFILE
   }
 
   # Method to ensure all paths in all sub-containers are formatted correctly.
   [void] Normalize() {
+    # First, normalize individual containers (expansion of env vars, trailing slashes)
     $this.General.Normalize()
     $this.Directories.Normalize()
     $this.Files.Normalize()
     $this.Logging.Normalize()
     $this.Jobs.Normalize()
     $this.Archiving.Normalize()
+
+    # Second, ensure that relative paths are always prefixed with the (possibly changed) BACKUP_DIR.
+    # We use Get-Item -LiteralPath and Split-Path to find out if it's already an absolute path
+    # or if it needs to be prefixed.
+    # Note: For now we just prefix them if they don't look like an absolute path.
+    if (! (Split-Path $this.Files.BACKUP_DIRLIST -IsAbsolute)) {
+      $this.Files.BACKUP_DIRLIST = Join-Path $this.Directories.BACKUP_DIR (Split-Path $this.Files.BACKUP_DIRLIST -Leaf)
+    }
+    if (! (Split-Path $this.Logging.BACKUP_LOGFILE -IsAbsolute)) {
+      $this.Logging.BACKUP_LOGFILE = Join-Path $this.Directories.BACKUP_DIR (Split-Path $this.Logging.BACKUP_LOGFILE -Leaf)
+    }
+    if (! (Split-Path $this.Logging.ERROR_LOGFILE -IsAbsolute)) {
+      $this.Logging.ERROR_LOGFILE = Join-Path $this.Directories.BACKUP_DIR (Split-Path $this.Logging.ERROR_LOGFILE -Leaf)
+    }
+    if (! (Split-Path $this.Logging.TRACE_LOGFILE -IsAbsolute)) {
+      $this.Logging.TRACE_LOGFILE = Join-Path $this.Directories.BACKUP_DIR (Split-Path $this.Logging.TRACE_LOGFILE -Leaf)
+    }
   }
 }
 

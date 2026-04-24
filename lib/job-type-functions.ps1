@@ -99,7 +99,7 @@ function Get-UserSelectedJobType {
     [Parameter(Mandatory = $true)]
     [ValidateSet('Incremental', 'Full', 'Purge', 'Archive', 'Cancel')]
     [string]$DefaultJobType,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$logfile,
     [Parameter(Mandatory = $true)]
     [int32]$MaxWaitingTimeS,
@@ -109,11 +109,11 @@ function Get-UserSelectedJobType {
   )
 
   if ($NonInteractive) {
-    LogAndShowMessage -logfile "${logfile}" -severity INFO -message "Non-interactive mode. Using the default: ${DefaultJobType}"
+    LogAndShowMessage INFO "Non-interactive mode. Using the default: ${DefaultJobType}" "${logfile}"
     return "${DefaultJobType}"
   }
 
-  Add-LogMessage -logfile "${logfile}" -severity INFO -message "Asking the user for the job-type..."
+  Add-LogMessage INFO "Asking the user for the job-type..." "${logfile}"
 
   [int32]$MaxWaitTimeMilliseconds = $MaxWaitingTimeS * 1000
   [int32]$CheckIntervalMilliseconds = 100
@@ -160,51 +160,51 @@ function Get-UserSelectedJobType {
   switch ($pressedKey) {
     'I' {
       $result = "Incremental"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Incremental selected."
+      Add-LogMessage INFO "Incremental selected." "${logfile}"
     }
 
     'F' {
       $result = "Full"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Full selected."
+      Add-LogMessage INFO "Full selected." "${logfile}"
     }
 
     'P' {
       $result = "Purge"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Purge selected."
+      Add-LogMessage INFO "Purge selected." "${logfile}"
     }
 
     'A' {
       $result = "Archive"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Archive selected."
+      Add-LogMessage INFO "Archive selected." "${logfile}"
     }
 
     'S' {
       $result = "${DefaultJobType}"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "Start selected. Using the default: ${DefaultJobType}"
+      Add-LogMessage INFO "Start selected. Using the default: ${DefaultJobType}" "${logfile}"
     }
 
     'ESCAPE' {
       $result = "Cancel"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User pressed ESCAPE. Cancel."
+      Add-LogMessage INFO "User pressed ESCAPE. Cancel." "${logfile}"
     }
 
     'ENTER' {
       Write-Host "Using the default."
       $result = "${DefaultJobType}"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User just pressed ENTER. Using the default: ${DefaultJobType}"
+      Add-LogMessage INFO "User just pressed ENTER. Using the default: ${DefaultJobType}" "${logfile}"
     }
 
     '' {
       # User didn't press any key.
       Write-Host "Using the default."
       $result = "${DefaultJobType}"
-      Add-LogMessage -logfile "${logfile}" -severity INFO -message "User didn't select a job-type. Using the default: ${DefaultJobType}"
+      Add-LogMessage INFO "User didn't select a job-type. Using the default: ${DefaultJobType}" "${logfile}"
     }
 
     Default {
       # Illegal choice
-      Add-LogMessage -logfile "${logfile}" -severity DEBUG -message "User clicked: ${pressedKey}"
-      LogAndShowMessage "${logfile}" WARNING "Illegal choice. Cancel."
+      Add-LogMessage DEBUG "User clicked: ${pressedKey}" "${logfile}"
+      LogAndShowMessage WARNING "Illegal choice. Cancel." "${logfile}"
       $result = "Cancel"
     }
   }

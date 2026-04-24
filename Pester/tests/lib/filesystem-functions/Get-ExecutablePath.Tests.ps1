@@ -77,14 +77,6 @@ Describe 'Get-ExecutablePath' {
         Get-ExecutablePath 'Test' ""
       } | Should -Throw
     }
-
-    It 'Throws an exception when called with an empty logfile.' {
-      $path_spec = "robocopy.exe"
-
-      {
-        Get-ExecutablePath 'Test' "${path_spec}" ""
-      } | Should -Throw
-    }
   }
 }
 

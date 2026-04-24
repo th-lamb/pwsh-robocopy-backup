@@ -83,7 +83,7 @@ Describe 'SeverityKeyword Enum' {
   It 'INFO should be 6' {
     [int][SeverityKeyword]::INFO | Should -Be 6
   }
-  It 'DEBUG should be 6' {
+  It 'DEBUG should be 7' {
     [int][SeverityKeyword]::DEBUG | Should -Be 7
   }
 }
